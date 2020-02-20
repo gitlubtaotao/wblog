@@ -2,14 +2,6 @@ package main
 
 import (
 	"flag"
-	"html/template"
-	"net/http"
-
-	"path/filepath"
-
-	"os"
-	"strings"
-
 	"github.com/cihub/seelog"
 	"github.com/claudiu/gocron"
 	"github.com/gin-contrib/sessions"
@@ -18,97 +10,129 @@ import (
 	"github.com/wangsongyan/wblog/helpers"
 	"github.com/wangsongyan/wblog/models"
 	"github.com/wangsongyan/wblog/system"
+	"net/http"
+	"os"
+	"path/filepath"
+	"strings"
+	
+	"html/template"
 )
 
-func main() {
-
+func main()  {
 	configFilePath := flag.String("C", "conf/conf.yaml", "config file path")
 	logConfigPath := flag.String("L", "conf/seelog.xml", "log config file path")
 	flag.Parse()
-
 	logger, err := seelog.LoggerFromConfigAsFile(*logConfigPath)
+	
 	if err != nil {
 		seelog.Critical("err parsing seelog config file", err)
 		return
 	}
 	seelog.ReplaceLogger(logger)
-	defer seelog.Flush()
-
 	if err := system.LoadConfiguration(*configFilePath); err != nil {
 		seelog.Critical("err parsing config log file", err)
 		return
 	}
-
+	defer seelog.Flush()
+	
+	
+	
+	//初始化数据库
 	db, err := models.InitDB()
 	if err != nil {
 		seelog.Critical("err open databases", err)
 		return
 	}
 	defer db.Close()
-
-	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
-
+	
 	setTemplate(router)
 	setSessions(router)
+	
+	//设置设置gin模式。参数可以传递：gin.DebugMode、gin.ReleaseMode、gin.TestMode
+	gin.SetMode(gin.DebugMode)
+	
 	router.Use(SharedData())
-
 	//Periodic tasks
+	
+	//定时任务处理器
 	gocron.Every(1).Day().Do(controllers.CreateXMLSitemap)
 	gocron.Every(7).Days().Do(controllers.Backup)
 	gocron.Start()
-
-	router.Static("/static", filepath.Join(getCurrentDirectory(), "./static"))
-
+	//获取静态资源文件
+	router.Static("/static", "./static")
+	//router.Static("/static", filepath.Join(getCurrentDirectory(), "./static"))
+	//路由不存在
 	router.NoRoute(controllers.Handle404)
+	
 	router.GET("/", controllers.IndexGet)
 	router.GET("/index", controllers.IndexGet)
 	router.GET("/rss", controllers.RssGet)
-
+	
+	//注册路由
 	if system.GetConfiguration().SignupEnabled {
-		router.GET("/signup", controllers.SignupGet)
-		router.POST("/signup", controllers.SignupPost)
+		signUp(router)
 	}
-	// user signin and logout
-	router.GET("/signin", controllers.SigninGet)
-	router.POST("/signin", controllers.SigninPost)
-	router.GET("/logout", controllers.LogoutGet)
-	router.GET("/oauth2callback", controllers.Oauth2Callback)
-	router.GET("/auth/:authType", controllers.AuthGet)
-
+	//登录和退出
+	signInAndOut(router)
 	// captcha
 	router.GET("/captcha", controllers.CaptchaGet)
+	//访问者路由
+	visitorRouter(router)
+	//订阅者路由
+	subscriberRouter(router)
+	//other router
+	otherRouter(router)
+	//后台路由
+	adminRouter(router)
+	router.Run(system.GetConfiguration().Addr)
+}
 
-	visitor := router.Group("/visitor")
+func signUp(engine *gin.Engine)  {
+	engine.GET("/signup", controllers.SignupGet)
+	engine.POST("/signup", controllers.SignupPost)
+}
+
+//登录和退出
+func signInAndOut(engine *gin.Engine)  {
+	engine.GET("/signin",controllers.SigninGet)
+	engine.POST("/signin", controllers.SigninPost)
+	engine.GET("/logout", controllers.LogoutGet)
+	engine.GET("/oauth2callback", controllers.Oauth2Callback)
+	engine.GET("/auth/:authType", controllers.AuthGet)
+}
+
+func visitorRouter(engine *gin.Engine)  {
+	visitor := engine.Group("/visitor")
 	visitor.Use(AuthRequired())
 	{
 		visitor.POST("/new_comment", controllers.CommentPost)
 		visitor.POST("/comment/:id/delete", controllers.CommentDelete)
 	}
+}
 
-	// subscriber
-	router.GET("/subscribe", controllers.SubscribeGet)
-	router.POST("/subscribe", controllers.Subscribe)
-	router.GET("/active", controllers.ActiveSubscriber)
-	router.GET("/unsubscribe", controllers.UnSubscribe)
+//订阅者访问
+func subscriberRouter(engine *gin.Engine){
+	engine.GET("/subscribe", controllers.SubscribeGet)
+	engine.POST("/subscribe", controllers.Subscribe)
+	engine.GET("/active", controllers.ActiveSubscriber)
+	engine.GET("/unsubscribe", controllers.UnSubscribe)
+}
 
-	router.GET("/page/:id", controllers.PageGet)
-	router.GET("/post/:id", controllers.PostGet)
-	router.GET("/tag/:tag", controllers.TagGet)
-	router.GET("/archives/:year/:month", controllers.ArchiveGet)
-
-	router.GET("/link/:id", controllers.LinkGet)
-
-	authorized := router.Group("/admin")
+func otherRouter(engine *gin.Engine)  {
+	engine.GET("/page/:id", controllers.PageGet)
+	engine.GET("/post/:id", controllers.PostGet)
+	engine.GET("/tag/:tag", controllers.TagGet)
+	engine.GET("/archives/:year/:month", controllers.ArchiveGet)
+	engine.GET("/link/:id", controllers.LinkGet)
+}
+//后台路由
+func adminRouter(engine *gin.Engine)  {
+	authorized := engine.Group("/admin")
 	authorized.Use(AdminScopeRequired())
 	{
-		// index
 		authorized.GET("/index", controllers.AdminIndex)
-
-		// image upload
 		authorized.POST("/upload", controllers.Upload)
-
-		// page
 		authorized.GET("/page", controllers.PageIndex)
 		authorized.GET("/new_page", controllers.PageNew)
 		authorized.POST("/new_page", controllers.PageCreate)
@@ -116,7 +140,7 @@ func main() {
 		authorized.POST("/page/:id/edit", controllers.PageUpdate)
 		authorized.POST("/page/:id/publish", controllers.PagePublish)
 		authorized.POST("/page/:id/delete", controllers.PageDelete)
-
+		
 		// post
 		authorized.GET("/post", controllers.PostIndex)
 		authorized.GET("/new_post", controllers.PostNew)
@@ -125,49 +149,42 @@ func main() {
 		authorized.POST("/post/:id/edit", controllers.PostUpdate)
 		authorized.POST("/post/:id/publish", controllers.PostPublish)
 		authorized.POST("/post/:id/delete", controllers.PostDelete)
-
 		// tag
 		authorized.POST("/new_tag", controllers.TagCreate)
-
-		//
 		authorized.GET("/user", controllers.UserIndex)
 		authorized.POST("/user/:id/lock", controllers.UserLock)
-
 		// profile
 		authorized.GET("/profile", controllers.ProfileGet)
 		authorized.POST("/profile", controllers.ProfileUpdate)
 		authorized.POST("/profile/email/bind", controllers.BindEmail)
 		authorized.POST("/profile/email/unbind", controllers.UnbindEmail)
 		authorized.POST("/profile/github/unbind", controllers.UnbindGithub)
-
+		
 		// subscriber
 		authorized.GET("/subscriber", controllers.SubscriberIndex)
 		authorized.POST("/subscriber", controllers.SubscriberPost)
-
+		
 		// link
 		authorized.GET("/link", controllers.LinkIndex)
 		authorized.POST("/new_link", controllers.LinkCreate)
 		authorized.POST("/link/:id/edit", controllers.LinkUpdate)
 		authorized.POST("/link/:id/delete", controllers.LinkDelete)
-
 		// comment
 		authorized.POST("/comment/:id", controllers.CommentRead)
 		authorized.POST("/read_all", controllers.CommentReadAll)
-
+		
 		// backup
 		authorized.POST("/backup", controllers.BackupPost)
 		authorized.POST("/restore", controllers.RestorePost)
-
+		
 		// mail
 		authorized.POST("/new_mail", controllers.SendMail)
 		authorized.POST("/new_batchmail", controllers.SendBatchMail)
 	}
-
-	router.Run(system.GetConfiguration().Addr)
+	
 }
 
 func setTemplate(engine *gin.Engine) {
-
 	funcMap := template.FuncMap{
 		"dateFormat": helpers.DateFormat,
 		"substring":  helpers.Substring,
@@ -178,9 +195,10 @@ func setTemplate(engine *gin.Engine) {
 		"minus":      helpers.Minus,
 		"listtag":    helpers.ListTag,
 	}
-
+	
 	engine.SetFuncMap(funcMap)
-	engine.LoadHTMLGlob(filepath.Join(getCurrentDirectory(), "./views/**/*"))
+	//engine.LoadHTMLGlob(filepath.Join(getCurrentDirectory(), "./views/**/*"))
+	engine.LoadHTMLGlob("views/**/*")
 }
 
 //setSessions initializes sessions & csrf middlewares
@@ -200,8 +218,6 @@ func setSessions(router *gin.Engine) {
 	}))*/
 }
 
-//+++++++++++++ middlewares +++++++++++++++++++++++
-
 //SharedData fills in common data, such as user info, etc...
 func SharedData() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -216,6 +232,32 @@ func SharedData() gin.HandlerFunc {
 			c.Set("SignupEnabled", true)
 		}
 		c.Next()
+	}
+}
+
+func getCurrentDirectory() string {
+	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	if err != nil {
+		seelog.Critical(err)
+	}
+	path := strings.Replace(dir, "\\", "/", -1)
+	return path
+}
+
+
+func AuthRequired() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		if user, _ := c.Get(controllers.CONTEXT_USER_KEY); user != nil {
+			if _, ok := user.(*models.User); ok {
+				c.Next()
+				return
+			}
+		}
+		seelog.Warnf("User not authorized to visit %s", c.Request.RequestURI)
+		c.HTML(http.StatusForbidden, "errors/error.html", gin.H{
+			"message": "Forbidden!",
+		})
+		c.Abort()
 	}
 }
 
@@ -236,30 +278,5 @@ func AdminScopeRequired() gin.HandlerFunc {
 	}
 }
 
-func AuthRequired() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		if user, _ := c.Get(controllers.CONTEXT_USER_KEY); user != nil {
-			if _, ok := user.(*models.User); ok {
-				c.Next()
-				return
-			}
-		}
-		seelog.Warnf("User not authorized to visit %s", c.Request.RequestURI)
-		c.HTML(http.StatusForbidden, "errors/error.html", gin.H{
-			"message": "Forbidden!",
-		})
-		c.Abort()
-	}
-}
 
-func getCurrentDirectory() string {
-	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-	if err != nil {
-		seelog.Critical(err)
-	}
-	return strings.Replace(dir, "\\", "/", -1)
-}
 
-//func getCurrentDirectory() string {
-//	return ""
-//}
