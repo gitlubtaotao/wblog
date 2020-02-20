@@ -14,8 +14,8 @@ import (
 	"github.com/pkg/errors"
 	"github.com/qiniu/api.v7/auth/qbox"
 	"github.com/qiniu/api.v7/storage"
-	"github.com/wangsongyan/wblog/helpers"
-	"github.com/wangsongyan/wblog/system"
+	"github.com/gitlubtaotao/wblog/helpers"
+	"github.com/gitlubtaotao/wblog/system"
 )
 
 func BackupPost(c *gin.Context) {

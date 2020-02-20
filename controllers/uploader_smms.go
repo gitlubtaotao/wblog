@@ -9,9 +9,9 @@ import (
 	"mime/multipart"
 	"net/http"
 
-	"github.com/wangsongyan/wblog/models"
+	"github.com/gitlubtaotao/wblog/models"
 
-	"github.com/wangsongyan/wblog/system"
+	"github.com/gitlubtaotao/wblog/system"
 )
 
 type SmmsUploader struct {
