@@ -6,15 +6,16 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
-
+	"time"
+	
 	"github.com/alimoeeny/gooauth2"
 	"github.com/cihub/seelog"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"github.com/pkg/errors"
 	"github.com/gitlubtaotao/wblog/helpers"
 	"github.com/gitlubtaotao/wblog/models"
 	"github.com/gitlubtaotao/wblog/system"
+	"github.com/pkg/errors"
 )
 
 type GithubUserInfo struct {
@@ -51,20 +52,25 @@ type GithubUserInfo struct {
 }
 
 func SigninGet(c *gin.Context) {
-	c.HTML(http.StatusOK, "auth/signin.html", nil)
+	c.HTML(http.StatusOK, "auth/signin.html", gin.H{
+		"title": "Wblog | Log in",
+	})
 }
 
 func SignupGet(c *gin.Context) {
-	c.HTML(http.StatusOK, "auth/signup.html", nil)
+	c.HTML(http.StatusOK, "auth/signup.html", gin.H{
+		"title": "Wblog | Registration Page",
+	})
 }
 
 func LogoutGet(c *gin.Context) {
 	s := sessions.Default(c)
-	s.Clear()
+	s.Delete(SESSION_KEY)
 	s.Save()
 	c.Redirect(http.StatusSeeOther, "/signin")
 }
 
+//注册新用户
 func SignupPost(c *gin.Context) {
 	var (
 		err error
@@ -79,6 +85,7 @@ func SignupPost(c *gin.Context) {
 		Telephone: telephone,
 		Password:  password,
 		IsAdmin:   true,
+		OutTime:   time.Now().AddDate(0,0,4),
 	}
 	if len(user.Email) == 0 || len(user.Password) == 0 {
 		res["message"] = "email or password cannot be null"
@@ -87,9 +94,11 @@ func SignupPost(c *gin.Context) {
 	user.Password = helpers.Md5(user.Email + user.Password)
 	err = user.Insert()
 	if err != nil {
-		res["message"] = "email already exists"
+		seelog.Critical(err)
+		res["message"] = "email or phone already exists"
 		return
 	}
+	res["contentType"] = c.ContentType()
 	res["succeed"] = true
 }
 
@@ -100,6 +109,7 @@ func SigninPost(c *gin.Context) {
 	)
 	username := c.PostForm("username")
 	password := c.PostForm("password")
+	//remeber := c.PostForm("checkbox")
 	if username == "" || password == "" {
 		c.HTML(http.StatusOK, "auth/signin.html", gin.H{
 			"message": "username or password cannot be null",
@@ -137,7 +147,7 @@ func Oauth2Callback(c *gin.Context) {
 	)
 	code := c.Query("code")
 	state := c.Query("state")
-
+	
 	// validate state
 	session := sessions.Default(c)
 	if len(state) == 0 || state != session.Get(SESSION_GITHUB_STATE) {
@@ -147,7 +157,7 @@ func Oauth2Callback(c *gin.Context) {
 	// remove state from session
 	session.Delete(SESSION_GITHUB_STATE)
 	session.Save()
-
+	
 	// exchange accesstoken by code
 	token, err := exchangeTokenByCode(code)
 	if err != nil {
@@ -155,7 +165,7 @@ func Oauth2Callback(c *gin.Context) {
 		c.Redirect(http.StatusMovedPermanently, "/signin")
 		return
 	}
-
+	
 	//get github userinfo by accesstoken
 	userInfo, err = getGithubUserInfoByAccessToken(token)
 	if err != nil {
@@ -163,7 +173,7 @@ func Oauth2Callback(c *gin.Context) {
 		c.Redirect(http.StatusMovedPermanently, "/signin")
 		return
 	}
-
+	
 	sessionUser, exists := c.Get(CONTEXT_USER_KEY)
 	if exists { // 已登录
 		user, _ = sessionUser.(*models.User)
@@ -193,7 +203,7 @@ func Oauth2Callback(c *gin.Context) {
 			}
 		}
 	}
-
+	
 	if err == nil {
 		s := sessions.Default(c)
 		s.Clear()
