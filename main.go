@@ -19,9 +19,11 @@ import (
 )
 
 func main()  {
+	//go里面的flag包，主要是用于解析命令行参数
 	configFilePath := flag.String("C", "conf/conf.yaml", "config file path")
 	logConfigPath := flag.String("L", "conf/seelog.xml", "log config file path")
 	flag.Parse()
+	
 	logger, err := seelog.LoggerFromConfigAsFile(*logConfigPath)
 	
 	if err != nil {
@@ -44,6 +46,8 @@ func main()  {
 		return
 	}
 	defer db.Close()
+	
+	
 	router := gin.Default()
 	
 	setTemplate(router)
