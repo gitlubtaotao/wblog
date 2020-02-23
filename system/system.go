@@ -2,8 +2,9 @@ package system
 
 import (
 	"io/ioutil"
-
+	
 	"github.com/go-yaml/yaml"
+	
 )
 
 type Configuration struct {
@@ -58,3 +59,5 @@ func LoadConfiguration(path string) error {
 func GetConfiguration() *Configuration {
 	return configuration
 }
+
+

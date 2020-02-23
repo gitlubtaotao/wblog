@@ -3,16 +3,16 @@ package models
 import (
 	"database/sql"
 	"fmt"
+	"github.com/gitlubtaotao/wblog/system"
 	"html/template"
 	"strconv"
 	"time"
-
+	
 	"github.com/jinzhu/gorm"
-	_ "github.com/mattn/go-sqlite3"
-	//_ "github.com/go-sql-driver/mysql"
+	//_ "github.com/mattn/go-sqlite3"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/russross/blackfriday"
-	"github.com/gitlubtaotao/wblog/system"
 )
 
 // I don't need soft delete,so I use customized BaseModel instead gorm.Model
@@ -130,13 +130,13 @@ type SmmsFile struct {
 
 var DB *gorm.DB
 
+// 初始化数据库。默认使用mysql
 func InitDB() (*gorm.DB, error) {
-
-	db, err := gorm.Open("sqlite3", system.GetConfiguration().DSN)
-	//db, err := gorm.Open("mysql", "root:mysql@/wblog?charset=utf8&parseTime=True&loc=Asia/Shanghai")
+	//db, err := gorm.Open("sqlite3", system.GetConfiguration().DSN)
+	db,err := gorm.Open("mysql",system.GetConfiguration().DSN)
 	if err == nil {
 		DB = db
-		//db.LogMode(true)
+		db.LogMode(true)
 		db.AutoMigrate(&Page{}, &Post{}, &Tag{}, &PostTag{}, &User{}, &Comment{}, &Subscriber{}, &Link{}, &SmmsFile{})
 		db.Model(&PostTag{}).AddUniqueIndex("uk_post_tag", "post_id", "tag_id")
 		return db, err
