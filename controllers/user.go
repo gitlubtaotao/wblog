@@ -116,7 +116,11 @@ func SigninPost(c *gin.Context) {
 		})
 		return
 	}
-	user, err = models.GetUserByUsername(username)
+	//var DB *gorm.DB
+	//err = DB.Where(&models.User{Email: username, Password: helpers.Md5(username + password)}).First(&user).Error
+	
+	user,err = models.GetUserByWhere(models.User{Email: username,Password: helpers.Md5(username+password)})
+	//user, err = models.GetUserByUsername(username)
 	if err != nil || user.Password != helpers.Md5(username+password) {
 		c.HTML(http.StatusOK, "auth/signin.html", gin.H{
 			"message": "invalid username or password",

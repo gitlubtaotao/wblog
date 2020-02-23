@@ -11,6 +11,7 @@ import (
 	"github.com/jinzhu/gorm"
 	//_ "github.com/mattn/go-sqlite3"
 	_ "github.com/go-sql-driver/mysql"
+	
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/russross/blackfriday"
 )
@@ -24,7 +25,7 @@ type BaseModel struct {
 
 // table pages
 type Page struct {
-	BaseModel
+	gorm.Model
 	Title       string // title
 	Body        string // body
 	View        int    // view count
@@ -490,6 +491,8 @@ func (user *User) Insert() error {
 	return DB.Create(user).Error
 }
 
+
+
 // update user
 func (user *User) Update() error {
 	return DB.Save(user).Error
@@ -501,6 +504,12 @@ func GetUserByUsername(username string) (*User, error) {
 	err := DB.First(&user, "email = ?", username).Error
 	return &user, err
 }
+//查询用户
+func GetUserByWhere(user User) (*User,error) {
+	err := DB.Where(&user).Or(User{Telephone: user.Email,Password: user.Password}).First(&user).Error
+	return &user,err
+}
+
 
 //
 func (user *User) FirstOrCreate() (*User, error) {
