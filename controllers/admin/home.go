@@ -10,7 +10,7 @@ import (
 //
 func Home(c *gin.Context)  {
 	user,_ := c.Get(controllers.CONTEXT_USER_KEY)
-	c.HTML(http.StatusOK,"admin/index.html",gin.H{
+	c.HTML(http.StatusOK,"admin/home.html",gin.H{
 		"pageCount": models.CountPage(),
 		"postCount": models.CountPost(),
 		"tagCount": models.CountTag(),
