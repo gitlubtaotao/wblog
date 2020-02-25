@@ -1,19 +1,18 @@
-package controllers
+package client
 
 import (
-	"net/http"
-	"strconv"
-
-	"math"
-
 	"github.com/gin-gonic/gin"
-	"github.com/microcosm-cc/bluemonday"
-	"github.com/russross/blackfriday"
+	"github.com/gitlubtaotao/wblog/controllers"
 	"github.com/gitlubtaotao/wblog/models"
 	"github.com/gitlubtaotao/wblog/system"
+	"github.com/microcosm-cc/bluemonday"
+	"github.com/russross/blackfriday"
+	"math"
+	"net/http"
+	"strconv"
 )
 
-func IndexGet(c *gin.Context) {
+func Index(c *gin.Context) {
 	var (
 		pageIndex int
 		pageSize  = system.GetConfiguration().PageSize
@@ -43,7 +42,7 @@ func IndexGet(c *gin.Context) {
 		post.Tags, _ = models.ListTagByPostId(strconv.FormatUint(uint64(post.ID), 10))
 		post.Body = policy.Sanitize(string(blackfriday.MarkdownCommon([]byte(post.Body))))
 	}
-	user, _ := c.Get(CONTEXT_USER_KEY)
+	user, _ := c.Get(controllers.CONTEXT_USER_KEY)
 	c.HTML(http.StatusOK, "index/index.html", gin.H{
 		"posts":           posts,
 		"tags":            models.MustListTag(),
@@ -55,17 +54,5 @@ func IndexGet(c *gin.Context) {
 		"path":            c.Request.URL.Path,
 		"maxReadPosts":    models.MustListMaxReadPost(),
 		"maxCommentPosts": models.MustListMaxCommentPost(),
-	})
-}
-
-func AdminIndex(c *gin.Context) {
-	user, _ := c.Get(CONTEXT_USER_KEY)
-	c.HTML(http.StatusOK, "admin/index.html", gin.H{
-		"pageCount":    models.CountPage(),
-		"postCount":    models.CountPost(),
-		"tagCount":     models.CountTag(),
-		"commentCount": models.CountComment(),
-		"user":         user,
-		"comments":     models.MustListUnreadComment(),
 	})
 }

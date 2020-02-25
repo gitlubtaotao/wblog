@@ -13,7 +13,8 @@ import (
 	"github.com/gitlubtaotao/wblog/helpers"
 	"github.com/gitlubtaotao/wblog/models"
 	"github.com/gitlubtaotao/wblog/system"
-	"github.com/gitlubtaotao/wblog/wrouter"
+	
+	"github.com/gitlubtaotao/wblog/crouter"
 	
 	"os"
 	"path/filepath"
@@ -59,7 +60,7 @@ func main() {
 	//router.Static("/static", filepath.Join(getCurrentDirectory(), "./static"))
 	//路由不存在
 	//注册路由
-	wrouter.InitRouter(router)
+	crouter.InitRouter(router)
 	router.Run(system.GetConfiguration().Addr)
 }
 

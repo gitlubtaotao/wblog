@@ -1,16 +1,18 @@
-package wrouter
+package crouter
 
 import (
 	"github.com/cihub/seelog"
 	"github.com/gin-gonic/gin"
 	"github.com/gitlubtaotao/wblog/controllers"
+	"github.com/gitlubtaotao/wblog/controllers/admin"
+	"github.com/gitlubtaotao/wblog/controllers/client"
 	"github.com/gitlubtaotao/wblog/models"
 	"github.com/gitlubtaotao/wblog/system"
 	"net/http"
 )
 
 //初始化路由
-func InitRouter(engine *gin.Engine)  {
+func InitRouter(engine *gin.Engine) {
 	indexInit(engine)
 	signUp(engine)
 	signInAndOut(engine)
@@ -21,32 +23,33 @@ func InitRouter(engine *gin.Engine)  {
 	adminRouter(engine)
 }
 
-func indexInit(engine *gin.Engine)  {
+func indexInit(engine *gin.Engine) {
 	engine.NoRoute(controllers.Handle404)
-	engine.GET("/", controllers.IndexGet)
-	engine.GET("/index", controllers.IndexGet)
+	engine.GET("/", client.Index)
+	engine.GET("/index", client.Index)
 	engine.GET("/rss", controllers.RssGet)
 }
 
-func signUp(engine *gin.Engine)  {
+func signUp(engine *gin.Engine) {
 	if system.GetConfiguration().SignupEnabled {
 		engine.GET("/signup", controllers.SignupGet)
 		engine.POST("/signup", controllers.SignupPost)
 	}
 }
+
 //登录和退出
-func signInAndOut(engine *gin.Engine)  {
-	engine.GET("/signin",controllers.SigninGet)
+func signInAndOut(engine *gin.Engine) {
+	engine.GET("/signin", controllers.SigninGet)
 	engine.POST("/signin", controllers.SigninPost)
 	engine.GET("/logout", controllers.LogoutGet)
 	engine.GET("/oauth2callback", controllers.Oauth2Callback)
 	engine.GET("/auth/:authType", controllers.AuthGet)
 }
 
-func captcha(engine *gin.Engine)  {
+func captcha(engine *gin.Engine) {
 	engine.GET("/captcha", controllers.CaptchaGet)
 }
-func visitorRouter(engine *gin.Engine)  {
+func visitorRouter(engine *gin.Engine) {
 	visitor := engine.Group("/visitor")
 	visitor.Use(authRequired())
 	{
@@ -56,14 +59,14 @@ func visitorRouter(engine *gin.Engine)  {
 }
 
 //订阅者访问
-func subscriberRouter(engine *gin.Engine){
+func subscriberRouter(engine *gin.Engine) {
 	engine.GET("/subscribe", controllers.SubscribeGet)
 	engine.POST("/subscribe", controllers.Subscribe)
 	engine.GET("/active", controllers.ActiveSubscriber)
 	engine.GET("/unsubscribe", controllers.UnSubscribe)
 }
 
-func otherRouter(engine *gin.Engine)  {
+func otherRouter(engine *gin.Engine) {
 	engine.GET("/page/:id", controllers.PageGet)
 	engine.GET("/post/:id", controllers.PostGet)
 	engine.GET("/tag/:tag", controllers.TagGet)
@@ -72,11 +75,12 @@ func otherRouter(engine *gin.Engine)  {
 }
 
 //后台路由
-func adminRouter(engine *gin.Engine)  {
+func adminRouter(engine *gin.Engine) {
 	authorized := engine.Group("/admin")
 	authorized.Use(AdminScopeRequired())
 	{
-		authorized.GET("/index", controllers.AdminIndex)
+		authorized.GET("", admin.Home)
+		authorized.GET("/index", admin.Home)
 		authorized.POST("/upload", controllers.Upload)
 		authorized.GET("/page", controllers.PageIndex)
 		authorized.GET("/new_page", controllers.PageNew)
