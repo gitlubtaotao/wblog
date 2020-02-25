@@ -3,7 +3,6 @@ package models
 import (
 	"database/sql"
 	"fmt"
-	"github.com/gitlubtaotao/wblog/system"
 	"html/template"
 	"strconv"
 	"time"
@@ -131,19 +130,7 @@ type SmmsFile struct {
 
 var DB *gorm.DB
 
-// 初始化数据库。默认使用mysql
-func InitDB() (*gorm.DB, error) {
-	//db, err := gorm.Open("sqlite3", system.GetConfiguration().DSN)
-	db,err := gorm.Open("mysql",system.GetConfiguration().DSN)
-	if err == nil {
-		DB = db
-		db.LogMode(true)
-		db.AutoMigrate(&Page{}, &Post{}, &Tag{}, &PostTag{}, &User{}, &Comment{}, &Subscriber{}, &Link{}, &SmmsFile{})
-		db.Model(&PostTag{}).AddUniqueIndex("uk_post_tag", "post_id", "tag_id")
-		return db, err
-	}
-	return nil, err
-}
+
 
 // Page
 func (page *Page) Insert() error {
@@ -491,8 +478,6 @@ func (user *User) Insert() error {
 	return DB.Create(user).Error
 }
 
-
-
 // update user
 func (user *User) Update() error {
 	return DB.Save(user).Error
@@ -504,12 +489,12 @@ func GetUserByUsername(username string) (*User, error) {
 	err := DB.First(&user, "email = ?", username).Error
 	return &user, err
 }
-//查询用户
-func GetUserByWhere(user User) (*User,error) {
-	err := DB.Where(&user).Or(User{Telephone: user.Email,Password: user.Password}).First(&user).Error
-	return &user,err
-}
 
+//查询用户
+func GetUserByWhere(user User) (*User, error) {
+	err := DB.Where(&user).Or(User{Telephone: user.Email, Password: user.Password}).First(&user).Error
+	return &user, err
+}
 
 //
 func (user *User) FirstOrCreate() (*User, error) {

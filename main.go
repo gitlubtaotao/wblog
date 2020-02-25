@@ -4,6 +4,8 @@ import (
 	"flag"
 	"github.com/cihub/seelog"
 	"github.com/claudiu/gocron"
+	"github.com/gitlubtaotao/wblog/database"
+	"github.com/gitlubtaotao/wblog/migration"
 	
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -20,7 +22,7 @@ import (
 	"html/template"
 )
 
-func main()  {
+func main() {
 	//go里面的flag包，主要是用于解析命令行参数
 	configFilePath := flag.String("C", "conf/conf.yaml", "config file path")
 	logConfigPath := flag.String("L", "conf/seelog.xml", "log config file path")
@@ -38,15 +40,10 @@ func main()  {
 		return
 	}
 	defer seelog.Flush()
-	
 	//初始化数据库
-	db, err := models.InitDB()
-	if err != nil {
-		seelog.Critical("err open databases", err)
-		panic(err)
-		return
-	}
-	defer db.Close()
+	database.InitDB()
+	defer database.DBCon.Close()
+	migration.Migrate()
 	
 	router := gin.Default()
 	//设置设置gin模式。参数可以传递：gin.DebugMode、gin.ReleaseMode、gin.TestMode
@@ -66,13 +63,17 @@ func main()  {
 	router.Run(system.GetConfiguration().Addr)
 }
 
+func init() {
+
+}
 
 //定时任务
-func goCron()  {
+func goCron() {
 	gocron.Every(1).Day().Do(controllers.CreateXMLSitemap)
 	gocron.Every(7).Days().Do(controllers.Backup)
 	gocron.Start()
 }
+
 //定义模版
 func setTemplate(engine *gin.Engine) {
 	funcMap := template.FuncMap{
@@ -132,11 +133,3 @@ func getCurrentDirectory() string {
 	path := strings.Replace(dir, "\\", "/", -1)
 	return path
 }
-
-
-
-
-
-
-
-
