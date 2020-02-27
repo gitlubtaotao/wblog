@@ -6,7 +6,7 @@ import (
 	"github.com/gitlubtaotao/wblog/models"
 	"github.com/gitlubtaotao/wblog/system"
 	"github.com/microcosm-cc/bluemonday"
-	"github.com/russross/blackfriday"
+	"gopkg.in/russross/blackfriday.v2"
 	"math"
 	"net/http"
 	"strconv"
@@ -40,7 +40,7 @@ func Index(c *gin.Context) {
 	policy = bluemonday.StrictPolicy()
 	for _, post := range posts {
 		post.Tags, _ = models.ListTagByPostId(strconv.FormatUint(uint64(post.ID), 10))
-		post.Body = policy.Sanitize(string(blackfriday.MarkdownCommon([]byte(post.Body))))
+		post.Body = policy.Sanitize(string(blackfriday.Run([]byte(post.Body),blackfriday.WithNoExtensions())))
 	}
 	user, _ := c.Get(controllers.CONTEXT_USER_KEY)
 	c.HTML(http.StatusOK, "index/index.html", gin.H{

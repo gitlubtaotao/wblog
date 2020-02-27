@@ -12,7 +12,8 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	
 	"github.com/microcosm-cc/bluemonday"
-	"github.com/russross/blackfriday"
+	"gopkg.in/russross/blackfriday.v2"
+	//"github.com/russross/blackfriday"
 )
 
 // I don't need soft delete,so I use customized BaseModel instead gorm.Model
@@ -216,7 +217,8 @@ func (post *Post) Delete() error {
 func (post *Post) Excerpt() template.HTML {
 	//you can sanitize, cut it down, add images, etc
 	policy := bluemonday.StrictPolicy() //remove all html tags
-	sanitized := policy.Sanitize(string(blackfriday.MarkdownCommon([]byte(post.Body))))
+	
+	sanitized := policy.Sanitize(string(blackfriday.Run([]byte(post.Body), blackfriday.WithNoExtensions())))
 	runes := []rune(sanitized)
 	if len(runes) > 300 {
 		sanitized = string(runes[:300])
