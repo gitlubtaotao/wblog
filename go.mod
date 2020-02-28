@@ -10,11 +10,13 @@ require (
 	github.com/denisbakhtin/sitemap v0.0.0-20151103020935-3b73dfe0369c
 	github.com/gin-contrib/sessions v0.0.3
 	github.com/gin-gonic/gin v1.5.0
+	github.com/go-playground/universal-translator v0.17.0 // indirect
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/go-yaml/yaml v2.1.0+incompatible
 	github.com/gorilla/feeds v1.1.1
 	github.com/jinzhu/gorm v1.9.12
 	github.com/kr/pretty v0.2.0 // indirect
+	github.com/leodido/go-urn v1.2.0 // indirect
 	github.com/microcosm-cc/bluemonday v1.0.2
 	github.com/pkg/errors v0.9.1
 	github.com/qiniu/api.v7 v7.2.5+incompatible

@@ -6,11 +6,11 @@ import (
 	"html/template"
 	"strconv"
 	"time"
-	
+
 	"github.com/jinzhu/gorm"
 	//_ "github.com/mattn/go-sqlite3"
 	_ "github.com/go-sql-driver/mysql"
-	
+
 	"github.com/microcosm-cc/bluemonday"
 	"gopkg.in/russross/blackfriday.v2"
 	//"github.com/russross/blackfriday"
@@ -131,8 +131,6 @@ type SmmsFile struct {
 
 var DB *gorm.DB
 
-
-
 // Page
 func (page *Page) Insert() error {
 	return DB.Create(page).Error
@@ -217,7 +215,7 @@ func (post *Post) Delete() error {
 func (post *Post) Excerpt() template.HTML {
 	//you can sanitize, cut it down, add images, etc
 	policy := bluemonday.StrictPolicy() //remove all html tags
-	
+
 	sanitized := policy.Sanitize(string(blackfriday.Run([]byte(post.Body), blackfriday.WithNoExtensions())))
 	runes := []rune(sanitized)
 	if len(runes) > 300 {

@@ -11,11 +11,11 @@ import (
 
 	"github.com/cihub/seelog"
 	"github.com/gin-gonic/gin"
+	"github.com/gitlubtaotao/wblog/helpers"
+	"github.com/gitlubtaotao/wblog/system"
 	"github.com/pkg/errors"
 	"github.com/qiniu/api.v7/auth/qbox"
 	"github.com/qiniu/api.v7/storage"
-	"github.com/gitlubtaotao/wblog/helpers"
-	"github.com/gitlubtaotao/wblog/system"
 )
 
 func BackupPost(c *gin.Context) {

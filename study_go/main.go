@@ -2,7 +2,7 @@ package main
 
 import (
 	"flag"
-	
+
 	"github.com/cihub/seelog"
 )
 
@@ -17,5 +17,5 @@ func main() {
 	seelog.ReplaceLogger(logger)
 	defer seelog.Flush()
 	seelog.Critical("测试文件")
-	
+
 }

@@ -1,10 +1,10 @@
 package database
 
 import (
-"github.com/cihub/seelog"
+	"github.com/cihub/seelog"
 	"github.com/gitlubtaotao/wblog/models"
 	"github.com/gitlubtaotao/wblog/system"
-"github.com/jinzhu/gorm"
+	"github.com/jinzhu/gorm"
 )
 
 var DBCon *gorm.DB

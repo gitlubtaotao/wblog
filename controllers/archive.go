@@ -7,10 +7,10 @@ import (
 	"math"
 
 	"github.com/gin-gonic/gin"
-	"github.com/microcosm-cc/bluemonday"
-	"gopkg.in/russross/blackfriday.v2"
 	"github.com/gitlubtaotao/wblog/models"
 	"github.com/gitlubtaotao/wblog/system"
+	"github.com/microcosm-cc/bluemonday"
+	"gopkg.in/russross/blackfriday.v2"
 )
 
 func ArchiveGet(c *gin.Context) {
@@ -45,7 +45,7 @@ func ArchiveGet(c *gin.Context) {
 	policy = bluemonday.StrictPolicy()
 	for _, post := range posts {
 		post.Tags, _ = models.ListTagByPostId(strconv.FormatUint(uint64(post.ID), 10))
-		post.Body = policy.Sanitize(string(blackfriday.Run([]byte(post.Body),blackfriday.WithNoExtensions())))
+		post.Body = policy.Sanitize(string(blackfriday.Run([]byte(post.Body), blackfriday.WithNoExtensions())))
 	}
 	c.HTML(http.StatusOK, "index/index.html", gin.H{
 		"posts":           posts,

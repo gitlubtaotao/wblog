@@ -6,7 +6,7 @@ import (
 	"github.com/claudiu/gocron"
 	"github.com/gitlubtaotao/wblog/database"
 	"github.com/gitlubtaotao/wblog/migration"
-	
+
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
@@ -14,13 +14,13 @@ import (
 	"github.com/gitlubtaotao/wblog/helpers"
 	"github.com/gitlubtaotao/wblog/models"
 	"github.com/gitlubtaotao/wblog/system"
-	
+
 	"github.com/gitlubtaotao/wblog/crouter"
-	
+
 	"os"
 	"path/filepath"
 	"strings"
-	
+
 	"html/template"
 )
 
@@ -30,13 +30,13 @@ func main() {
 	logConfigPath := flag.String("L", "conf/seelog.xml", "log config file path")
 	flag.Parse()
 	logger, err := seelog.LoggerFromConfigAsFile(*logConfigPath)
-	
+
 	if err != nil {
 		seelog.Critical("err parsing seelog config file", err)
 		return
 	}
 	seelog.ReplaceLogger(logger)
-	
+
 	if err := system.LoadConfiguration(*configFilePath); err != nil {
 		seelog.Critical("err parsing config log file", err)
 		return
@@ -46,15 +46,15 @@ func main() {
 	database.InitDB()
 	defer database.DBCon.Close()
 	migration.Migrate()
-	
-	router := gin.Default()
+
 	//设置设置gin模式。参数可以传递：gin.DebugMode、gin.ReleaseMode、gin.TestMode
+	//gin.SetMode(gin.DebugMode)
 	gin.SetMode(gin.DebugMode)
-	
+	router := gin.Default()
 	setTemplate(router)
 	setSessions(router)
 	router.Use(SharedData())
-	
+
 	goCron() //Periodic tasks
 	//获取静态资源文件
 	router.Static("/static", "./static")

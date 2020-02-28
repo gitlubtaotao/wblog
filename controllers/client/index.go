@@ -40,7 +40,7 @@ func Index(c *gin.Context) {
 	policy = bluemonday.StrictPolicy()
 	for _, post := range posts {
 		post.Tags, _ = models.ListTagByPostId(strconv.FormatUint(uint64(post.ID), 10))
-		post.Body = policy.Sanitize(string(blackfriday.Run([]byte(post.Body),blackfriday.WithNoExtensions())))
+		post.Body = policy.Sanitize(string(blackfriday.Run([]byte(post.Body), blackfriday.WithNoExtensions())))
 	}
 	user, _ := c.Get(controllers.CONTEXT_USER_KEY)
 	c.HTML(http.StatusOK, "index/index.html", gin.H{

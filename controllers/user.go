@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strconv"
 	"time"
-	
+
 	"github.com/alimoeeny/gooauth2"
 	"github.com/cihub/seelog"
 	"github.com/gin-contrib/sessions"
@@ -85,7 +85,7 @@ func SignupPost(c *gin.Context) {
 		Telephone: telephone,
 		Password:  password,
 		IsAdmin:   true,
-		OutTime:   time.Now().AddDate(0,0,4),
+		OutTime:   time.Now().AddDate(0, 0, 4),
 	}
 	if len(user.Email) == 0 || len(user.Password) == 0 {
 		res["message"] = "email or password cannot be null"
@@ -118,8 +118,8 @@ func SigninPost(c *gin.Context) {
 	}
 	//var DB *gorm.DB
 	//err = DB.Where(&models.User{Email: username, Password: helpers.Md5(username + password)}).First(&user).Error
-	
-	user,err = models.GetUserByWhere(models.User{Email: username,Password: helpers.Md5(username+password)})
+
+	user, err = models.GetUserByWhere(models.User{Email: username, Password: helpers.Md5(username + password)})
 	//user, err = models.GetUserByUsername(username)
 	if err != nil || user.Password != helpers.Md5(username+password) {
 		c.HTML(http.StatusOK, "auth/signin.html", gin.H{
@@ -151,7 +151,7 @@ func Oauth2Callback(c *gin.Context) {
 	)
 	code := c.Query("code")
 	state := c.Query("state")
-	
+
 	// validate state
 	session := sessions.Default(c)
 	if len(state) == 0 || state != session.Get(SESSION_GITHUB_STATE) {
@@ -161,7 +161,7 @@ func Oauth2Callback(c *gin.Context) {
 	// remove state from session
 	session.Delete(SESSION_GITHUB_STATE)
 	session.Save()
-	
+
 	// exchange accesstoken by code
 	token, err := exchangeTokenByCode(code)
 	if err != nil {
@@ -169,7 +169,7 @@ func Oauth2Callback(c *gin.Context) {
 		c.Redirect(http.StatusMovedPermanently, "/signin")
 		return
 	}
-	
+
 	//get github userinfo by accesstoken
 	userInfo, err = getGithubUserInfoByAccessToken(token)
 	if err != nil {
@@ -177,7 +177,7 @@ func Oauth2Callback(c *gin.Context) {
 		c.Redirect(http.StatusMovedPermanently, "/signin")
 		return
 	}
-	
+
 	sessionUser, exists := c.Get(CONTEXT_USER_KEY)
 	if exists { // 已登录
 		user, _ = sessionUser.(*models.User)
@@ -207,7 +207,7 @@ func Oauth2Callback(c *gin.Context) {
 			}
 		}
 	}
-	
+
 	if err == nil {
 		s := sessions.Default(c)
 		s.Clear()
