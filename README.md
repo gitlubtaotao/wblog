@@ -41,15 +41,14 @@
 - [x] 邮箱订阅功能
 
 ## 安装部署
-本项目使用govendor管理依赖包，[govendor](https://github.com/kardianos/govendor)安装方法
-```
-go get -u github.com/kardianos/govendor
-```
+本项目使用go module管理依赖包
+
 
 ```
 git clone https://github.com/gitlubtaotao/wblog
 cd wblog
-govendor sync
+go mod init
+go mod tidy
 go run main.go
 ```
 
