@@ -8,6 +8,7 @@ import (
 	"github.com/gitlubtaotao/wblog/migration"
 	
 	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	"github.com/gitlubtaotao/wblog/controllers"
 	"github.com/gitlubtaotao/wblog/helpers"
@@ -96,7 +97,7 @@ func setTemplate(engine *gin.Engine) {
 func setSessions(router *gin.Engine) {
 	config := system.GetConfiguration()
 	//https://github.com/gin-gonic/contrib/tree/master/sessions
-	store := sessions.NewCookieStore([]byte(config.SessionSecret))
+	store := cookie.NewStore([]byte(config.SessionSecret))
 	store.Options(sessions.Options{HttpOnly: true, MaxAge: 7 * 86400, Path: "/"}) //Also set Secure: true if using SSL, you should though
 	router.Use(sessions.Sessions("gin-session", store))
 	//https://github.com/utrack/gin-csrf
