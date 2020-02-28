@@ -3,10 +3,10 @@ package main
 import (
 	"flag"
 	"github.com/cihub/seelog"
-	"github.com/claudiu/gocron"
 	"github.com/gitlubtaotao/wblog/database"
 	"github.com/gitlubtaotao/wblog/migration"
-
+	"github.com/gitlubtaotao/wblog/schedule"
+	
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
@@ -14,13 +14,13 @@ import (
 	"github.com/gitlubtaotao/wblog/helpers"
 	"github.com/gitlubtaotao/wblog/models"
 	"github.com/gitlubtaotao/wblog/system"
-
+	
 	"github.com/gitlubtaotao/wblog/crouter"
-
+	
 	"os"
 	"path/filepath"
 	"strings"
-
+	
 	"html/template"
 )
 
@@ -54,8 +54,8 @@ func main() {
 	setTemplate(router)
 	setSessions(router)
 	router.Use(SharedData())
-
-	goCron() //Periodic tasks
+	schedule.GoCron() //Periodic tasks
+	
 	//获取静态资源文件
 	router.Static("/static", "./static")
 	//router.Static("/static", filepath.Join(getCurrentDirectory(), "./static"))
@@ -65,16 +65,9 @@ func main() {
 	router.Run(system.GetConfiguration().Addr)
 }
 
-func init() {
 
-}
 
-//定时任务
-func goCron() {
-	gocron.Every(1).Day().Do(controllers.CreateXMLSitemap)
-	gocron.Every(7).Days().Do(controllers.Backup)
-	gocron.Start()
-}
+
 
 //定义模版
 func setTemplate(engine *gin.Engine) {

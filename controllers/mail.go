@@ -16,7 +16,7 @@ func SendMail(c *gin.Context) {
 		uid        uint64
 		subscriber *models.Subscriber
 	)
-	defer writeJSON(c, res)
+	defer WriteJSON(c, res)
 	subject := c.PostForm("subject")
 	content := c.PostForm("content")
 	userId := c.Query("userId")
@@ -50,7 +50,7 @@ func SendBatchMail(c *gin.Context) {
 		subscribers []*models.Subscriber
 		emails      = make([]string, 0)
 	)
-	defer writeJSON(c, res)
+	defer WriteJSON(c, res)
 	subject := c.PostForm("subject")
 	content := c.PostForm("content")
 	if subject == "" || content == "" {

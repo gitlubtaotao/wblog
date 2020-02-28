@@ -6,11 +6,11 @@ import (
 	"html/template"
 	"strconv"
 	"time"
-
+	
 	"github.com/jinzhu/gorm"
 	//_ "github.com/mattn/go-sqlite3"
 	_ "github.com/go-sql-driver/mysql"
-
+	
 	"github.com/microcosm-cc/bluemonday"
 	"gopkg.in/russross/blackfriday.v2"
 	//"github.com/russross/blackfriday"
@@ -32,17 +32,7 @@ type Page struct {
 	IsPublished bool   // published or not
 }
 
-// table posts
-type Post struct {
-	BaseModel
-	Title        string     // title
-	Body         string     // body
-	View         int        // view count
-	IsPublished  bool       // published or not
-	Tags         []*Tag     `gorm:"-"` // tags of post
-	Comments     []*Comment `gorm:"-"` // comments of post
-	CommentTotal int        `gorm:"-"` // count of comment
-}
+
 
 // table tags
 type Tag struct {
@@ -215,7 +205,7 @@ func (post *Post) Delete() error {
 func (post *Post) Excerpt() template.HTML {
 	//you can sanitize, cut it down, add images, etc
 	policy := bluemonday.StrictPolicy() //remove all html tags
-
+	
 	sanitized := policy.Sanitize(string(blackfriday.Run([]byte(post.Body), blackfriday.WithNoExtensions())))
 	runes := []rune(sanitized)
 	if len(runes) > 300 {
@@ -225,54 +215,11 @@ func (post *Post) Excerpt() template.HTML {
 	return excerpt
 }
 
-func ListPublishedPost(tag string, pageIndex, pageSize int) ([]*Post, error) {
-	return _listPost(tag, true, pageIndex, pageSize)
-}
 
-func ListAllPost(tag string) ([]*Post, error) {
-	return _listPost(tag, false, 0, 0)
-}
 
-func _listPost(tag string, published bool, pageIndex, pageSize int) ([]*Post, error) {
-	var posts []*Post
-	var err error
-	if len(tag) > 0 {
-		tagId, err := strconv.ParseUint(tag, 10, 64)
-		if err != nil {
-			return nil, err
-		}
-		var rows *sql.Rows
-		if published {
-			if pageIndex > 0 {
-				rows, err = DB.Raw("select p.* from posts p inner join post_tags pt on p.id = pt.post_id where pt.tag_id = ? and p.is_published = ? order by created_at desc limit ? offset ?", tagId, true, pageSize, (pageIndex-1)*pageSize).Rows()
-			} else {
-				rows, err = DB.Raw("select p.* from posts p inner join post_tags pt on p.id = pt.post_id where pt.tag_id = ? and p.is_published = ? order by created_at desc", tagId, true).Rows()
-			}
-		} else {
-			rows, err = DB.Raw("select p.* from posts p inner join post_tags pt on p.id = pt.post_id where pt.tag_id = ? order by created_at desc", tagId).Rows()
-		}
-		if err != nil {
-			return nil, err
-		}
-		defer rows.Close()
-		for rows.Next() {
-			var post Post
-			DB.ScanRows(rows, &post)
-			posts = append(posts, &post)
-		}
-	} else {
-		if published {
-			if pageIndex > 0 {
-				err = DB.Where("is_published = ?", true).Order("created_at desc").Limit(pageSize).Offset((pageIndex - 1) * pageSize).Find(&posts).Error
-			} else {
-				err = DB.Where("is_published = ?", true).Order("created_at desc").Find(&posts).Error
-			}
-		} else {
-			err = DB.Order("created_at desc").Find(&posts).Error
-		}
-	}
-	return posts, err
-}
+
+
+
 
 func MustListMaxReadPost() (posts []*Post) {
 	posts, _ = ListMaxReadPost()

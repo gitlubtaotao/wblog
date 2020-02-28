@@ -182,7 +182,7 @@ func SubscriberPost(c *gin.Context) {
 		err error
 		res = gin.H{}
 	)
-	defer writeJSON(c, res)
+	defer WriteJSON(c, res)
 	mail := c.PostForm("mail")
 	subject := c.PostForm("subject")
 	body := c.PostForm("body")

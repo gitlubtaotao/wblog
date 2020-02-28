@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"os"
 	"path"
-
+	
 	"strings"
-
+	
 	"github.com/denisbakhtin/sitemap"
 	"github.com/gin-gonic/gin"
 	"github.com/gitlubtaotao/wblog/helpers"
@@ -61,14 +61,14 @@ func CreateXMLSitemap() {
 	domain := configuration.Domain
 	now := helpers.GetCurrentTime()
 	items := make([]sitemap.Item, 0)
-
+	
 	items = append(items, sitemap.Item{
 		Loc:        domain,
 		LastMod:    now,
 		Changefreq: "daily",
 		Priority:   1,
 	})
-
+	
 	posts, err := models.ListPublishedPost("", 0, 0)
 	if err == nil {
 		for _, post := range posts {
@@ -80,7 +80,7 @@ func CreateXMLSitemap() {
 			})
 		}
 	}
-
+	
 	pages, err := models.ListPublishedPage()
 	if err == nil {
 		for _, page := range pages {
@@ -92,7 +92,7 @@ func CreateXMLSitemap() {
 			})
 		}
 	}
-
+	
 	if err := sitemap.SiteMap(path.Join(folder, "sitemap1.xml.gz"), items); err != nil {
 		return
 	}
@@ -101,9 +101,14 @@ func CreateXMLSitemap() {
 	}
 }
 
-func writeJSON(ctx *gin.Context, h gin.H) {
+func WriteJSON(ctx *gin.Context, h gin.H) {
 	if _, ok := h["succeed"]; !ok {
 		h["succeed"] = false
 	}
 	ctx.JSON(http.StatusOK, h)
+}
+
+func GetUser(c *gin.Context) *models.User {
+	user, _ := c.Get(CONTEXT_USER_KEY)
+	return user.(*models.User)
 }

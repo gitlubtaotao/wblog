@@ -15,7 +15,7 @@ func Upload(c *gin.Context) {
 		file     multipart.File
 		fh       *multipart.FileHeader
 	)
-	defer writeJSON(c, res)
+	defer WriteJSON(c, res)
 	file, fh, err = c.Request.FormFile("file")
 	if err != nil {
 		res["message"] = err.Error()

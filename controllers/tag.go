@@ -18,7 +18,7 @@ func TagCreate(c *gin.Context) {
 		err error
 		res = gin.H{}
 	)
-	defer writeJSON(c, res)
+	defer WriteJSON(c, res)
 	name := c.PostForm("value")
 	tag := &models.Tag{Name: name}
 	err = tag.Insert()

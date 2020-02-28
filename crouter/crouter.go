@@ -68,7 +68,7 @@ func subscriberRouter(engine *gin.Engine) {
 
 func otherRouter(engine *gin.Engine) {
 	engine.GET("/page/:id", controllers.PageGet)
-	engine.GET("/post/:id", controllers.PostGet)
+	engine.GET("/post/:id", admin.PostGet)
 	engine.GET("/tag/:tag", controllers.TagGet)
 	engine.GET("/archives/:year/:month", controllers.ArchiveGet)
 	engine.GET("/link/:id", controllers.LinkGet)
@@ -91,13 +91,13 @@ func adminRouter(engine *gin.Engine) {
 		authorized.POST("/page/:id/delete", controllers.PageDelete)
 
 		// post
-		authorized.GET("/post", controllers.PostIndex)
-		authorized.GET("/new_post", controllers.PostNew)
-		authorized.POST("/new_post", controllers.PostCreate)
-		authorized.GET("/post/:id/edit", controllers.PostEdit)
-		authorized.POST("/post/:id/edit", controllers.PostUpdate)
-		authorized.POST("/post/:id/publish", controllers.PostPublish)
-		authorized.POST("/post/:id/delete", controllers.PostDelete)
+		authorized.GET("/post", admin.PostIndex)
+		authorized.GET("/new_post", admin.PostNew)
+		authorized.POST("/new_post", admin.PostCreate)
+		authorized.GET("/post/:id/edit", admin.PostEdit)
+		authorized.POST("/post/:id/edit", admin.PostUpdate)
+		authorized.POST("/post/:id/publish", admin.PostPublish)
+		authorized.POST("/post/:id/delete", admin.PostDelete)
 		// tag
 		authorized.POST("/new_tag", controllers.TagCreate)
 		authorized.GET("/user", controllers.UserIndex)

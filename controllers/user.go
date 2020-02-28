@@ -76,7 +76,7 @@ func SignupPost(c *gin.Context) {
 		err error
 		res = gin.H{}
 	)
-	defer writeJSON(c, res)
+	defer WriteJSON(c, res)
 	email := c.PostForm("email")
 	telephone := c.PostForm("telephone")
 	password := c.PostForm("password")
@@ -282,7 +282,7 @@ func ProfileUpdate(c *gin.Context) {
 		err error
 		res = gin.H{}
 	)
-	defer writeJSON(c, res)
+	defer WriteJSON(c, res)
 	avatarUrl := c.PostForm("avatarUrl")
 	nickName := c.PostForm("nickName")
 	sessionUser, _ := c.Get(CONTEXT_USER_KEY)
@@ -305,7 +305,7 @@ func BindEmail(c *gin.Context) {
 		err error
 		res = gin.H{}
 	)
-	defer writeJSON(c, res)
+	defer WriteJSON(c, res)
 	email := c.PostForm("email")
 	sessionUser, _ := c.Get(CONTEXT_USER_KEY)
 	user, ok := sessionUser.(*models.User)
@@ -335,7 +335,7 @@ func UnbindEmail(c *gin.Context) {
 		err error
 		res = gin.H{}
 	)
-	defer writeJSON(c, res)
+	defer WriteJSON(c, res)
 	sessionUser, _ := c.Get(CONTEXT_USER_KEY)
 	user, ok := sessionUser.(*models.User)
 	if !ok {
@@ -359,7 +359,7 @@ func UnbindGithub(c *gin.Context) {
 		err error
 		res = gin.H{}
 	)
-	defer writeJSON(c, res)
+	defer WriteJSON(c, res)
 	sessionUser, _ := c.Get(CONTEXT_USER_KEY)
 	user, ok := sessionUser.(*models.User)
 	if !ok {
@@ -396,7 +396,7 @@ func UserLock(c *gin.Context) {
 		res  = gin.H{}
 		user *models.User
 	)
-	defer writeJSON(c, res)
+	defer WriteJSON(c, res)
 	id := c.Param("id")
 	_id, err = strconv.ParseUint(id, 10, 64)
 	if err != nil {

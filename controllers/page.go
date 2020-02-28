@@ -84,7 +84,7 @@ func PagePublish(c *gin.Context) {
 		err error
 		res = gin.H{}
 	)
-	defer writeJSON(c, res)
+	defer WriteJSON(c, res)
 	id := c.Param("id")
 	page, err := models.GetPageById(id)
 	if err == nil {
@@ -105,7 +105,7 @@ func PageDelete(c *gin.Context) {
 		err error
 		res = gin.H{}
 	)
-	defer writeJSON(c, res)
+	defer WriteJSON(c, res)
 	id := c.Param("id")
 	pid, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {

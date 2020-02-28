@@ -24,7 +24,7 @@ func LinkCreate(c *gin.Context) {
 		res   = gin.H{}
 		_sort int64
 	)
-	defer writeJSON(c, res)
+	defer WriteJSON(c, res)
 	name := c.PostForm("name")
 	url := c.PostForm("url")
 	sort := c.PostForm("sort")
@@ -57,7 +57,7 @@ func LinkUpdate(c *gin.Context) {
 		err   error
 		res   = gin.H{}
 	)
-	defer writeJSON(c, res)
+	defer WriteJSON(c, res)
 	id := c.Param("id")
 	name := c.PostForm("name")
 	url := c.PostForm("url")
@@ -109,7 +109,7 @@ func LinkDelete(c *gin.Context) {
 		_id uint64
 		res = gin.H{}
 	)
-	defer writeJSON(c, res)
+	defer WriteJSON(c, res)
 	id := c.Param("id")
 	_id, err = strconv.ParseUint(id, 10, 64)
 	if err != nil {
