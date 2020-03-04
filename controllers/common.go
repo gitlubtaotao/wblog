@@ -2,6 +2,8 @@ package controllers
 
 import (
 	"fmt"
+	"github.com/cihub/seelog"
+	"log"
 	"net/http"
 	"os"
 	"path"
@@ -22,6 +24,15 @@ const (
 	SESSION_CAPTCHA      = "GIN_CAPTCHA"  // captcha session key
 )
 
+type Controller interface {
+	Index(c *gin.Context)
+	Get(c *gin.Context)
+	New(c *gin.Context)
+	Create(c *gin.Context)
+	Edit(c *gin.Context)
+	Update(c *gin.Context)
+	Delete(c *gin.Context)
+}
 func Handle404(c *gin.Context) {
 	HandleMessage(c, "Sorry,I lost myself!")
 }
@@ -112,3 +123,14 @@ func GetUser(c *gin.Context) *models.User {
 	user, _ := c.Get(CONTEXT_USER_KEY)
 	return user.(*models.User)
 }
+
+//处理共同错误信息
+func HandlerError(message string, err error) bool {
+	if err != nil {
+		_ = seelog.Critical(message, err)
+		log.Fatalf("%s:%s", message, err)
+		return false
+	}
+	return true
+}
+

@@ -3,7 +3,6 @@ package models
 import (
 	"database/sql"
 	"fmt"
-	"html/template"
 	"strconv"
 	"time"
 	
@@ -11,8 +10,6 @@ import (
 	//_ "github.com/mattn/go-sqlite3"
 	_ "github.com/go-sql-driver/mysql"
 	
-	"github.com/microcosm-cc/bluemonday"
-	"gopkg.in/russross/blackfriday.v2"
 	//"github.com/russross/blackfriday"
 )
 
@@ -192,32 +189,6 @@ func (post *Post) Update() error {
 	}).Error
 }
 
-func (post *Post) UpdateView() error {
-	return DB.Model(post).Updates(map[string]interface{}{
-		"view": post.View,
-	}).Error
-}
-
-func (post *Post) Delete() error {
-	return DB.Delete(post).Error
-}
-
-func (post *Post) Excerpt() template.HTML {
-	//you can sanitize, cut it down, add images, etc
-	policy := bluemonday.StrictPolicy() //remove all html tags
-	
-	sanitized := policy.Sanitize(string(blackfriday.Run([]byte(post.Body), blackfriday.WithNoExtensions())))
-	runes := []rune(sanitized)
-	if len(runes) > 300 {
-		sanitized = string(runes[:300])
-	}
-	excerpt := template.HTML(sanitized + "...")
-	return excerpt
-}
-
-
-
-
 
 
 
@@ -275,15 +246,7 @@ func CountPost() int {
 	return count
 }
 
-func GetPostById(id string) (*Post, error) {
-	pid, err := strconv.ParseUint(id, 10, 64)
-	if err != nil {
-		return nil, err
-	}
-	var post Post
-	err = DB.First(&post, "id = ?", pid).Error
-	return &post, err
-}
+
 
 func MustListPostArchives() []*QrArchive {
 	archives, _ := ListPostArchives()

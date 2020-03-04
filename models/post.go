@@ -3,6 +3,9 @@ package models
 import (
 	"database/sql"
 	"github.com/jinzhu/gorm"
+	"github.com/microcosm-cc/bluemonday"
+	"gopkg.in/russross/blackfriday.v2"
+	"html/template"
 	"strconv"
 )
 
@@ -27,6 +30,38 @@ func ListAllPost(tag string) ([]*Post, error) {
 //获取已发布的博文
 func ListPublishedPost(tag string, pageIndex, pageSize int) ([]*Post, error) {
 	return listPost(tag, true, pageIndex, pageSize)
+}
+
+//通过Id查询博文
+func GetPostById(id string) (*Post, error) {
+	pid, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	var post Post
+	err = DB.First(&post, "id=?", pid).Error
+	return &post, err
+}
+
+//更新博文阅读数量
+func (post *Post) UpdateView() error {
+	return DB.Model(post).Update("view", post.View).Error
+}
+
+//删除博文
+func (post *Post) Delete() error {
+	return DB.Delete(post).Error
+}
+
+func (post *Post) Excerpt() template.HTML {
+	policy := bluemonday.StrictPolicy()
+	sanitized := policy.Sanitize(string(blackfriday.Run([]byte(post.Body), blackfriday.WithNoExtensions())))
+	runes := []rune(sanitized)
+	if len(runes) > 300 {
+		sanitized = string(runes[:300])
+	}
+	excerpt := template.HTML(sanitized + "...")
+	return excerpt
 }
 
 //博文查询method

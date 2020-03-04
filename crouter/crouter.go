@@ -89,9 +89,9 @@ func adminRouter(engine *gin.Engine) {
 		authorized.POST("/page/:id/edit", controllers.PageUpdate)
 		authorized.POST("/page/:id/publish", controllers.PagePublish)
 		authorized.POST("/page/:id/delete", controllers.PageDelete)
-
+		
 		// post
-		authorized.GET("/post", admin.PostIndex)
+		authorized.GET("/post", new(admin.PostController).Index)
 		authorized.GET("/new_post", admin.PostNew)
 		authorized.POST("/new_post", admin.PostCreate)
 		authorized.GET("/post/:id/edit", admin.PostEdit)
@@ -108,11 +108,11 @@ func adminRouter(engine *gin.Engine) {
 		authorized.POST("/profile/email/bind", controllers.BindEmail)
 		authorized.POST("/profile/email/unbind", controllers.UnbindEmail)
 		authorized.POST("/profile/github/unbind", controllers.UnbindGithub)
-
+		
 		// subscriber
 		authorized.GET("/subscriber", controllers.SubscriberIndex)
 		authorized.POST("/subscriber", controllers.SubscriberPost)
-
+		
 		// link
 		authorized.GET("/link", controllers.LinkIndex)
 		authorized.POST("/new_link", controllers.LinkCreate)
@@ -121,16 +121,16 @@ func adminRouter(engine *gin.Engine) {
 		// comment
 		authorized.POST("/comment/:id", controllers.CommentRead)
 		authorized.POST("/read_all", controllers.CommentReadAll)
-
+		
 		// backup
 		authorized.POST("/backup", controllers.BackupPost)
 		authorized.POST("/restore", controllers.RestorePost)
-
+		
 		// mail
 		authorized.POST("/new_mail", controllers.SendMail)
 		authorized.POST("/new_batchmail", controllers.SendBatchMail)
 	}
-
+	
 }
 func authRequired() gin.HandlerFunc {
 	return func(c *gin.Context) {

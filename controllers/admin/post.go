@@ -2,6 +2,7 @@ package admin
 
 import (
 	"github.com/gitlubtaotao/wblog/controllers"
+	"github.com/gitlubtaotao/wblog/repositories"
 	"net/http"
 	"strconv"
 	"strings"
@@ -10,10 +11,30 @@ import (
 	"github.com/gitlubtaotao/wblog/models"
 )
 
+type PostController struct {
+}
+
+
+func (p *PostController) Index(c *gin.Context) {
+	res := repositories.NewPostRepository()
+	posts, _ := res.ListAll("")
+	user := controllers.GetUser(c)
+	c.HTML(http.StatusOK, "admin/post.html", gin.H{
+		"posts":    posts,
+		"Active":   "posts",
+		"user":     user,
+		"comments": models.MustListUnreadComment(),
+	})
+	
+	//posts, _ := models.ListAllPost("")
+	
+}
+
 func PostGet(c *gin.Context) {
 	id := c.Param("id")
 	post, err := models.GetPostById(id)
 	if err != nil || !post.IsPublished {
+		_ = controllers.HandlerError("post not published ", err)
 		controllers.Handle404(c)
 		return
 	}
