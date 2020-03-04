@@ -3,6 +3,7 @@ package admin
 import (
 	"github.com/gitlubtaotao/wblog/controllers"
 	"github.com/gitlubtaotao/wblog/repositories"
+	"github.com/jinzhu/gorm"
 	"net/http"
 	"strconv"
 	"strings"
@@ -14,7 +15,6 @@ import (
 type PostController struct {
 }
 
-
 func (p *PostController) Index(c *gin.Context) {
 	res := repositories.NewPostRepository()
 	posts, _ := res.ListAll("")
@@ -25,9 +25,56 @@ func (p *PostController) Index(c *gin.Context) {
 		"user":     user,
 		"comments": models.MustListUnreadComment(),
 	})
-	
-	//posts, _ := models.ListAllPost("")
-	
+}
+
+func (p *PostController) New(c *gin.Context) {
+	c.HTML(http.StatusOK, "post/new.html", nil)
+}
+
+func (p *PostController) Create(c *gin.Context) {
+	tags := c.PostForm("tags")
+	array := c.PostFormMap("post")
+	isPublished := c.PostForm("isPublished")
+	published := "on" == isPublished
+	post := &models.Post{
+		Title:       array["title"],
+		Body:        array["body"],
+		IsPublished: published,
+	}
+	err := models.DB.Transaction(func(tx *gorm.DB) error {
+		err := post.Insert()
+		if err != nil {
+			return err
+		}
+		if len(tags) > 0 {
+			tagArr := strings.Split(tags, ",")
+			for _, tag := range tagArr {
+				tagId, err := strconv.ParseUint(tag, 10, 64)
+				if err != nil {
+					continue
+				}
+				pt := &models.PostTag{
+					PostId: post.ID,
+					TagId:  uint(tagId),
+				}
+				err = pt.Insert()
+				if err != nil {
+					return nil
+				}
+			}
+		}
+		// do some database operations in the transaction (use 'tx' from this point, not 'db')
+		// return nil will commit
+		return nil
+	})
+	if err != nil {
+		c.HTML(http.StatusOK, "post/new.html", gin.H{
+			"post":    post,
+			"message": err.Error(),
+		})
+		return
+	}
+	c.Redirect(http.StatusMovedPermanently, "/admin/posts")
 }
 
 func PostGet(c *gin.Context) {
@@ -51,45 +98,6 @@ func PostGet(c *gin.Context) {
 
 func PostNew(c *gin.Context) {
 	c.HTML(http.StatusOK, "post/new.html", nil)
-}
-
-func PostCreate(c *gin.Context) {
-	tags := c.PostForm("tags")
-	title := c.PostForm("title")
-	body := c.PostForm("body")
-	isPublished := c.PostForm("isPublished")
-	published := "on" == isPublished
-	
-	post := &models.Post{
-		Title:       title,
-		Body:        body,
-		IsPublished: published,
-	}
-	err := post.Insert()
-	if err != nil {
-		c.HTML(http.StatusOK, "post/new.html", gin.H{
-			"post":    post,
-			"message": err.Error(),
-		})
-		return
-	}
-	
-	// add tag for post
-	if len(tags) > 0 {
-		tagArr := strings.Split(tags, ",")
-		for _, tag := range tagArr {
-			tagId, err := strconv.ParseUint(tag, 10, 64)
-			if err != nil {
-				continue
-			}
-			pt := &models.PostTag{
-				PostId: post.ID,
-				TagId:  uint(tagId),
-			}
-			_ = pt.Insert()
-		}
-	}
-	c.Redirect(http.StatusMovedPermanently, "/admin/post")
 }
 
 func PostEdit(c *gin.Context) {
@@ -196,15 +204,4 @@ func PostDelete(c *gin.Context) {
 	}
 	_ = models.DeletePostTagByPostId(uint(pid))
 	res["succeed"] = true
-}
-
-func PostIndex(c *gin.Context) {
-	posts, _ := models.ListAllPost("")
-	user := controllers.GetUser(c)
-	c.HTML(http.StatusOK, "admin/post.html", gin.H{
-		"posts":    posts,
-		"Active":   "posts",
-		"user":     user,
-		"comments": models.MustListUnreadComment(),
-	})
 }

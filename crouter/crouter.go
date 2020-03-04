@@ -91,9 +91,10 @@ func adminRouter(engine *gin.Engine) {
 		authorized.POST("/page/:id/delete", controllers.PageDelete)
 		
 		// post
-		authorized.GET("/post", new(admin.PostController).Index)
-		authorized.GET("/new_post", admin.PostNew)
-		authorized.POST("/new_post", admin.PostCreate)
+		post := new(admin.PostController)
+		authorized.GET("/posts", post.Index)
+		authorized.GET("/posts/new", post.New)
+		authorized.POST("/posts", post.Create)
 		authorized.GET("/post/:id/edit", admin.PostEdit)
 		authorized.POST("/post/:id/edit", admin.PostUpdate)
 		authorized.POST("/post/:id/publish", admin.PostPublish)
