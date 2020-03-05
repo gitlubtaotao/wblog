@@ -8,19 +8,42 @@ import (
 )
 
 type PostRepository struct {
-	object *models.Post
+	Object *models.Post
 }
 
 func NewPostRepository() *PostRepository {
-	return &PostRepository{object: &models.Post{}}
+	return &PostRepository{Object: &models.Post{}}
 }
 
 func (p *PostRepository) ListAll(tag string) (post []*models.Post, err error) {
 	return p.listPost(tag, false, 0, 0)
 }
 
-func (p *PostRepository) ListPublishedPost(tag string, pageIndex, pageSize int) ([]* models.Post, error) {
+func (p *PostRepository) ListPublishedPost(tag string, pageIndex, pageSize int) ([]*models.Post, error) {
 	return p.listPost(tag, true, pageIndex, pageSize)
+}
+
+func (p *PostRepository) Delete() error {
+	return models.DB.Delete(p.Object).Error
+}
+
+func (p *PostRepository) GetPostById(id string) (*models.Post, error) {
+	pid, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	err = models.DB.First(&p.Object, "id=?", pid).Error
+	return p.Object, err
+}
+
+//更新博文信息
+func (p *PostRepository) Update() error {
+	
+	return models.DB.Model(&p.Object).Updates(map[string]interface{}{
+		"title":        p.Object.Title,
+		"body":         p.Object.Body,
+		"is_published": p.Object.IsPublished,
+	}).Error
 }
 
 func (p *PostRepository) listPost(tag string, published bool, pageIndex, pageSize int) ([]*models.Post, error) {

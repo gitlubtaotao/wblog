@@ -24,7 +24,10 @@ const (
 	SESSION_CAPTCHA      = "GIN_CAPTCHA"  // captcha session key
 )
 
-type Controller interface {
+type BaseController struct {
+	Ctx *gin.Context
+}
+type IController interface {
 	Index(c *gin.Context)
 	Get(c *gin.Context)
 	New(c *gin.Context)
@@ -33,6 +36,12 @@ type Controller interface {
 	Update(c *gin.Context)
 	Delete(c *gin.Context)
 }
+
+//初始化newBase
+func NewBase(ctx *gin.Context) *BaseController {
+	return &BaseController{Ctx: ctx}
+}
+
 func Handle404(c *gin.Context) {
 	HandleMessage(c, "Sorry,I lost myself!")
 }
@@ -119,6 +128,14 @@ func WriteJSON(ctx *gin.Context, h gin.H) {
 	ctx.JSON(http.StatusOK, h)
 }
 
+//输出json格式
+func (b *BaseController) WriteJSON(ctx *gin.Context, h gin.H) {
+	if _, ok := h["succeed"]; !ok {
+		h["succeed"] = false
+	}
+	ctx.JSON(http.StatusOK, h)
+}
+
 func GetUser(c *gin.Context) *models.User {
 	user, _ := c.Get(CONTEXT_USER_KEY)
 	return user.(*models.User)
@@ -133,4 +150,3 @@ func HandlerError(message string, err error) bool {
 	}
 	return true
 }
-

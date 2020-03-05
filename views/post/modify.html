@@ -175,8 +175,8 @@
         <!-- create or update a article -->
         <form action="/admin/post/{{.post.ID}}/edit" method="post" id="postForm" class="form-group">
             <input id="tags" name="tags" type="hidden">
-            <input name="title" type="text" class="form-control" placeholder="Title" value="{{.post.Title}}"/><br/>
-            <textarea id="demo" name="body">{{.post.Body}}</textarea><br/>
+            <input name="post[title]" type="text" class="form-control" placeholder="Title" value="{{.post.Title}}"/><br/>
+            <textarea id="demo" name="post[body]">{{.post.Body}}</textarea><br/>
             <div class="bootstrap-switch-small">
                 <input id="switchbtn" name="isPublished" type="checkbox" {{if .post.IsPublished}}checked{{end}} />
             </div>

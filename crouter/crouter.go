@@ -95,10 +95,10 @@ func adminRouter(engine *gin.Engine) {
 		authorized.GET("/posts", post.Index)
 		authorized.GET("/posts/new", post.New)
 		authorized.POST("/posts", post.Create)
-		authorized.GET("/post/:id/edit", admin.PostEdit)
-		authorized.POST("/post/:id/edit", admin.PostUpdate)
+		authorized.GET("/post/:id/edit", post.Edit)
+		authorized.POST("/post/:id/edit", post.Update)
 		authorized.POST("/post/:id/publish", admin.PostPublish)
-		authorized.POST("/post/:id/delete", admin.PostDelete)
+		authorized.POST("/post/:id/delete", post.Delete)
 		// tag
 		authorized.POST("/new_tag", controllers.TagCreate)
 		authorized.GET("/user", controllers.UserIndex)
