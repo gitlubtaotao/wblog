@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"errors"
 	"github.com/dchest/captcha"
-	
 )
 
 type CaptchaImageResponse struct {
@@ -12,6 +11,7 @@ type CaptchaImageResponse struct {
 	ImageUrl  string `json:"imageUrl"`
 }
 
+//new captcha
 func NewCaptchaResponse(CaptchaId string, ImageUrl string) CaptchaImageResponse {
 	return CaptchaImageResponse{CaptchaId: CaptchaId, ImageUrl: ImageUrl}
 }
@@ -28,16 +28,16 @@ func GetCaptchaImage(length int) (response CaptchaImageResponse) {
 	return
 }
 
-func ServeHTTPCaptcha(id string,reload bool) (content bytes.Buffer, err error) {
+func ServeHTTPCaptcha(id string, reload bool) (content bytes.Buffer, err error) {
 	if id == "" {
 		err = captcha.ErrNotFound
 		return
 	}
-	content, err = ServeImage(id, 0, 0, reload)
+	content, err = serveImage(id, 0, 0, reload)
 	return
 }
 
-func ServeImage(id string, width, height int, reload bool) (content bytes.Buffer, err error) {
+func serveImage(id string, width, height int, reload bool) (content bytes.Buffer, err error) {
 	if reload {
 		captcha.Reload(id)
 	}
