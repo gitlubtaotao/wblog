@@ -16,7 +16,6 @@ func InitRouter(engine *gin.Engine) {
 	indexInit(engine)
 	signUp(engine)
 	signInAndOut(engine)
-	captcha(engine)
 	visitorRouter(engine)
 	subscriberRouter(engine)
 	otherRouter(engine)
@@ -24,11 +23,14 @@ func InitRouter(engine *gin.Engine) {
 	captchaRoute(engine)
 }
 
+//captchaRoute
 func captchaRoute(engine *gin.Engine) {
 	engine.GET("/getCaptcha", new(controllers.CaptchaController).GetCaptcha)
 	engine.GET("/verifyCaptcha", new(controllers.CaptchaController).VerifyCaptcha)
 	engine.GET("/captcha/:source", new(controllers.CaptchaController).GetCaptchaPng)
+	engine.GET("/captcha", new(controllers.CaptchaController).Captcha)
 }
+
 func indexInit(engine *gin.Engine) {
 	engine.NoRoute(controllers.Handle404)
 	engine.GET("/", client.Index)
@@ -52,9 +54,8 @@ func signInAndOut(engine *gin.Engine) {
 	engine.GET("/auth/:authType", controllers.AuthGet)
 }
 
-func captcha(engine *gin.Engine) {
-	engine.GET("/captcha", controllers.CaptchaGet)
-}
+
+
 func visitorRouter(engine *gin.Engine) {
 	visitor := engine.Group("/visitor")
 	visitor.Use(authRequired())

@@ -3,6 +3,8 @@ package controllers
 import (
 	"bytes"
 	"fmt"
+	"github.com/dchest/captcha"
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/gitlubtaotao/wblog/helpers"
 	"net/http"
@@ -11,6 +13,15 @@ import (
 )
 
 type CaptchaController struct {
+}
+
+func (cap *CaptchaController) Captcha(context *gin.Context) {
+	session := sessions.Default(context)
+	result := helpers.GetCaptchaImage(4)
+	session.Delete(SESSION_CAPTCHA)
+	session.Set(SESSION_CAPTCHA, result.CaptchaId)
+	_ = session.Save()
+	_ = captcha.WriteImage(context.Writer, result.CaptchaId, 100, 40)
 }
 
 func (cap *CaptchaController) GetCaptcha(c *gin.Context) {

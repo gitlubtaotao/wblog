@@ -33,11 +33,11 @@ func ServeHTTPCaptcha(id string, reload bool) (content bytes.Buffer, err error) 
 		err = captcha.ErrNotFound
 		return
 	}
-	content, err = serveImage(id, 0, 0, reload)
+	content, err = ServeImage(id, 0, 0, reload)
 	return
 }
 
-func serveImage(id string, width, height int, reload bool) (content bytes.Buffer, err error) {
+func ServeImage(id string, width, height int, reload bool) (content bytes.Buffer, err error) {
 	if reload {
 		captcha.Reload(id)
 	}
