@@ -7,8 +7,12 @@ import (
 	"strconv"
 )
 
+type IPostRepository interface {
+}
+
 type PostRepository struct {
 	Object *models.Post
+	DB     *gorm.DB
 }
 
 func NewPostRepository() *PostRepository {

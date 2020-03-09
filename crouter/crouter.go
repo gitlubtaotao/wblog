@@ -21,8 +21,14 @@ func InitRouter(engine *gin.Engine) {
 	subscriberRouter(engine)
 	otherRouter(engine)
 	adminRouter(engine)
+	captchaRoute(engine)
 }
 
+func captchaRoute(engine *gin.Engine) {
+	engine.GET("/getCaptcha", new(controllers.CaptchaController).GetCaptcha)
+	engine.GET("/verifyCaptcha", new(controllers.CaptchaController).VerifyCaptcha)
+	engine.GET("/captcha/:source", new(controllers.CaptchaController).GetCaptchaPng)
+}
 func indexInit(engine *gin.Engine) {
 	engine.NoRoute(controllers.Handle404)
 	engine.GET("/", client.Index)
