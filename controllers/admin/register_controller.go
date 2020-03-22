@@ -1,11 +1,9 @@
 package admin
 
 import (
-	"github.com/cihub/seelog"
 	"github.com/gin-gonic/gin"
 	"github.com/gitlubtaotao/wblog/controllers"
 	"github.com/gitlubtaotao/wblog/services"
-	
 	"net/http"
 )
 
@@ -13,6 +11,7 @@ type RegisterController struct {
 	*controllers.BaseController
 }
 
+//注册页面
 func (r *RegisterController) SignUpGet(c *gin.Context) {
 	c.HTML(http.StatusOK, "auth/signup.html", gin.H{
 		"title": "Wblog | Registeration Page",
@@ -32,9 +31,9 @@ func (r *RegisterController) SignUpPost(c *gin.Context) {
 	service := services.NewUserService(c)
 	err = service.Register()
 	if err != nil {
-		_ = seelog.Critical(err)
-		res["message"] = err
+		res["message"] = err.Error()
 		return
 	}
+	res["contentType"] = c.ContentType()
 	res["succeed"] = true
 }

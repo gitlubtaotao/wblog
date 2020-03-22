@@ -61,3 +61,5 @@ func VerifyCaptcha(captchaId string, value string) (err error) {
 		return errors.New("验证失败")
 	}
 }
+
+

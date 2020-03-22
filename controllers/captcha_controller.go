@@ -40,16 +40,17 @@ func (cap *CaptchaController) GetCaptcha(c *gin.Context) {
 
 //校验验证码
 func (cap *CaptchaController) VerifyCaptcha(c *gin.Context) {
-	value := c.PostForm("value")
+	value := c.Query("value")
+	fmt.Println(value)
 	session := sessions.Default(c)
 	captchaId := session.Get(SESSION_CAPTCHA)
 	errs := helpers.VerifyCaptcha(captchaId.(string), value)
 	var json = gin.H{}
+	json["contentType"] = c.ContentType()
 	if errs != nil {
-		json["status"] = http.StatusInternalServerError
-		json["message"] = errs
+		json["message"] = errs.Error()
 	} else {
-		json["status"] = http.StatusOK
+		json["succeed"] = true
 	}
 	cap.WriteJSON(c, json)
 }

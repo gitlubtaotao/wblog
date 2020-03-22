@@ -41,15 +41,16 @@ func indexInit(engine *gin.Engine) {
 
 func signUp(engine *gin.Engine) {
 	if system.GetConfiguration().SignupEnabled {
-		engine.GET("/signup", new(admin.RegisterController).SignUpGet)
-		engine.POST("/signup", new(admin.RegisterController).SignUpPost)
+		engine.GET("/admin/signup", new(admin.RegisterController).SignUpGet)
+		engine.POST("admin/signup", new(admin.RegisterController).SignUpPost)
 	}
 }
 
 //登录和退出
 func signInAndOut(engine *gin.Engine) {
-	engine.GET("/signin", controllers.SigninGet)
-	engine.POST("/signin", controllers.SigninPost)
+	session := admin.SessionController{}
+	engine.GET("/admin/signin", session.GetSignIn)
+	engine.POST("/admin/signin", session.PostSignIn)
 	engine.GET("/logout", controllers.LogoutGet)
 	engine.GET("/oauth2callback", controllers.Oauth2Callback)
 	engine.GET("/auth/:authType", controllers.AuthGet)

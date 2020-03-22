@@ -6,22 +6,17 @@ import (
 )
 
 type IController interface {
-	Index(c *gin.Context)
-	Get(c *gin.Context)
-	New(c *gin.Context)
-	Create(c *gin.Context)
-	Edit(c *gin.Context)
-	Update(c *gin.Context)
-	Delete(c *gin.Context)
+	Index(ctx *gin.Context)
+	Get(ctx *gin.Context)
+	New(ctx *gin.Context)
+	Create(ctx *gin.Context)
+	Edit(ctx *gin.Context)
+	Update(ctx *gin.Context)
+	Delete(ctx *gin.Context)
 }
 
 type BaseController struct {
-	Ctx *gin.Context
-}
 
-//初始化newBase
-func NewBase(ctx *gin.Context) *BaseController {
-	return &BaseController{Ctx: ctx}
 }
 
 //return json 格式
@@ -32,3 +27,4 @@ func (b *BaseController) WriteJSON(ctx *gin.Context, h gin.H) {
 	}
 	ctx.JSON(http.StatusOK, h)
 }
+

@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"github.com/cihub/seelog"
 	"github.com/go-playground/locales/en"
 	
 	ut "github.com/go-playground/universal-translator"
@@ -29,10 +30,11 @@ func (v *ValidatorService) HandlerError() error {
 	validate = validator.New()
 	_ = en_translations.RegisterDefaultTranslations(validate, trans)
 	var str string
-	if _, ok := err.(*validator.ValidationErrors); ok {
+	if _, ok := err.(validator.ValidationErrors); ok {
 		errs := err.(validator.ValidationErrors)
+		_ = seelog.Error(errs)
 		for k, v := range errs.Translate(trans) {
-			str += k + v
+			str += k + "," + v
 		}
 	}
 	if str == "" {

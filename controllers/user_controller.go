@@ -3,11 +3,6 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"net/http"
-	"strconv"
-	"time"
-
 	"github.com/alimoeeny/gooauth2"
 	"github.com/cihub/seelog"
 	"github.com/gin-contrib/sessions"
@@ -16,6 +11,9 @@ import (
 	"github.com/gitlubtaotao/wblog/models"
 	"github.com/gitlubtaotao/wblog/system"
 	"github.com/pkg/errors"
+	"io/ioutil"
+	"net/http"
+	"strconv"
 )
 
 type GithubUserInfo struct {
@@ -51,17 +49,9 @@ type GithubUserInfo struct {
 	URL               string      `json:"url"`
 }
 
-func SigninGet(c *gin.Context) {
-	c.HTML(http.StatusOK, "auth/signin.html", gin.H{
-		"title": "Wblog | Log in",
-	})
-}
 
-func SignupGet(c *gin.Context) {
-	c.HTML(http.StatusOK, "auth/signup.html", gin.H{
-		"title": "Wblog | Registration Page",
-	})
-}
+
+
 
 func LogoutGet(c *gin.Context) {
 	s := sessions.Default(c)
@@ -70,48 +60,16 @@ func LogoutGet(c *gin.Context) {
 	c.Redirect(http.StatusSeeOther, "/signin")
 }
 
-//注册新用户
-func SignupPost(c *gin.Context) {
-	var (
-		err error
-		res = gin.H{}
-	)
-	defer WriteJSON(c, res)
-	email := c.PostForm("email")
-	telephone := c.PostForm("telephone")
-	password := c.PostForm("password")
-	user := &models.User{
-		Email:     email,
-		Telephone: telephone,
-		Password:  password,
-		IsAdmin:   true,
-		OutTime:   time.Now().AddDate(0, 0, 4),
-	}
-	if len(user.Email) == 0 || len(user.Password) == 0 {
-		res["message"] = "email or password cannot be null"
-		return
-	}
-	user.Password = helpers.Md5(user.Email + user.Password)
-	err = user.Insert()
-	if err != nil {
-		seelog.Critical(err)
-		res["message"] = "email or phone already exists"
-		return
-	}
-	res["contentType"] = c.ContentType()
-	res["succeed"] = true
-}
-
-
 func SigninPost(c *gin.Context) {
 	var (
 		err  error
 		user *models.User
 	)
-	username := c.PostForm("username")
+	username := c.PostForm("account")
 	password := c.PostForm("password")
 	//remeber := c.PostForm("checkbox")
 	if username == "" || password == "" {
+		
 		c.HTML(http.StatusOK, "auth/signin.html", gin.H{
 			"message": "username or password cannot be null",
 		})

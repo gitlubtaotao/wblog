@@ -19,7 +19,6 @@ type PostController struct {
 
 func (p *PostController) Index(c *gin.Context) {
 	p.Res = repositories.NewPostRepository()
-	p.Base.Ctx = c
 	posts, _ := p.Res.ListAll("")
 	user := controllers.GetUser(c)
 	c.HTML(http.StatusOK, "admin/post.html", gin.H{
