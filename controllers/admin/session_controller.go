@@ -45,8 +45,6 @@ func (s *SessionController) PostSignIn(ctx *gin.Context) {
 		res["message"] = "Your account have been locked"
 		return
 	}
-	
-	
 	res["succeed"] = true
 	res["remember"] = remember
 	res["contentType"] = ctx.ContentType()
