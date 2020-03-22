@@ -25,6 +25,7 @@ require (
 	github.com/qiniu/x v7.0.8+incompatible // indirect
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
 	github.com/snluu/uuid v0.0.0-20130306162636-1dd34a9ad6c0
+	golang.org/x/crypto v0.0.0-20191205180655-e7c4368fe9dd
 	gopkg.in/russross/blackfriday.v2 v2.0.0
 	qiniupkg.com/x v7.0.8+incompatible // indirect
 )

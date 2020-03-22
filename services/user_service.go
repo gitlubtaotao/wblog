@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/gitlubtaotao/wblog/database"
+	"github.com/gitlubtaotao/wblog/encrypt"
 	"github.com/gitlubtaotao/wblog/helpers"
 	"github.com/gitlubtaotao/wblog/models"
 	"time"
@@ -31,7 +32,11 @@ func (r *UserService) Register() (err error) {
 	}
 	r.Model.IsAdmin = true
 	r.Model.OutTime = time.Now().AddDate(0, 0, 4)
-	r.Model.Password = helpers.Md5(r.Model.Password)
+	password, err := encrypt.HashAndSalt(r.Model.Password)
+	if err != nil {
+		return err
+	}
+	r.Model.Password = password
 	valid := ValidatorService{model: r.Model}
 	err = valid.HandlerError()
 	if err != nil {
@@ -47,8 +52,7 @@ func (r *UserService) Insert() error {
 
 //用户进行登录
 func (r *UserService) SignIn(account string, password string) (*models.User, error) {
-	md5Password := helpers.Md5(password)
-	r.Model = &models.User{Password: md5Password}
+	r.Model = &models.User{}
 	//邮箱登录
 	if helpers.MatchEmail(account) {
 		r.Model.Email = account
@@ -59,5 +63,11 @@ func (r *UserService) SignIn(account string, password string) (*models.User, err
 	}
 	var user models.User
 	err := database.DBCon.Where(r.Model).First(&user).Error
+	if err != nil {
+		return nil, err
+	}
+	if err := encrypt.CompareHashSalt(user.Password, password);err!=nil{
+		return nil,err
+	}
 	return &user, err
 }

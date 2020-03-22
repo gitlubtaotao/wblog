@@ -2,8 +2,10 @@ package admin
 
 import (
 	"github.com/cihub/seelog"
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/gitlubtaotao/wblog/controllers"
+	"github.com/gitlubtaotao/wblog/encrypt"
 	"github.com/gitlubtaotao/wblog/services"
 	"net/http"
 )
@@ -45,6 +47,16 @@ func (s *SessionController) PostSignIn(ctx *gin.Context) {
 		res["message"] = "Your account have been locked"
 		return
 	}
+	session := sessions.Default(ctx)
+	session.Clear()
+	key, err := encrypt.EnCryptData(string(user.ID))
+	if err != nil {
+		_ = seelog.Error(err)
+		res["message"] = "Your account not exist"
+		return
+	}
+	session.Set(controllers.SESSION_KEY, key)
+	_ = session.Save()
 	res["succeed"] = true
 	res["remember"] = remember
 	res["contentType"] = ctx.ContentType()

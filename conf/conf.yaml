@@ -13,7 +13,7 @@ github_scope:
 smtp_username:
 smtp_password:
 smtp_host:
-session_secret: wblog
+session_secret: DIS**#KKKDJJSKDI
 domain:
 public: static
 addr: :8081
