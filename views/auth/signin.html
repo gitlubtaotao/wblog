@@ -50,7 +50,7 @@
             </div>
             <!-- /.social-auth-links -->
 
-            <a href="#">I forgot my password</a><br>
+            <a href="/password/index">I forgot my password</a><br>
             <a href="/admin/signup" class="text-center">Register a new membership</a>
 
         </div>
@@ -78,7 +78,6 @@
                     toastr.error("username or password cannot be null");
                     return false
                 }
-                console.log("dsdsdsds");
                 $.ajax({
                     url: form.attr('action'),
                     type: 'post',

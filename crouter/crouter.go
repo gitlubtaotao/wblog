@@ -54,6 +54,10 @@ func signInAndOut(engine *gin.Engine) {
 	engine.GET("/logout", controllers.LogoutGet)
 	engine.GET("/oauth2callback", controllers.Oauth2Callback)
 	engine.GET("/auth/:authType", controllers.AuthGet)
+	engine.GET("/password/index", session.GetPassword)
+	engine.GET("/password/modifyPassword",session.ModifyPassword)
+	engine.POST("/passwords", session.UpdatePassword)
+	engine.POST("/password/sendNotice", session.SendNotice)
 }
 
 func visitorRouter(engine *gin.Engine) {

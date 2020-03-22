@@ -23,3 +23,4 @@ dsn: root:qweqwe123@tcp(127.0.0.1:3306)/wblog?charset=utf8mb4&parseTime=True&loc
 notify_emails:
 page_size: 5
 smms_fileserver: https://sm.ms/api/upload
+modify_password: 3600

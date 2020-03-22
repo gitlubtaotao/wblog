@@ -16,7 +16,6 @@ type IController interface {
 }
 
 type BaseController struct {
-
 }
 
 //return json 格式
@@ -28,3 +27,8 @@ func (b *BaseController) WriteJSON(ctx *gin.Context, h gin.H) {
 	ctx.JSON(http.StatusOK, h)
 }
 
+//render html
+func (b *BaseController) RenderHtml(ctx *gin.Context, path string, h gin.H) {
+	ctx.HTML(http.StatusOK, path, h)
+	ctx.Abort()
+}

@@ -8,6 +8,7 @@ import (
 	"github.com/gitlubtaotao/wblog/encrypt"
 	"github.com/gitlubtaotao/wblog/services"
 	"net/http"
+	"time"
 )
 
 type SessionController struct {
@@ -66,4 +67,52 @@ func (s *SessionController) PostSignIn(ctx *gin.Context) {
 
 func (s *SessionController) AuthGet(c *gin.Context) {
 
+}
+
+func (s *SessionController) GetPassword(ctx *gin.Context) {
+	ctx.HTML(http.StatusOK, "auth/password.html", gin.H{
+		"title": "Wblog | Modify Your Password",
+	})
+}
+
+func (s *SessionController) ModifyPassword(ctx *gin.Context) {
+	ctx.HTML(http.StatusOK, "auth/password.html", gin.H{
+		"title": "Wblog | Modify Your Password",
+	})
+}
+
+func (s *SessionController) UpdatePassword(ctx *gin.Context) {
+
+}
+
+//发送邮件or验证码
+func (s *SessionController) SendNotice(ctx *gin.Context) {
+	email := ctx.PostForm("email")
+	if email == "" {
+		s.RenderHtml(ctx, "auth/password.html",
+			gin.H{"message": "Email not eq null"})
+		return
+	}
+	service := services.NewUserService(ctx)
+	user, err := service.FindUserByEmail(email)
+	if err != nil {
+		_ = seelog.Error(err)
+		s.RenderHtml(ctx, "auth/password.html",
+			gin.H{"message": "Your Account is not exist"})
+		return
+	}
+	//生成对于的修改密码链接
+	modifyPasswordHash, err := encrypt.EnCryptData(email)
+	if err != nil {
+		_ = seelog.Error(err)
+		s.RenderHtml(ctx, "auth/password.html",
+			gin.H{"message": "Your Account is not exist"})
+		return
+	}
+	user.ModifyPasswordHash = modifyPasswordHash
+	user.ModifyPasswordTime = time.Now()
+	err = service.UpdateUser(user)
+	ctx.HTML(http.StatusOK, "auth/signin.html", gin.H{
+		"title": "Wblog | Log in",
+	})
 }

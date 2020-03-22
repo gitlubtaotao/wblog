@@ -29,8 +29,6 @@ type Page struct {
 	IsPublished bool   // published or not
 }
 
-
-
 // table tags
 type Tag struct {
 	BaseModel
@@ -48,18 +46,20 @@ type PostTag struct {
 // table users
 type User struct {
 	gorm.Model
-	Email         string    `gorm:"unique_index;default:null" json:"email" form:"email" validate:"required,email"` //邮箱
-	Telephone     string    `gorm:"unique_index;default:null" json:"telephone" form:"telephone" validate:"required"` //手机号码
-	Password      string    `gorm:"default:null" json:"password" form:"password" validate:"required"`              //密码
-	VerifyState   string    `gorm:"default:'0'" json:"verify_state"`               //邮箱验证状态
-	SecretKey     string    `gorm:"default:null" json:"secret_key"`              //密钥
-	OutTime       time.Time //过期时间
-	GithubLoginId string    `gorm:"unique_index;default:null" json:"github_login_id"` // github唯一标识
-	GithubUrl     string    //github地址
-	IsAdmin       bool      //是否是管理员
-	AvatarUrl     string    `form:"avatar_url"` // 头像链接
-	NickName      string    `form:"nick_name" json:"nick_name"` // 昵称
-	LockState     bool      `gorm:"default:'0'"` //锁定状态
+	Email              string    `gorm:"unique_index;default:null" json:"email" form:"email" validate:"required,email"`   //邮箱
+	Telephone          string    `gorm:"unique_index;default:null" json:"telephone" form:"telephone" validate:"required"` //手机号码
+	Password           string    `gorm:"default:null" json:"password" form:"password" validate:"required"`                //密码
+	VerifyState        string    `gorm:"default:'0'" json:"verify_state"`                                                 //邮箱验证状态
+	SecretKey          string    `gorm:"default:null" json:"secret_key"`                                                  //密钥
+	OutTime            time.Time //过期时间
+	GithubLoginId      string    `gorm:"unique_index;default:null" json:"github_login_id"` // github唯一标识
+	GithubUrl          string    //github地址
+	IsAdmin            bool      //是否是管理员
+	AvatarUrl          string    `form:"avatar_url"`                 // 头像链接
+	NickName           string    `form:"nick_name" json:"nick_name"` // 昵称
+	LockState          bool      `gorm:"default:'0'"`                //锁定状态
+	ModifyPasswordHash string    `gorm:"default:null"`
+	ModifyPasswordTime time.Time `gorm:"default:'0000-00-00 00:00:00'"`
 }
 
 // table comments
@@ -189,9 +189,6 @@ func (post *Post) Update() error {
 	}).Error
 }
 
-
-
-
 func MustListMaxReadPost() (posts []*Post) {
 	posts, _ = ListMaxReadPost()
 	return
@@ -245,8 +242,6 @@ func CountPost() int {
 	DB.Model(&Post{}).Count(&count)
 	return count
 }
-
-
 
 func MustListPostArchives() []*QrArchive {
 	archives, _ := ListPostArchives()
