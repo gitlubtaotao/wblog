@@ -25,10 +25,11 @@ func InitRouter(engine *gin.Engine) {
 
 //captchaRoute
 func captchaRoute(engine *gin.Engine) {
-	engine.GET("/getCaptcha", new(controllers.CaptchaController).GetCaptcha)
-	engine.GET("/verifyCaptcha", new(controllers.CaptchaController).VerifyCaptcha)
-	engine.GET("/captcha/:source", new(controllers.CaptchaController).GetCaptchaPng)
-	engine.GET("/captcha", new(controllers.CaptchaController).Captcha)
+	controller := new(controllers.CaptchaController)
+	engine.GET("/getCaptcha", controller.GetCaptcha)
+	engine.GET("/verifyCaptcha", controller.VerifyCaptcha)
+	engine.GET("/captcha/:source", controller.GetCaptchaPng)
+	engine.GET("/captcha", controller.Captcha)
 }
 
 func indexInit(engine *gin.Engine) {
@@ -40,8 +41,8 @@ func indexInit(engine *gin.Engine) {
 
 func signUp(engine *gin.Engine) {
 	if system.GetConfiguration().SignupEnabled {
-		engine.GET("/signup", controllers.SignupGet)
-		engine.POST("/signup", controllers.SignupPost)
+		engine.GET("/signup", new(admin.RegisterController).SignUpGet)
+		engine.POST("/signup", new(admin.RegisterController).SignUpPost)
 	}
 }
 
@@ -53,8 +54,6 @@ func signInAndOut(engine *gin.Engine) {
 	engine.GET("/oauth2callback", controllers.Oauth2Callback)
 	engine.GET("/auth/:authType", controllers.AuthGet)
 }
-
-
 
 func visitorRouter(engine *gin.Engine) {
 	visitor := engine.Group("/visitor")

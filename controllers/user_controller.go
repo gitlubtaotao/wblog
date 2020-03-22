@@ -102,6 +102,7 @@ func SignupPost(c *gin.Context) {
 	res["succeed"] = true
 }
 
+
 func SigninPost(c *gin.Context) {
 	var (
 		err  error

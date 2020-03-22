@@ -13,12 +13,18 @@ import (
 )
 
 type CaptchaController struct {
+	*BaseController
 }
 
+//获取验证码图片
 func (cap *CaptchaController) Captcha(context *gin.Context) {
 	session := sessions.Default(context)
 	result := helpers.GetCaptchaImage(4)
 	session.Delete(SESSION_CAPTCHA)
+	reload := context.Param("reload")
+	if reload != "" {
+		captcha.Reload(result.CaptchaId)
+	}
 	session.Set(SESSION_CAPTCHA, result.CaptchaId)
 	_ = session.Save()
 	_ = captcha.WriteImage(context.Writer, result.CaptchaId, 100, 40)
@@ -32,9 +38,22 @@ func (cap *CaptchaController) GetCaptcha(c *gin.Context) {
 	})
 }
 
+//校验验证码
 func (cap *CaptchaController) VerifyCaptcha(c *gin.Context) {
-
+	value := c.PostForm("value")
+	session := sessions.Default(c)
+	captchaId := session.Get(SESSION_CAPTCHA)
+	errs := helpers.VerifyCaptcha(captchaId.(string), value)
+	var json = gin.H{}
+	if errs != nil {
+		json["status"] = http.StatusInternalServerError
+		json["message"] = errs
+	} else {
+		json["status"] = http.StatusOK
+	}
+	cap.WriteJSON(c, json)
 }
+
 func (cap *CaptchaController) GetCaptchaPng(c *gin.Context) {
 	source := c.Param("source")
 	fmt.Println("GetCaptchaPng : " + source)
