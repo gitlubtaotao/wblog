@@ -170,7 +170,9 @@ func AdminScopeRequired() gin.HandlerFunc {
 				return
 			}
 		}
-		seelog.Warnf("User not authorized to visit %s", c.Request.RequestURI)
+		
+		_ = seelog.Warnf("User not authorized to visit %s", c.Request.RequestURI)
+		
 		c.HTML(http.StatusForbidden, "errors/error.html", gin.H{
 			"message": "Forbidden!",
 		})

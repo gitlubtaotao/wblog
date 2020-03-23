@@ -7,7 +7,6 @@ import (
 	"github.com/cihub/seelog"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"github.com/gitlubtaotao/wblog/helpers"
 	"github.com/gitlubtaotao/wblog/models"
 	"github.com/gitlubtaotao/wblog/system"
 	"github.com/pkg/errors"
@@ -60,48 +59,7 @@ func LogoutGet(c *gin.Context) {
 	c.Redirect(http.StatusSeeOther, "/signin")
 }
 
-func SigninPost(c *gin.Context) {
-	var (
-		err  error
-		user *models.User
-	)
-	username := c.PostForm("account")
-	password := c.PostForm("password")
-	//remeber := c.PostForm("checkbox")
-	if username == "" || password == "" {
-		
-		c.HTML(http.StatusOK, "auth/signin.html", gin.H{
-			"message": "username or password cannot be null",
-		})
-		return
-	}
-	//var DB *gorm.DB
-	//err = DB.Where(&models.User{Email: username, Password: helpers.Md5(username + password)}).First(&user).Error
 
-	user, err = models.GetUserByWhere(models.User{Email: username, Password: helpers.Md5(username + password)})
-	//user, err = models.GetUserByUsername(username)
-	if err != nil || user.Password != helpers.Md5(username+password) {
-		c.HTML(http.StatusOK, "auth/signin.html", gin.H{
-			"message": "invalid username or password",
-		})
-		return
-	}
-	if user.LockState {
-		c.HTML(http.StatusOK, "auth/signin.html", gin.H{
-			"message": "Your account have been locked",
-		})
-		return
-	}
-	s := sessions.Default(c)
-	s.Clear()
-	s.Set(SESSION_KEY, user.ID)
-	s.Save()
-	if user.IsAdmin {
-		c.Redirect(http.StatusMovedPermanently, "/admin/index")
-	} else {
-		c.Redirect(http.StatusMovedPermanently, "/")
-	}
-}
 
 func Oauth2Callback(c *gin.Context) {
 	var (

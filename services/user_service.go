@@ -15,6 +15,7 @@ type IUserService interface {
 	Insert() error
 	SignIn(account string, password string) (user *models.User, err error)
 	FindUserByEmail(email string) (models.User, error)
+	GetUserByID(id interface{}) (*models.User, error)
 	UpdateUser(attr map[string]interface{}) (err error)
 	GetModel() (*models.User, error)
 }
@@ -83,6 +84,11 @@ func (u *UserService) FindUserByEmail(email string) (models.User, error) {
 		u.Model = &user
 	}
 	return user, err
+}
+func (u *UserService) GetUserByID(id interface{}) (*models.User, error) {
+	var user models.User
+	err := database.DBCon.First(&user, id).Error
+	return &user, err
 }
 
 //根据不同的字段进行根据

@@ -66,7 +66,6 @@ func (s *SessionController) PostSignIn(ctx *gin.Context) {
 	res["remember"] = remember
 	res["contentType"] = ctx.ContentType()
 	//进行session id 加密
-	
 }
 
 func (s *SessionController) AuthGet(c *gin.Context) {
@@ -82,7 +81,7 @@ func (s *SessionController) GetPassword(ctx *gin.Context) {
 func (s *SessionController) ModifyPassword(ctx *gin.Context) {
 	path := "auth/modify_password.html"
 	hash := ctx.Param("hash")
-	email, err := encrypt.DeCryptData(hash)
+	email, err := encrypt.DeCryptData(hash,false)
 	if err != nil {
 		s.errorHandler(ctx, err, path, gin.H{
 			"message": "Your Account is not exist",

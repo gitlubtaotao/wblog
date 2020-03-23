@@ -7,6 +7,8 @@ import (
 	"encoding/base64"
 	"errors"
 	"github.com/gitlubtaotao/wblog/system"
+	"strconv"
+	"strings"
 )
 
 func EnCryptData(originData string) (string, error) {
@@ -18,7 +20,7 @@ func EnCryptData(originData string) (string, error) {
 	return base64.StdEncoding.EncodeToString(result), err
 }
 
-func DeCryptData(hash string) (string, error) {
+func DeCryptData(hash string,isInt bool) (string, error) {
 	//解密base64字符串
 	secret := system.GetConfiguration().SessionSecret
 	pwdByte, err := base64.StdEncoding.DecodeString(hash)
@@ -27,7 +29,13 @@ func DeCryptData(hash string) (string, error) {
 	}
 	//执行AES解密
 	originData, err := aesDeCrypt(pwdByte, []byte(secret))
-	return string(originData), err
+	var s  string
+	if isInt{
+		s = convert(originData)
+	}else{
+		s = string(originData)
+	}
+	return s, err
 }
 
 //使用aes进行加密
@@ -72,6 +80,15 @@ func aesDeCrypt(canted []byte, key []byte) ([]byte, error) {
 		return nil, err
 	}
 	return origData, err
+}
+
+//整形转化
+func convert(b []byte) string {
+	s := make([]string, len(b))
+	for i := range b {
+		s[i] = strconv.Itoa(int(b[i]))
+	}
+	return strings.Join(s, ",")
 }
 
 //填充的反向操作，删除填充字符串

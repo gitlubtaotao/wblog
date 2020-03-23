@@ -4,15 +4,17 @@ import (
 	"flag"
 	"github.com/cihub/seelog"
 	"github.com/gitlubtaotao/wblog/database"
+	"github.com/gitlubtaotao/wblog/encrypt"
 	"github.com/gitlubtaotao/wblog/migration"
 	"github.com/gitlubtaotao/wblog/schedule"
+	"github.com/gitlubtaotao/wblog/services"
+	"strconv"
 	
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	"github.com/gitlubtaotao/wblog/controllers"
 	"github.com/gitlubtaotao/wblog/helpers"
-	"github.com/gitlubtaotao/wblog/models"
 	"github.com/gitlubtaotao/wblog/system"
 	
 	"github.com/gitlubtaotao/wblog/crouter"
@@ -35,7 +37,7 @@ func main() {
 		return
 	}
 	_ = seelog.ReplaceLogger(logger)
-
+	
 	//加载配置文件
 	if err := system.LoadConfiguration(*configFilePath); err != nil {
 		seelog.Critical("err parsing config log file", err)
@@ -46,7 +48,7 @@ func main() {
 	database.InitDB()
 	defer database.DBCon.Close()
 	migration.Migrate()
-
+	
 	//设置设置gin模式。参数可以传递：gin.DebugMode、gin.ReleaseMode、gin.TestMode
 	//gin.SetMode(gin.DebugMode)
 	gin.SetMode(gin.DebugMode)
@@ -64,10 +66,6 @@ func main() {
 	crouter.InitRouter(router)
 	router.Run(system.GetConfiguration().Addr)
 }
-
-
-
-
 
 //定义模版
 func setTemplate(engine *gin.Engine) {
@@ -108,9 +106,13 @@ func SharedData() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		session := sessions.Default(c)
 		if uID := session.Get(controllers.SESSION_KEY); uID != nil {
-			user, err := models.GetUser(uID)
+			userString, err := encrypt.DeCryptData(uID.(string),true)
+			intId, _ := strconv.ParseInt(userString, 10, 64)
+			user, err := services.NewUserService(c).GetUserByID(intId)
 			if err == nil {
 				c.Set(controllers.CONTEXT_USER_KEY, user)
+			}else{
+				_ = seelog.Error(err)
 			}
 		}
 		if system.GetConfiguration().SignupEnabled {
