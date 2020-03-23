@@ -10,9 +10,9 @@ github_authurl: https://github.com/login/oauth/authorize?client_id=%s&scope=user
 github_redirecturl: http://localhost:8090/oauth2callback
 github_tokenurl: https://github.com/login/oauth/access_token
 github_scope:
-smtp_username:
-smtp_password:
-smtp_host:
+smtp_username: taotao-it@youtulink.com
+smtp_password: Xutaotao1215.
+smtp_host: "smtp.mxhichina.com:25"
 session_secret: DIS**#KKKDJJSKDI
 domain:
 public: static
@@ -23,4 +23,5 @@ dsn: root:qweqwe123@tcp(127.0.0.1:3306)/wblog?charset=utf8mb4&parseTime=True&loc
 notify_emails:
 page_size: 5
 smms_fileserver: https://sm.ms/api/upload
-modify_password: 3600
+password_valid: 60
+

@@ -34,11 +34,12 @@ func HandleMessage(c *gin.Context, message string) {
 	})
 }
 
-func sendMail(to, subject, body string) error {
-	c := system.GetConfiguration()
-	return helpers.SendToMail(c.SmtpUsername, c.SmtpPassword, c.SmtpHost, to, subject, body, "html")
-}
 
+//发送邮件
+func sendMail(to, subject, body string) error {
+	return helpers.SendToMail(to, subject, body, "html")
+}
+// 通知邮件
 func NotifyEmail(subject, body string) error {
 	notifyEmailsStr := system.GetConfiguration().NotifyEmails
 	if notifyEmailsStr != "" {

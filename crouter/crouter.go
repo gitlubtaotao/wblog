@@ -55,7 +55,8 @@ func signInAndOut(engine *gin.Engine) {
 	engine.GET("/oauth2callback", controllers.Oauth2Callback)
 	engine.GET("/auth/:authType", controllers.AuthGet)
 	engine.GET("/password/index", session.GetPassword)
-	engine.GET("/password/modifyPassword",session.ModifyPassword)
+	engine.GET("/password/modifyPassword/:hash",session.ModifyPassword)
+	engine.POST("/password/updatePassword",session.UpdatePassword)
 	engine.POST("/passwords", session.UpdatePassword)
 	engine.POST("/password/sendNotice", session.SendNotice)
 }

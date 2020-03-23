@@ -14,8 +14,9 @@ type IUserService interface {
 	Register() (err error)
 	Insert() error
 	SignIn(account string, password string) (user *models.User, err error)
-	FindUserByEmail(email string) (user *models.User, err error)
-	UpdateUser(user *models.User, fields string) (err error)
+	FindUserByEmail(email string) (models.User, error)
+	UpdateUser(attr map[string]interface{}) (err error)
+	GetModel() (*models.User, error)
 }
 type UserService struct {
 	Model   *models.User
@@ -75,18 +76,23 @@ func (u *UserService) SignIn(account string, password string) (*models.User, err
 }
 
 //查询user
-func (u *UserService) FindUserByEmail(email string) (user *models.User, err error) {
-	err = database.DBCon.Where("email = ?", email).First(&user).Error
+func (u *UserService) FindUserByEmail(email string) (models.User, error) {
+	var user models.User
+	err := database.DBCon.Where("email = ?", email).First(&user).Error
+	if err == nil {
+		u.Model = &user
+	}
 	return user, err
 }
 
 //根据不同的字段进行根据
 //TODO-taotao 根据用户
-func (u *UserService) UpdateUser(user *models.User, fields string) (err error) {
+func (u *UserService) UpdateUser(attr map[string]interface{}) (err error) {
 	//更新所有的字段
-	if fields == "" {
-	
-	}
-	return
-	
+	return database.DBCon.Model(&u.Model).Update(attr).Error
+}
+
+//get model value
+func (u *UserService) GetModel() (*models.User, error) {
+	return u.Model, nil
 }

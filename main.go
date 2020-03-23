@@ -30,13 +30,13 @@ func main() {
 	logConfigPath := flag.String("L", "conf/seelog.xml", "log config file path")
 	flag.Parse()
 	logger, err := seelog.LoggerFromConfigAsFile(*logConfigPath)
-
 	if err != nil {
-		seelog.Critical("err parsing seelog config file", err)
+		_ = seelog.Critical("err parsing seelog config file", err)
 		return
 	}
-	seelog.ReplaceLogger(logger)
+	_ = seelog.ReplaceLogger(logger)
 
+	//加载配置文件
 	if err := system.LoadConfiguration(*configFilePath); err != nil {
 		seelog.Critical("err parsing config log file", err)
 		return

@@ -18,10 +18,10 @@ func EnCryptData(originData string) (string, error) {
 	return base64.StdEncoding.EncodeToString(result), err
 }
 
-func DeCryptData(pwd string) (string, error) {
+func DeCryptData(hash string) (string, error) {
 	//解密base64字符串
 	secret := system.GetConfiguration().SessionSecret
-	pwdByte, err := base64.StdEncoding.DecodeString(pwd)
+	pwdByte, err := base64.StdEncoding.DecodeString(hash)
 	if err != nil {
 		return "", err
 	}
