@@ -52,12 +52,7 @@ type GithubUserInfo struct {
 
 
 
-func LogoutGet(c *gin.Context) {
-	s := sessions.Default(c)
-	s.Delete(SESSION_KEY)
-	s.Save()
-	c.Redirect(http.StatusSeeOther, "/signin")
-}
+
 
 
 

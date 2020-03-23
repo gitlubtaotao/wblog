@@ -51,12 +51,12 @@ func signInAndOut(engine *gin.Engine) {
 	session := admin.SessionController{}
 	engine.GET("/admin/signin", session.GetSignIn)
 	engine.POST("/admin/signin", session.PostSignIn)
-	engine.GET("/logout", controllers.LogoutGet)
+	engine.GET("/logout", session.LogoutGet)
 	engine.GET("/oauth2callback", controllers.Oauth2Callback)
 	engine.GET("/auth/:authType", controllers.AuthGet)
 	engine.GET("/password/index", session.GetPassword)
-	engine.GET("/password/modifyPassword/:hash",session.ModifyPassword)
-	engine.POST("/password/updatePassword",session.UpdatePassword)
+	engine.GET("/password/modifyPassword/:hash", session.ModifyPassword)
+	engine.POST("/password/updatePassword", session.UpdatePassword)
 	engine.POST("/passwords", session.UpdatePassword)
 	engine.POST("/password/sendNotice", session.SendNotice)
 }
@@ -172,10 +172,7 @@ func AdminScopeRequired() gin.HandlerFunc {
 		}
 		
 		_ = seelog.Warnf("User not authorized to visit %s", c.Request.RequestURI)
-		
-		c.HTML(http.StatusForbidden, "errors/error.html", gin.H{
-			"message": "Forbidden!",
-		})
+		c.Redirect(http.StatusSeeOther, "/admin/signin")
 		c.Abort()
 	}
 }
