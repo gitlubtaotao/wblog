@@ -3,11 +3,12 @@ qiniu_accesskey:
 qiniu_secretkey:
 qiniu_fileserver:
 qiniu_bucket:
-github_clientid:
-github_clientsecret:
+github_clientid: 8fc369fefbb9c176bd35
+github_clientsecret: d3856f6a85625de7749e222701ffdb149f4e92cb
 github_authurl: https://github.com/login/oauth/authorize?client_id=%s&scope=user:email&state=%s
 # 与github配置的回调地址一致
-github_redirecturl: http://localhost:8090/oauth2callback
+github_redirecturl: http://localhost:8081/githubCallback
+
 github_tokenurl: https://github.com/login/oauth/access_token
 github_scope:
 smtp_username: taotao-it@youtulink.com

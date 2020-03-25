@@ -49,11 +49,12 @@ func signUp(engine *gin.Engine) {
 //登录和退出
 func signInAndOut(engine *gin.Engine) {
 	session := admin.SessionController{}
+	auth := controllers.AuthController{}
 	engine.GET("/admin/signin", session.GetSignIn)
 	engine.POST("/admin/signin", session.PostSignIn)
 	engine.GET("/logout", session.LogoutGet)
-	engine.GET("/oauth2callback", controllers.Oauth2Callback)
-	engine.GET("/auth/:authType", controllers.AuthGet)
+	engine.GET("/githubCallback", auth.GithubCallback)
+	engine.GET("/auth/:authType", auth.AuthGet)
 	engine.GET("/password/index", session.GetPassword)
 	engine.GET("/password/modifyPassword/:hash", session.ModifyPassword)
 	engine.POST("/password/updatePassword", session.UpdatePassword)

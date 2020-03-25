@@ -3,12 +3,13 @@ package admin
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/gitlubtaotao/wblog/controllers"
-	"github.com/gitlubtaotao/wblog/services"
+	"github.com/gitlubtaotao/wblog/repositories"
 	"net/http"
 )
 
 type RegisterController struct {
 	*controllers.BaseController
+	repository repositories.IUserRepository
 }
 
 //注册页面
@@ -28,8 +29,7 @@ func (r *RegisterController) SignUpPost(c *gin.Context) {
 		res["message"] = "Inconsistent password entry"
 		return
 	}
-	service := services.NewUserService(c)
-	err = service.Register()
+	err = r.repository.Register()
 	if err != nil {
 		res["message"] = err.Error()
 		return

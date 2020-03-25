@@ -1,4 +1,4 @@
-package services
+package repositories
 
 import (
 	"errors"
@@ -11,7 +11,7 @@ import (
 	en_translations "github.com/go-playground/validator/v10/translations/en"
 )
 
-type ValidatorService struct {
+type ValidatorRepository struct {
 	model interface{}
 }
 
@@ -21,7 +21,7 @@ var (
 )
 
 //handler validator error
-func (v *ValidatorService) HandlerError() error {
+func (v *ValidatorRepository) HandlerError() error {
 	err := validator.New().Struct(v.model)
 	en := en.New()
 	uni = ut.New(en, en)

@@ -2,14 +2,13 @@ package admin
 
 import (
 	"errors"
-	"fmt"
 	"github.com/cihub/seelog"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/gitlubtaotao/wblog/controllers"
 	"github.com/gitlubtaotao/wblog/encrypt"
 	"github.com/gitlubtaotao/wblog/helpers"
-	"github.com/gitlubtaotao/wblog/services"
+	"github.com/gitlubtaotao/wblog/repositories"
 	"github.com/gitlubtaotao/wblog/system"
 	"net/http"
 	"time"
@@ -17,6 +16,7 @@ import (
 
 type SessionController struct {
 	*controllers.BaseController
+	repository repositories.IUserRepository
 }
 
 func (s *SessionController) GetSignIn(ctx *gin.Context) {
@@ -31,6 +31,7 @@ func (s *SessionController) PostSignIn(ctx *gin.Context) {
 		res      = gin.H{}
 		remember bool
 	)
+	s.repository = repositories.NewUserRepository(ctx)
 	defer s.WriteJSON(ctx, res)
 	account := ctx.PostForm("account")
 	password := ctx.PostForm("password")
@@ -41,8 +42,7 @@ func (s *SessionController) PostSignIn(ctx *gin.Context) {
 	if ctx.PostForm("checkbox") != "" {
 		remember = true
 	}
-	service := services.NewUserService(ctx)
-	user, err := service.SignIn(account, password)
+	user, err := s.repository.SignIn(account, password)
 	if err != nil {
 		_ = seelog.Error(err)
 		res["message"] = "Your account not exist"
@@ -52,16 +52,14 @@ func (s *SessionController) PostSignIn(ctx *gin.Context) {
 		res["message"] = "Your account have been locked"
 		return
 	}
-	session := sessions.Default(ctx)
-	session.Clear()
+	
 	key, err := encrypt.EnCryptData(string(user.ID))
 	if err != nil {
 		_ = seelog.Error(err)
 		res["message"] = "Your account not exist"
 		return
 	}
-	session.Set(controllers.SESSION_KEY, key)
-	_ = session.Save()
+	_ = s.OperationSession(ctx, controllers.SESSION_KEY, key)
 	res["succeed"] = true
 	res["remember"] = remember
 	res["contentType"] = ctx.ContentType()
@@ -75,10 +73,7 @@ func (s *SessionController) LogoutGet(c *gin.Context) {
 	c.Redirect(http.StatusSeeOther, "/admin/signin")
 }
 
-func (s *SessionController) AuthGet(c *gin.Context) {
-
-}
-
+//修改密码功能
 func (s *SessionController) GetPassword(ctx *gin.Context) {
 	ctx.HTML(http.StatusOK, "auth/password.html", gin.H{
 		"title": "Wblog | Modify Your Password",
@@ -87,6 +82,7 @@ func (s *SessionController) GetPassword(ctx *gin.Context) {
 
 func (s *SessionController) ModifyPassword(ctx *gin.Context) {
 	path := "auth/modify_password.html"
+	s.repository = repositories.NewUserRepository(ctx)
 	hash := ctx.Param("hash")
 	email, err := encrypt.DeCryptData(hash, false)
 	if err != nil {
@@ -94,9 +90,7 @@ func (s *SessionController) ModifyPassword(ctx *gin.Context) {
 			"message": "Your Account is not exist",
 		})
 	}
-	service := services.NewUserService(ctx)
-	user, err := service.FindUserByEmail(email)
-	
+	user, err := s.repository.FirstUserByEmail(email)
 	if err != nil {
 		s.errorHandler(ctx, err, path, gin.H{
 			"message": "Your Account is not exist",
@@ -116,10 +110,10 @@ func (s *SessionController) ModifyPassword(ctx *gin.Context) {
 }
 
 func (s *SessionController) UpdatePassword(ctx *gin.Context) {
+	s.repository = repositories.NewUserRepository(ctx)
 	password := ctx.PostForm("password")
 	confirmPassword := ctx.PostForm("confirm_password")
 	email := ctx.PostForm("email")
-	fmt.Println(email)
 	h := gin.H{
 		"message": "Passwords entered twice are inconsistent",
 		"email":   email,
@@ -129,19 +123,16 @@ func (s *SessionController) UpdatePassword(ctx *gin.Context) {
 			"auth/modify_password.html", h)
 		return
 	}
-	
-	service := services.NewUserService(ctx)
-	_, err := service.FindUserByEmail(email)
+	_, err := s.repository.FirstUserByEmail(email)
 	if err != nil {
 		s.errorHandler(ctx, err, "auth/modify_password.html", h)
 		return
 	}
-	fmt.Println(password)
 	password, _ = encrypt.HashAndSalt(password)
 	var attr map[string]interface{}
 	attr = make(map[string]interface{}, 1)
 	attr["password"] = password
-	err = service.UpdateUser(attr)
+	err = s.repository.UpdateUserAttr(attr)
 	if err != nil {
 		s.errorHandler(ctx, err, "auth/modify_password.html", h)
 		return
@@ -151,6 +142,7 @@ func (s *SessionController) UpdatePassword(ctx *gin.Context) {
 
 //发送邮件or验证码
 func (s *SessionController) SendNotice(ctx *gin.Context) {
+	s.repository = repositories.NewUserRepository(ctx)
 	path := "auth/password.html"
 	email := ctx.PostForm("email")
 	if email == "" {
@@ -160,8 +152,7 @@ func (s *SessionController) SendNotice(ctx *gin.Context) {
 		return
 	}
 	message := gin.H{"message": "Your Account is not exist",}
-	service := services.NewUserService(ctx)
-	_, err := service.FindUserByEmail(email)
+	_, err := s.repository.FirstUserByEmail(email)
 	if err != nil {
 		s.errorHandler(ctx, err, path, message)
 		return
@@ -176,7 +167,7 @@ func (s *SessionController) SendNotice(ctx *gin.Context) {
 	attr = make(map[string]interface{}, 2)
 	attr["ModifyPasswordHash"] = modifyPasswordHash
 	attr["ModifyPasswordTime"] = time.Now()
-	err = service.UpdateUser(attr)
+	err = s.repository.UpdateUserAttr(attr)
 	if err != nil {
 		s.errorHandler(ctx, err, path, message)
 		return
