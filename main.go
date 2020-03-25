@@ -3,21 +3,22 @@ package main
 import (
 	"flag"
 	"github.com/cihub/seelog"
+	"github.com/gitlubtaotao/wblog/api"
 	"github.com/gitlubtaotao/wblog/database"
 	"github.com/gitlubtaotao/wblog/encrypt"
+	"github.com/gitlubtaotao/wblog/service"
+	"strconv"
+	
 	"github.com/gitlubtaotao/wblog/migration"
 	"github.com/gitlubtaotao/wblog/schedule"
-	"github.com/gitlubtaotao/wblog/services"
-	"strconv"
 	
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
-	"github.com/gitlubtaotao/wblog/controllers"
 	"github.com/gitlubtaotao/wblog/helpers"
 	"github.com/gitlubtaotao/wblog/system"
 	
-	"github.com/gitlubtaotao/wblog/crouter"
+	"github.com/gitlubtaotao/wblog/tools"
 	
 	"os"
 	"path/filepath"
@@ -61,10 +62,13 @@ func main() {
 	//获取静态资源文件
 	router.Static("/static", "./static")
 	//router.Static("/static", filepath.Join(getCurrentDirectory(), "./static"))
-	//路由不存在
+	
 	//注册路由
-	crouter.InitRouter(router)
-	router.Run(system.GetConfiguration().Addr)
+	tools.NewRoutes(router).InitRouter()
+	err = router.Run(system.GetConfiguration().Addr)
+	if err != nil {
+		panic(err)
+	}
 }
 
 //定义模版
@@ -105,13 +109,13 @@ func setSessions(router *gin.Engine) {
 func SharedData() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		session := sessions.Default(c)
-		if uID := session.Get(controllers.SESSION_KEY); uID != nil {
-			userString, err := encrypt.DeCryptData(uID.(string),true)
+		if uID := session.Get(api.SESSION_KEY); uID != nil {
+			userString, err := encrypt.DeCryptData(uID.(string), true)
 			intId, _ := strconv.ParseInt(userString, 10, 64)
-			user, err := services.NewUserService(c).GetUserByID(intId)
+			user, err := service.NewUserService().GetUserByID(intId)
 			if err == nil {
-				c.Set(controllers.CONTEXT_USER_KEY, user)
-			}else{
+				c.Set(api.CONTEXT_USER_KEY, user)
+			} else {
 				_ = seelog.Error(err)
 			}
 		}

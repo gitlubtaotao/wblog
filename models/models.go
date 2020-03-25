@@ -117,36 +117,36 @@ type SmmsFile struct {
 }
 
 type GithubUserInfo struct {
-	AvatarURL         string      `json:"avatar_url"`
-	Bio               interface{} `json:"bio"`
-	Blog              string      `json:"blog"`
-	Company           interface{} `json:"company"`
-	CreatedAt         string      `json:"created_at"`
-	Email             interface{} `gorm:"unique_index;default:null" json:"email"`
-	EventsURL         string      `json:"events_url"`
-	Followers         int         `json:"followers"`
-	FollowersURL      string      `json:"followers_url"`
-	Following         int         `json:"following"`
-	FollowingURL      string      `json:"following_url"`
-	GistsURL          string      `json:"gists_url"`
-	GravatarID        string      `gorm:"unique_index;default:null" json:"gravatar_id"`
-	Hireable          interface{} `json:"hireable"`
-	HTMLURL           string      `json:"html_url"`
-	ID                int         `json:"id"`
-	Location          interface{} `json:"location"`
-	Login             string      `gorm:"unique_index" json:"login"`
-	Name              interface{} `json:"name"`
-	OrganizationsURL  string      `json:"organizations_url"`
-	PublicGists       int         `json:"public_gists"`
-	PublicRepos       int         `json:"public_repos"`
-	ReceivedEventsURL string      `json:"received_events_url"`
-	ReposURL          string      `json:"repos_url"`
-	SiteAdmin         bool        `json:"site_admin"`
-	StarredURL        string      `json:"starred_url"`
-	SubscriptionsURL  string      `json:"subscriptions_url"`
-	Type              string      `json:"type"`
-	UpdatedAt         string      `json:"updated_at"`
-	URL               string      `gorm:"default:null" json:"url"`
+	AvatarURL         string `json:"avatar_url"`
+	Bio               string `json:"bio"`
+	Blog              string `json:"blog"`
+	Company           string `json:"company"`
+	CreatedAt         string `json:"created_at"`
+	Email             string `gorm:"unique_index;default:null" json:"email"`
+	EventsURL         string `json:"events_url"`
+	Followers         int    `json:"followers"`
+	FollowersURL      string `json:"followers_url"`
+	Following         int    `json:"following"`
+	FollowingURL      string `json:"following_url"`
+	GistsURL          string `json:"gists_url"`
+	GravatarID        string `gorm:"unique_index;default:null" json:"gravatar_id"`
+	Hireable          string `json:"hireable"`
+	HTMLURL           string `json:"html_url"`
+	ID                int    `json:"id"`
+	Location          string `json:"location"`
+	Login             string `gorm:"unique_index" json:"login"`
+	Name              string `json:"name"`
+	OrganizationsURL  string `json:"organizations_url"`
+	PublicGists       int    `json:"public_gists"`
+	PublicRepos       int    `json:"public_repos"`
+	ReceivedEventsURL string `json:"received_events_url"`
+	ReposURL          string `json:"repos_url"`
+	SiteAdmin         bool   `json:"site_admin"`
+	StarredURL        string `json:"starred_url"`
+	SubscriptionsURL  string `json:"subscriptions_url"`
+	Type              string `json:"type"`
+	UpdatedAt         string `json:"updated_at"`
+	URL               string `gorm:"default:null" json:"url"`
 }
 
 var DB *gorm.DB

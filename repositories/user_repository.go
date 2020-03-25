@@ -1,13 +1,13 @@
 package repositories
 
 import (
-"errors"
-"github.com/gin-gonic/gin"
-"github.com/gitlubtaotao/wblog/encrypt"
-"github.com/gitlubtaotao/wblog/helpers"
-"github.com/gitlubtaotao/wblog/models"
-"github.com/gitlubtaotao/wblog/services"
-"time"
+	"errors"
+	"github.com/gin-gonic/gin"
+	"github.com/gitlubtaotao/wblog/encrypt"
+	"github.com/gitlubtaotao/wblog/helpers"
+	"github.com/gitlubtaotao/wblog/models"
+	"github.com/gitlubtaotao/wblog/service"
+	"time"
 )
 
 type IUserRepository interface {
@@ -18,12 +18,12 @@ type IUserRepository interface {
 }
 
 type UserRepository struct {
-	userService services.IUserService
+	userService service.IUserService
 	Ctx         *gin.Context
 }
 
 func NewUserRepository(ctx *gin.Context) IUserRepository {
-	return &UserRepository{Ctx: ctx, userService: services.NewUserService()}
+	return &UserRepository{Ctx: ctx, userService: service.NewUserService()}
 }
 
 //系统后台进行注册
@@ -75,6 +75,6 @@ func (u *UserRepository) FirstUserByEmail(email string) (models.User, error) {
 	return u.userService.FindUserByEmail(email)
 }
 
-func (u *UserRepository) UpdateUserAttr(attr map[string]interface{}) error {
+func (u *UserRepository)UpdateUserAttr(attr map[string]interface{}) error  {
 	return u.userService.UpdateUserAttr(attr)
 }

@@ -7,11 +7,12 @@ import (
 	oauth "github.com/alimoeeny/gooauth2"
 	"github.com/gin-gonic/gin"
 	"github.com/gitlubtaotao/wblog/models"
-	"github.com/gitlubtaotao/wblog/services"
+	"github.com/gitlubtaotao/wblog/service"
 	"github.com/gitlubtaotao/wblog/system"
 	"io/ioutil"
 	"net/http"
 )
+
 
 type IAuthRepository interface {
 	GitHubAccessURL(uuid string) (url string)
@@ -20,12 +21,12 @@ type IAuthRepository interface {
 	GithubUserCreate(github *models.GithubUserInfo) (*models.User, error)
 	GithubUserBing(sessionUser interface{}, githubUser *models.GithubUserInfo)(user *models.User, err error)
 }
-
+//
 type AuthRepository struct {
-	gitHubService services.IGitHubService
+	gitHubService service.IAuthService
 	Ctx           *gin.Context
 }
-
+//
 func NewAuthRepository() IAuthRepository {
 	return &AuthRepository{}
 }
@@ -77,7 +78,7 @@ func (a *AuthRepository) GithubUserInfoByAccessToken(token string) (*models.Gith
 }
 
 func (a *AuthRepository) GithubUserBing(sessionUser interface{}, githubUser *models.GithubUserInfo) (user *models.User, err error) {
-	service := services.NewUserService()
+	service := service.NewUserService()
 	user, _ = sessionUser.(*models.User)
 	_ = service.SetModel(user)
 	var attr map[string]interface{}
@@ -99,7 +100,7 @@ func (a *AuthRepository) GithubUserBing(sessionUser interface{}, githubUser *mod
 
 //通过github auth进行用户的创建
 func (a *AuthRepository) GithubUserCreate(github *models.GithubUserInfo) (user *models.User, err error) {
-	service := services.NewUserService()
+	service := service.NewUserService()
 	user = &models.User{
 		GithubLoginId: github.Login,
 		AvatarUrl:     github.AvatarURL,
