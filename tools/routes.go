@@ -1,7 +1,6 @@
 package tools
 
 import (
-	"fmt"
 	"github.com/cihub/seelog"
 	"github.com/gin-gonic/gin"
 	"github.com/gitlubtaotao/wblog/api"
@@ -174,8 +173,6 @@ func authRequired() gin.HandlerFunc {
 //AuthRequired grants access to authenticated users, requires SharedData middleware
 func AdminScopeRequired() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		ss, _ := c.Get(api.CONTEXT_USER_KEY)
-		fmt.Println("3333",ss)
 		if user, _ := c.Get(api.CONTEXT_USER_KEY); user != nil {
 			if u, ok := user.(*models.User); ok && u.IsAdmin {
 				c.Next()

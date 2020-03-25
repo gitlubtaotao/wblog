@@ -12,11 +12,11 @@ type AuthService struct {
 	Model *models.GithubUserInfo
 }
 
-func NewGitHubService() IAuthService {
+func NewAuthService() IAuthService {
 	return &AuthService{}
 }
 
 func (g *AuthService)FirstOrCreate(github *models.GithubUserInfo) (*models.GithubUserInfo, error){
-	err := database.DBCon.FirstOrCreate(github, "login = ?", github.Login).Error
+	err := database.DBCon.Where(models.GithubUserInfo{Login: github.Login}).Attrs(github).FirstOrCreate(&github).Error
 	return github, err
 }

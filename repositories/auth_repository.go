@@ -11,24 +11,26 @@ import (
 	"github.com/gitlubtaotao/wblog/system"
 	"io/ioutil"
 	"net/http"
+	"time"
 )
-
 
 type IAuthRepository interface {
 	GitHubAccessURL(uuid string) (url string)
 	GitHubExchangeTokenByCode(code string) (accessToken string, err error)
 	GithubUserInfoByAccessToken(token string) (*models.GithubUserInfo, error)
 	GithubUserCreate(github *models.GithubUserInfo) (*models.User, error)
-	GithubUserBing(sessionUser interface{}, githubUser *models.GithubUserInfo)(user *models.User, err error)
+	GithubUserBing(sessionUser interface{}, githubUser *models.GithubUserInfo) (user *models.User, err error)
 }
+
 //
 type AuthRepository struct {
 	gitHubService service.IAuthService
 	Ctx           *gin.Context
 }
+
 //
 func NewAuthRepository() IAuthRepository {
-	return &AuthRepository{}
+	return &AuthRepository{gitHubService: service.NewAuthService()}
 }
 
 func (a *AuthRepository) GitHubAccessURL(uuid string) (url string) {
@@ -100,17 +102,19 @@ func (a *AuthRepository) GithubUserBing(sessionUser interface{}, githubUser *mod
 
 //通过github auth进行用户的创建
 func (a *AuthRepository) GithubUserCreate(github *models.GithubUserInfo) (user *models.User, err error) {
-	service := service.NewUserService()
+	userService := service.NewUserService()
 	user = &models.User{
 		GithubLoginId: github.Login,
 		AvatarUrl:     github.AvatarURL,
 		GithubUrl:     github.HTMLURL,
+		Email:         github.Email,
+		OutTime:       time.Now().AddDate(0, 0, 4),
 	}
-	_ = service.SetModel(user)
-	user, err = service.FirstOrCreate(user)
+	_ = userService.SetModel(user)
+	user, err = userService.FirstOrCreate(user)
 	if err != nil {
 		return nil, err
 	}
 	github, err = a.gitHubService.FirstOrCreate(github)
-	return
+	return user,err
 }

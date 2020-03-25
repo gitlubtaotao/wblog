@@ -67,7 +67,7 @@ func (u *UserService) UpdateUserAttr(attr map[string]interface{}) error {
 }
 
 func (u *UserService) FirstOrCreate(user *models.User) (*models.User, error) {
-	err := database.DBCon.FirstOrCreate(user, "github_login_id = ?", user.GithubLoginId).Error
+	err := database.DBCon.Where(models.User{GithubLoginId: user.GithubLoginId}).Attrs(user).FirstOrCreate(&user).Error
 	return user, err
 }
 
