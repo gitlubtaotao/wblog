@@ -74,14 +74,14 @@ func main() {
 //定义模版
 func setTemplate(engine *gin.Engine) {
 	funcMap := template.FuncMap{
-		"dateFormat": helpers.DateFormat,
-		"substring":  helpers.Substring,
-		"isOdd":      helpers.IsOdd,
-		"isEven":     helpers.IsEven,
+		"dateFormat": tools.DateFormat,
+		"substring":  tools.Substring,
+		"isOdd":      tools.IsOdd,
+		"isEven":     tools.IsEven,
 		"truncate":   helpers.Truncate,
-		"add":        helpers.Add,
-		"minus":      helpers.Minus,
-		"listtag":    helpers.ListTag,
+		"add":        tools.Add,
+		"minus":      tools.Minus,
+		"listtag":    tools.ListTag,
 	}
 	engine.SetFuncMap(funcMap)
 	//engine.LoadHTMLGlob(filepath.Join(getCurrentDirectory(), "./views/**/*"))
