@@ -2,27 +2,17 @@
     <!DOCTYPE html>
     <html lang="zh-CN">
     <head>
-        {{template "admin/start.html" .}}
-        <link rel="stylesheet" href="/static/libs/datatables.net-bs/css/dataTables.bootstrap.min.css">
+        {{template "layouts/header.html" .}}
         <title>Wblog - Dartboard</title>
     </head>
     <body class="hold-transition skin-blue sidebar-mini">
     <div class="wrapper">
-        {{template "admin/navbar.html" .}}
-        {{template "admin/sidebar.html" .}}
+        {{template "layouts/navbar.html" .}}
+        {{template "layouts/sidebar.html" .}}
         <!-- Content Wrapper. Contains page content -->
         <div class="content-wrapper">
             <!-- Content Header (Page header) -->
-            <section class="content-header">
-                <h1>
-                    Dashboard
-                    <small>Version 2.0</small>
-                </h1>
-                <ol class="breadcrumb">
-                    <li><a href="/admin/index"><i class="fa fa-dashboard"></i> Home</a></li>
-                    <li class="active">Dashboard</li>
-                </ol>
-            </section>
+            {{template "layouts/section.html" .}}
             <!-- Main content -->
             <section class="content">
                 <!-- Info boxes -->
@@ -91,6 +81,9 @@
             <!-- /.content -->
         </div>
         <!-- /.content-wrapper -->
-
-        {{template "admin/page_end.html"}}
+    </div>
+    {{template "layouts/footer.html"}}
+    <script src="/static/libs/AdminLTE/js/pages/dashboard2.js"></script>
+    </body>
+    </html>
 {{end}}

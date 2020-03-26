@@ -1,8 +1,10 @@
 package api
 
 import (
+	"errors"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"github.com/gitlubtaotao/wblog/models"
 	"net/http"
 )
 
@@ -42,7 +44,6 @@ func (b *BaseApi) OperationSession(ctx *gin.Context, Key string, value interface
 	return session.Save()
 }
 
-
 func (b *BaseApi) GetSessionValue(ctx *gin.Context, key string, isDelete bool) (value interface{}, err error) {
 	session := sessions.Default(ctx)
 	value = session.Get(key)
@@ -53,8 +54,22 @@ func (b *BaseApi) GetSessionValue(ctx *gin.Context, key string, isDelete bool) (
 	return value, nil
 }
 
-func (b *BaseApi)HandleMessage(c *gin.Context, message string) {
+func (b *BaseApi) HandleMessage(c *gin.Context, message string) {
 	c.HTML(http.StatusNotFound, "errors/error.html", gin.H{
 		"message": message,
 	})
+	c.Abort()
+}
+
+func (b *BaseApi) CurrentUser(c *gin.Context) (*models.User, error) {
+	sessionUser, exists := c.Get(CONTEXT_USER_KEY)
+	if !exists {
+		return nil, errors.New("current user is not exist")
+	}
+	
+	user, ok := sessionUser.(*models.User)
+	if !ok {
+		return nil, errors.New("server interval error")
+	}
+	return user, nil
 }

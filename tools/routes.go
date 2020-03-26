@@ -20,7 +20,7 @@ func NewRoutes(engine *gin.Engine) *Routes {
 }
 
 //初始化路由
-func (r *Routes)InitRouter() {
+func (r *Routes) InitRouter() {
 	r.indexInit()
 	r.signUp()
 	r.signInAndOut()
@@ -32,7 +32,7 @@ func (r *Routes)InitRouter() {
 }
 
 //captchaRoute
-func (r *Routes)captchaRoute() {
+func (r *Routes) captchaRoute() {
 	controller := new(api.CaptchaController)
 	r.engine.GET("/getCaptcha", controller.GetCaptcha)
 	r.engine.GET("/verifyCaptcha", controller.VerifyCaptcha)
@@ -40,14 +40,14 @@ func (r *Routes)captchaRoute() {
 	r.engine.GET("/captcha", controller.Captcha)
 }
 
-func (r *Routes)indexInit() {
+func (r *Routes) indexInit() {
 	r.engine.NoRoute(api.Handle404)
 	r.engine.GET("/", client.Index)
 	r.engine.GET("/index", client.Index)
 	r.engine.GET("/rss", api.RssGet)
 }
 
-func (r *Routes)signUp() {
+func (r *Routes) signUp() {
 	if system.GetConfiguration().SignupEnabled {
 		r.engine.GET("/admin/signup", new(admin.RegisterApi).SignUpGet)
 		r.engine.POST("admin/signup", new(admin.RegisterApi).SignUpPost)
@@ -55,7 +55,7 @@ func (r *Routes)signUp() {
 }
 
 //登录和退出
-func (r *Routes)signInAndOut() {
+func (r *Routes) signInAndOut() {
 	session := admin.SessionApi{}
 	auth := api.AuthController{}
 	r.engine.GET("/admin/signin", session.GetSignIn)
@@ -70,7 +70,7 @@ func (r *Routes)signInAndOut() {
 	r.engine.POST("/password/sendNotice", session.SendNotice)
 }
 
-func (r *Routes)visitorRouter() {
+func (r *Routes) visitorRouter() {
 	visitor := r.engine.Group("/visitor")
 	visitor.Use(authRequired())
 	{
@@ -80,14 +80,14 @@ func (r *Routes)visitorRouter() {
 }
 
 //订阅者访问
-func (r *Routes)subscriberRouter() {
+func (r *Routes) subscriberRouter() {
 	r.engine.GET("/subscribe", api.SubscribeGet)
 	r.engine.POST("/subscribe", api.Subscribe)
 	r.engine.GET("/active", api.ActiveSubscriber)
 	r.engine.GET("/unsubscribe", api.UnSubscribe)
 }
 
-func (r *Routes)otherRouter() {
+func (r *Routes) otherRouter() {
 	r.engine.GET("/page/:id", api.PageGet)
 	r.engine.GET("/post/:id", admin.PostGet)
 	r.engine.GET("/tag/:tag", api.TagGet)
@@ -96,7 +96,7 @@ func (r *Routes)otherRouter() {
 }
 
 //后台路由
-func (r *Routes)adminRouter() {
+func (r *Routes) adminRouter() {
 	authorized := r.engine.Group("/admin")
 	authorized.Use(AdminScopeRequired())
 	{
@@ -122,14 +122,15 @@ func (r *Routes)adminRouter() {
 		authorized.POST("/post/:id/delete", post.Delete)
 		// tag
 		authorized.POST("/new_tag", api.TagCreate)
-		authorized.GET("/user", api.UserIndex)
-		authorized.POST("/user/:id/lock", api.UserLock)
+		authorized.GET("/user", admin.UserIndex)
+		authorized.POST("/user/:id/lock", admin.UserLock)
 		// profile
-		authorized.GET("/profile", api.ProfileGet)
-		authorized.POST("/profile", api.ProfileUpdate)
-		authorized.POST("/profile/email/bind", api.BindEmail)
-		authorized.POST("/profile/email/unbind", api.UnbindEmail)
-		authorized.POST("/profile/github/unbind", api.UnbindGithub)
+		user := &admin.UserApi{}
+		authorized.GET("/user/profile", user.ProfileGet)
+		authorized.POST("/profile", admin.ProfileUpdate)
+		authorized.POST("/profile/email/bind", admin.BindEmail)
+		authorized.POST("/profile/email/unbind", admin.UnbindEmail)
+		authorized.POST("/profile/github/unbind", admin.UnbindGithub)
 		
 		// subscriber
 		authorized.GET("/subscriber", api.SubscriberIndex)
