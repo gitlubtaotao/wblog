@@ -15,17 +15,9 @@ type UserApi struct {
 }
 
 func (u *UserApi) ProfileGet(ctx *gin.Context) {
-	currentUser, err := u.CurrentUser(ctx)
-	if err != nil {
-		u.HandleMessage(ctx, err.Error())
-		return
-	}
-	ctx.HTML(http.StatusOK, "user/profile.html", gin.H{
-		"user":     currentUser,
-	})
+	user, _ := ctx.Get(api.CONTEXT_USER_KEY)
+	u.RenderHtml(ctx, "user/show.html", u.RenderComments(gin.H{"user": user,}))
 }
-
-
 
 func ProfileUpdate(c *gin.Context) {
 	var (
@@ -132,7 +124,7 @@ func UnbindGithub(c *gin.Context) {
 func UserIndex(c *gin.Context) {
 	users, _ := models.ListUsers()
 	user, _ := c.Get(api.CONTEXT_USER_KEY)
-	c.HTML(http.StatusOK, "admin/user.html", gin.H{
+	c.HTML(http.StatusOK, "user/index.html", gin.H{
 		"users":    users,
 		"user":     user,
 		"comments": models.MustListUnreadComment(),

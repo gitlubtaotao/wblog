@@ -14,7 +14,6 @@
     <script src="bower_components/fastclick/lib/fastclick.js"></script>
     AdminLTE App -->
     <script src="/static/libs/AdminLTE/js/adminlte.min.js"></script>
-    <script src="/static/libs/AdminLTE/js/pages/dashboard2.js"></script>
     <script src="/static/libs/AdminLTE/js/demo.js"></script>
     <!-- Sparkline --
     <script src="bower_components/jquery-sparkline/dist/jquery.sparkline.min.js"></script>-->
@@ -23,20 +22,5 @@
     <!-- ChartJS --
     <script src="bower_components/Chart.js/Chart.js"></script>-->
     <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
-
-    <script>
-        $(document).ready(function () {
-            $(".readcomment").on("click",function(e){
-                $.post($(e.target).data("href"),{},function(result){
-                    window.location.href = $(e.target).data("redirect");
-                },'json');
-            });
-
-            $(".readall").on("click",function (e) {
-                $.post("/admin/read_all",{},function(result){
-                    window.location.href = window.location.href;
-                },"json");
-            });
-        });
-    </script>
+    <script src="/static/libs/page_assets/footer.js"></script>
 {{end}}

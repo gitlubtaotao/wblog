@@ -5,6 +5,7 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/gitlubtaotao/wblog/models"
+	"github.com/gitlubtaotao/wblog/repositories"
 	"net/http"
 )
 
@@ -34,6 +35,14 @@ func (b *BaseApi) WriteJSON(ctx *gin.Context, h gin.H) {
 func (b *BaseApi) RenderHtml(ctx *gin.Context, path string, h gin.H) {
 	ctx.HTML(http.StatusOK, path, h)
 	ctx.Abort()
+}
+
+//handler render html comments
+
+func (b *BaseApi) RenderComments(h gin.H) gin.H {
+	repository := repositories.NewCommentRepository()
+	h["comments"], _ = repository.MustListUnreadComment()
+	return h
 }
 
 //操作对于的session

@@ -1,11 +1,11 @@
-{{define "user/profile.html"}}
+{{define "user/show.html"}}
     <!DOCTYPE html>
     <html lang="zh-CN">
     <head>
         {{template "layouts/header.html" .}}
         <title>Wblog - Profile</title>
     </head>
-    <body content="hold-transition skin-blue sidebar-mini">
+    <body class="hold-transition skin-blue sidebar-mini">
     <!-- Content Wrapper. Contains page content -->
     <div class="wrapper">
         {{template "layouts/navbar.html" .}}
@@ -89,19 +89,23 @@
     </body>
     </html>
     <script type="text/javascript">
-        function bindEmail() {
-        }
+        $(document).ready(function () {
 
-        function bindGithub() {
-        }
 
-        function unbindGithub() {
-            $.post("/admin/profile/github/unbind", {}, function (result) {
-                if (result.succeed) {
-                    window.location.reload(true)
-                }
-            }, 'json');
-        }
+            function bindEmail() {
+            }
+
+            function bindGithub() {
+            }
+
+            function unbindGithub() {
+                $.post("/admin/profile/github/unbind", {}, function (result) {
+                    if (result.succeed) {
+                        window.location.reload(true)
+                    }
+                }, 'json');
+            }
+        });
     </script>
 
 {{end}}
