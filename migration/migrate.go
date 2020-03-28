@@ -13,4 +13,6 @@ func Migrate() {
 	database.DBCon.Model(&models.PostTag{}).AddUniqueIndex("uk_post_tag", "post_id", "tag_id")
 	
 	database.DBCon.Model(&models.Post{}).ModifyColumn("body", "text")
+	database.DBCon.Model(&models.GithubUserInfo{}).AddIndex("github_user_id","user_id")
+	
 }

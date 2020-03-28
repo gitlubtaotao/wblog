@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"github.com/cihub/seelog"
 	"github.com/gin-gonic/gin"
 	"github.com/gitlubtaotao/wblog/api"
 	"github.com/gitlubtaotao/wblog/models"
@@ -16,7 +17,16 @@ type UserApi struct {
 
 func (u *UserApi) ProfileGet(ctx *gin.Context) {
 	user, _ := ctx.Get(api.CONTEXT_USER_KEY)
-	u.RenderHtml(ctx, "user/show.html", u.RenderComments(gin.H{"user": user,}))
+	repository := repositories.NewUserRepository(ctx)
+	u.repository = repository
+	tempUser, ok := user.(*models.User)
+	if ok {
+		err := u.repository.ReloadGithub(tempUser)
+		if err != nil {
+			_ = seelog.Critical(err)
+		}
+	}
+	u.RenderHtml(ctx, "user/show.html", u.RenderComments(gin.H{"user": tempUser,}))
 }
 
 func ProfileUpdate(c *gin.Context) {

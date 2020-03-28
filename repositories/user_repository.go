@@ -15,6 +15,7 @@ type IUserRepository interface {
 	SignIn(account string, password string) (user *models.User, err error)
 	FirstUserByEmail(email string) (models.User, error)
 	UpdateUserAttr(attr map[string]interface{}) error
+	ReloadGithub(user *models.User) (err error)
 }
 
 type UserRepository struct {
@@ -75,6 +76,10 @@ func (u *UserRepository) FirstUserByEmail(email string) (models.User, error) {
 	return u.userService.FindUserByEmail(email)
 }
 
-func (u *UserRepository)UpdateUserAttr(attr map[string]interface{}) error  {
+func (u *UserRepository) UpdateUserAttr(attr map[string]interface{}) error {
 	return u.userService.UpdateUserAttr(attr)
+}
+
+func (u *UserRepository) ReloadGithub(user *models.User)(err error) {
+	return u.userService.ReloadGithub(user)
 }

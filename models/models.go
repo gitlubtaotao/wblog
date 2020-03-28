@@ -60,6 +60,7 @@ type User struct {
 	LockState          bool      `gorm:"default:'0'"`                //锁定状态
 	ModifyPasswordHash string    `gorm:"default:null"`
 	ModifyPasswordTime time.Time `gorm:"default:'0000-00-00 00:00:00'"`
+	GithubUserInfo     GithubUserInfo
 }
 
 // table comments
@@ -147,6 +148,7 @@ type GithubUserInfo struct {
 	Type              string `json:"type"`
 	UpdatedAt         string `json:"updated_at"`
 	URL               string `gorm:"default:null" json:"url"`
+	UserID            uint
 }
 
 var DB *gorm.DB

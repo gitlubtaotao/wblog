@@ -16,6 +16,7 @@ type IUserService interface {
 	GetModel() (*models.User, error)
 	SetModel(user *models.User) error
 	FindUserAll(attr map[string]interface{}) ([]*models.User, error)
+	ReloadGithub(user *models.User) error
 }
 type UserService struct {
 	Model *models.User
@@ -79,4 +80,9 @@ func (u *UserService) GetModel() (*models.User, error) {
 func (u *UserService) SetModel(user *models.User) error {
 	u.Model = user
 	return nil
+}
+
+//reloadGithub: 加载github
+func (u *UserService) ReloadGithub(user *models.User) error {
+	return database.DBCon.Model(&user).Related(&user.GithubUserInfo).Error
 }
