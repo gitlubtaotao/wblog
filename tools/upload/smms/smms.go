@@ -1,20 +1,18 @@
-package api
+package smms
 
 import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"github.com/gitlubtaotao/wblog/models"
+	"github.com/gitlubtaotao/wblog/system"
 	"io"
 	"io/ioutil"
 	"mime/multipart"
 	"net/http"
-
-	"github.com/gitlubtaotao/wblog/models"
-
-	"github.com/gitlubtaotao/wblog/system"
 )
 
-type SmmsUploader struct {
+type Uploader struct {
 }
 
 type SmmsRet struct {
@@ -33,7 +31,7 @@ type SmmsRet struct {
 	} `json:"data"`
 }
 
-func (u SmmsUploader) upload(file multipart.File, fileHeader *multipart.FileHeader) (url string, err error) {
+func (u Uploader) Upload(file multipart.File, fileHeader *multipart.FileHeader) (url string,key string, err error) {
 	var (
 		resp      *http.Response
 		bodyBytes []byte
@@ -51,7 +49,7 @@ func (u SmmsUploader) upload(file multipart.File, fileHeader *multipart.FileHead
 		return
 	}
 	bodyWriter.Close()
-
+	
 	resp, err = http.Post(system.GetConfiguration().SmmsFileServer, bodyWriter.FormDataContentType(), bodyBuf)
 	if err != nil {
 		return

@@ -1,21 +1,18 @@
 package api
 
 import (
-	"bytes"
-	"context"
 	"fmt"
+	"github.com/gitlubtaotao/wblog/tools/upload/qiniu"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
-
+	
 	"github.com/cihub/seelog"
 	"github.com/gin-gonic/gin"
 	"github.com/gitlubtaotao/wblog/helpers"
 	"github.com/gitlubtaotao/wblog/system"
 	"github.com/pkg/errors"
-	"github.com/qiniu/api.v7/auth/qbox"
-	"github.com/qiniu/api.v7/storage"
 )
 
 func BackupPost(c *gin.Context) {
@@ -47,14 +44,14 @@ func RestorePost(c *gin.Context) {
 		res["message"] = "fileName cannot be empty."
 		return
 	}
-	fileUrl = system.GetConfiguration().QiniuFileServer + fileName
+	upload := qiniu.NewUploaderDefault()
+	fileUrl = upload.PublicReadUrl(fileName)
 	resp, err = http.Get(fileUrl)
 	if err != nil {
 		res["message"] = err.Error()
 		return
 	}
 	defer resp.Body.Close()
-
 	bodyBytes, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
 		res["message"] = err.Error()
@@ -73,11 +70,11 @@ func RestorePost(c *gin.Context) {
 	res["succeed"] = true
 }
 
+//备份
 func Backup() (err error) {
 	var (
 		u           *url.URL
 		exist       bool
-		ret         PutRet
 		bodyBytes   []byte
 		encryptData []byte
 	)
@@ -103,22 +100,13 @@ func Backup() (err error) {
 		seelog.Error(err)
 		return
 	}
-
-	putPolicy := storage.PutPolicy{
-		Scope: system.GetConfiguration().QiniuBucket,
-	}
-	mac := qbox.NewMac(system.GetConfiguration().QiniuAccessKey, system.GetConfiguration().QiniuSecretKey)
-	token := putPolicy.UploadToken(mac)
-	cfg := storage.Config{}
-	uploader := storage.NewFormUploader(&cfg)
-	putExtra := storage.PutExtra{}
-
-	fileName := fmt.Sprintf("wblog_%s.db", helpers.GetCurrentTime().Format("20060102150405"))
-	err = uploader.Put(context.Background(), &ret, token, fileName, bytes.NewReader(encryptData), int64(len(encryptData)), &putExtra)
+	uploader := qiniu.NewUploaderDefault()
+	url,_, err := uploader.ByteUpload(encryptData, fmt.Sprintf("wblog_%s.db", helpers.GetCurrentTime().Format("20060102150405")))
 	if err != nil {
 		seelog.Debugf("backup error:%v", err)
 		return
 	}
 	seelog.Debug("backup succeefully.")
+	fmt.Println(url)
 	return err
 }

@@ -21,7 +21,7 @@ require (
 	github.com/microcosm-cc/bluemonday v1.0.2
 	github.com/pkg/errors v0.9.1
 	github.com/qiniu/api.v7 v7.2.5+incompatible
-	github.com/qiniu/x v7.0.8+incompatible // indirect
+	github.com/qiniu/x v7.0.8+incompatible
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
 	github.com/snluu/uuid v0.0.0-20130306162636-1dd34a9ad6c0
 	golang.org/x/crypto v0.0.0-20191205180655-e7c4368fe9dd
