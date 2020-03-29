@@ -1,24 +1,42 @@
 package api
 
 import (
+	"github.com/cihub/seelog"
+	"github.com/gitlubtaotao/wblog/repositories"
 	"net/http"
 	"strconv"
-
+	
 	"github.com/gin-gonic/gin"
 	"github.com/gitlubtaotao/wblog/models"
 )
 
-func LinkIndex(c *gin.Context) {
-	links, _ := models.ListLinks()
-	user, _ := c.Get(CONTEXT_USER_KEY)
-	c.HTML(http.StatusOK, "admin/link.html", gin.H{
-		"links":    links,
-		"user":     user,
-		"comments": models.MustListUnreadComment(),
-	})
+type LinkApi struct {
+	*BaseApi
 }
 
-func LinkCreate(c *gin.Context) {
+func (l *LinkApi) Index(ctx *gin.Context) {
+	repository := repositories.NewLinkRepository(ctx)
+	var columns []string
+	links, err := repository.ListAllLink(columns)
+	if err != nil {
+		_ = seelog.Critical(err)
+		l.HandleMessage(ctx, "service is inter error")
+	}
+	user, err := l.CurrentUser(ctx)
+	if err != nil {
+		_ = seelog.Critical(err)
+		l.HandleMessage(ctx, err.Error())
+		return
+	}
+	ctx.HTML(http.StatusOK, "admin/link.html", l.RenderComments(gin.H{
+		"links": links,
+		"user":  user,
+	}))
+}
+
+
+
+func (l *LinkApi)LinkCreate(c *gin.Context) {
 	var (
 		err   error
 		res   = gin.H{}
@@ -50,7 +68,7 @@ func LinkCreate(c *gin.Context) {
 	res["succeed"] = true
 }
 
-func LinkUpdate(c *gin.Context) {
+func (l *LinkApi)LinkUpdate(c *gin.Context) {
 	var (
 		_id   uint64
 		_sort int64
@@ -90,7 +108,7 @@ func LinkUpdate(c *gin.Context) {
 	res["succeed"] = true
 }
 
-func LinkGet(c *gin.Context) {
+func (l *LinkApi)LinkGet(c *gin.Context) {
 	id := c.Param("id")
 	_id, _ := strconv.ParseInt(id, 10, 64)
 	link, err := models.GetLinkById(uint(_id))
@@ -103,7 +121,7 @@ func LinkGet(c *gin.Context) {
 	c.Redirect(http.StatusFound, link.Url)
 }
 
-func LinkDelete(c *gin.Context) {
+func (l *LinkApi)LinkDelete(c *gin.Context) {
 	var (
 		err error
 		_id uint64
@@ -116,7 +134,7 @@ func LinkDelete(c *gin.Context) {
 		res["message"] = err.Error()
 		return
 	}
-
+	
 	link := new(models.Link)
 	link.ID = uint(_id)
 	err = link.Delete()

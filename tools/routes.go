@@ -92,7 +92,8 @@ func (r *Routes) otherRouter() {
 	r.engine.GET("/post/:id", admin.PostGet)
 	r.engine.GET("/tag/:tag", api.TagGet)
 	r.engine.GET("/archives/:year/:month", api.ArchiveGet)
-	r.engine.GET("/link/:id", api.LinkGet)
+	link := api.LinkApi{}
+	r.engine.GET("/link/:id", link.LinkGet)
 }
 
 //后台路由
@@ -140,10 +141,11 @@ func (r *Routes) adminRouter() {
 		authorized.POST("/subscriber", api.SubscriberPost)
 		
 		// link
-		authorized.GET("/link", api.LinkIndex)
-		authorized.POST("/new_link", api.LinkCreate)
-		authorized.POST("/link/:id/edit", api.LinkUpdate)
-		authorized.POST("/link/:id/delete", api.LinkDelete)
+		link := &api.LinkApi{}
+		authorized.GET("/link", link.Index)
+		authorized.POST("/new_link", link.LinkCreate)
+		authorized.POST("/link/:id/edit", link.LinkUpdate)
+		authorized.POST("/link/:id/delete", link.LinkDelete)
 		// comment
 		authorized.POST("/comment/:id", api.CommentRead)
 		authorized.POST("/read_all", api.CommentReadAll)
