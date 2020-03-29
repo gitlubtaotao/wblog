@@ -88,8 +88,8 @@ func (a *AuthRepository) GithubUserBing(sessionUser interface{}, githubUser *mod
 	attr["github_login_id"] = githubUser.Login
 	attr["id"] = user.ID
 	//没有进行绑定，可以进行绑定操作
-	_, err = service.FindUserAll(attr)
-	if err != nil {
+	users, _ := service.FindUserAll(attr)
+	if len(users) == 0 {
 		user.GithubLoginId = githubUser.Login
 		user.AvatarUrl = githubUser.AvatarURL
 		user.GithubUrl = githubUser.HTMLURL
@@ -116,5 +116,5 @@ func (a *AuthRepository) GithubUserCreate(github *models.GithubUserInfo) (user *
 		return nil, err
 	}
 	github, err = a.gitHubService.FirstOrCreate(github)
-	return user,err
+	return user, err
 }

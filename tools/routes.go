@@ -57,7 +57,7 @@ func (r *Routes) signUp() {
 //登录和退出
 func (r *Routes) signInAndOut() {
 	session := admin.SessionApi{}
-	auth := api.AuthController{}
+	auth := api.AuthApi{}
 	r.engine.GET("/admin/signin", session.GetSignIn)
 	r.engine.POST("/admin/signin", session.PostSignIn)
 	r.engine.GET("/logout", session.LogoutGet)
@@ -128,9 +128,10 @@ func (r *Routes) adminRouter() {
 		user := &admin.UserApi{}
 		authorized.GET("/user/profile", user.ProfileGet)
 		authorized.POST("/profile", admin.ProfileUpdate)
-		authorized.POST("/profile/email/bind", admin.BindEmail)
-		authorized.POST("/profile/email/unbind", admin.UnbindEmail)
-		authorized.POST("/profile/github/unbind", admin.UnbindGithub)
+		auth := api.AuthApi{}
+		authorized.POST("/profile/email/bind", auth.BindEmail)
+		authorized.POST("/profile/email/unbind", auth.UnbindEmail)
+		authorized.POST("/profile/github/unbind", auth.UnbindGithub)
 		
 		// subscriber
 		authorized.GET("/subscriber", api.SubscriberIndex)

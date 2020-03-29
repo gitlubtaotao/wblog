@@ -38,17 +38,20 @@
                                     <div class="form-group">
                                         <label for="inputEmail3" class="col-sm-3 control-label">Email</label>
                                         {{if gt (len .user.Email) 0}}
-                                            <div class="col-sm-6">
+                                            <div class="col-sm-4">
                                                 <input type="email" class="form-control" id="inputEmail3"
                                                        value="{{.user.Email}}" readonly placeholder="Email">
                                             </div>
+                                            <div class="col-sm-2">
+                                                <button id="unbind_email" class="btn btn-primary ">解绑</button>
+                                            </div>
                                         {{else}}
-                                            <div class="col-sm-6">
+                                            <div class="col-sm-4">
                                                 <input type="email" class="form-control" id="inputEmail3"
                                                        placeholder="Email">
                                             </div>
-                                            <div class="col-sm-4">
-                                                <a href="#" class="btn btn-primary" onclick="bindEmail();">绑定</a>
+                                            <div class="col-sm-2">
+                                                <button id="bind_email" class="btn btn-primary ">绑定</button>
                                             </div>
                                         {{end}}
                                     </div>
@@ -80,20 +83,24 @@
                                         <label for="inputGithub" class="col-sm-3 control-label">Avatar Image</label>
                                         <div class="col-sm-6 image">
                                             <input class="form-control" value="" type="file" name="avatar_url">
-                                            <img src="{{.user.AvatarUrl}}"  class="img-circle" alt="User Image" style="width: 50px;">
+                                            <img src="{{.user.AvatarUrl}}" class="img-circle" alt="User Image"
+                                                 style="width: 50px;">
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <label for="inputGithub" class="col-sm-3 control-label">Github</label>
                                         {{if gt (len .user.GithubLoginId) 0}}
-                                            <div class="col-sm-6">
+                                            <div class="col-sm-4">
                                                 <input type="text" class="form-control" id="inputGithub"
                                                        value="{{.user.GithubLoginId}}" readonly>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <a href="#" id="unbind_github" class="btn btn-primary">解绑</a>
                                             </div>
 
                                         {{else}}
                                             <div class="col-sm-4">
-                                                <a href="/auth/github" class="btn btn-primary">绑定</a>
+                                                <a href="/auth/github" id="bind_github" class="btn btn-primary">绑定</a>
                                             </div>
                                         {{end}}
                                     </div>
@@ -134,31 +141,36 @@
                                         <div class="form-group">
                                             <label for="inputGithub" class="col-sm-3 control-label">Avatar Image</label>
                                             <div class="col-sm-6 image">
-                                                <img src="{{.user.GithubUserInfo.AvatarURL}}"  class="img-circle" alt="User Image" style="width: 60px;">
+                                                <img src="{{.user.GithubUserInfo.AvatarURL}}" class="img-circle"
+                                                     alt="User Image" style="width: 60px;">
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label for="inputGithub" class="col-sm-3 control-label">Bio</label>
                                             <div class="col-sm-6">
-                                                <input type="text" value="{{.user.GithubUserInfo.Bio}}"  class="form-control" readonly="readonly" >
+                                                <input type="text" value="{{.user.GithubUserInfo.Bio}}"
+                                                       class="form-control" readonly="readonly">
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label for="inputGithub" class="col-sm-3 control-label">Email</label>
                                             <div class="col-sm-6">
-                                                <input value="{{.user.GithubUserInfo.Email}}"  class="form-control" readonly="readonly">
+                                                <input value="{{.user.GithubUserInfo.Email}}" class="form-control"
+                                                       readonly="readonly">
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label for="inputGithub" class="col-sm-3 control-label">Location</label>
                                             <div class="col-sm-6">
-                                                <input value="{{.user.GithubUserInfo.Location}}"  class="form-control" readonly="readonly">
+                                                <input value="{{.user.GithubUserInfo.Location}}" class="form-control"
+                                                       readonly="readonly">
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label for="inputGithub" class="col-sm-3 control-label">Name</label>
                                             <div class="col-sm-6">
-                                                <input value="{{.user.GithubUserInfo.Name}}"  class="form-control" readonly="readonly">
+                                                <input value="{{.user.GithubUserInfo.Name}}" class="form-control"
+                                                       readonly="readonly">
                                             </div>
                                         </div>
                                     </div>
@@ -176,21 +188,24 @@
     </html>
     <script type="text/javascript">
         $(document).ready(function () {
-
-
-            function bindEmail() {
-            }
-
-            function bindGithub() {
-            }
-
-            function unbindGithub() {
+            $('#unbind_github').on("click", function () {
                 $.post("/admin/profile/github/unbind", {}, function (result) {
+                    toastr.success(result.message);
                     if (result.succeed) {
                         window.location.reload(true)
                     }
                 }, 'json');
-            }
+            });
+
+            $('#bind_github').on("click", function () {
+
+            });
+            $('#unbind_email').on('click', function () {
+
+            });
+            $('#bind_email').on('click', function () {
+
+            });
         });
     </script>
 

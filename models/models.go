@@ -59,7 +59,7 @@ type User struct {
 	NickName           string    `form:"nick_name" json:"nick_name"` // 昵称
 	LockState          bool      `gorm:"default:'0'"`                //锁定状态
 	ModifyPasswordHash string    `gorm:"default:null"`
-	ModifyPasswordTime time.Time `gorm:"default:'0000-00-00 00:00:00'"`
+	ModifyPasswordTime time.Time `gorm:"default:'1990-01-01 00:00:00'"`
 	GithubUserInfo     GithubUserInfo
 }
 

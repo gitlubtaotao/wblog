@@ -82,54 +82,7 @@ func BindEmail(c *gin.Context) {
 	res["succeed"] = true
 }
 
-func UnbindEmail(c *gin.Context) {
-	var (
-		err error
-		res = gin.H{}
-	)
-	defer api.WriteJSON(c, res)
-	sessionUser, _ := c.Get(api.CONTEXT_USER_KEY)
-	user, ok := sessionUser.(*models.User)
-	if !ok {
-		res["message"] = "server interval error"
-		return
-	}
-	if user.Email == "" {
-		res["message"] = "email haven't bound"
-		return
-	}
-	err = user.UpdateEmail("")
-	if err != nil {
-		res["message"] = err.Error()
-		return
-	}
-	res["succeed"] = true
-}
 
-func UnbindGithub(c *gin.Context) {
-	var (
-		err error
-		res = gin.H{}
-	)
-	defer api.WriteJSON(c, res)
-	sessionUser, _ := c.Get(api.CONTEXT_USER_KEY)
-	user, ok := sessionUser.(*models.User)
-	if !ok {
-		res["message"] = "server interval error"
-		return
-	}
-	if user.GithubLoginId == "" {
-		res["message"] = "github haven't bound"
-		return
-	}
-	user.GithubLoginId = ""
-	err = user.UpdateGithubUserInfo()
-	if err != nil {
-		res["message"] = err.Error()
-		return
-	}
-	res["succeed"] = true
-}
 
 func UserIndex(c *gin.Context) {
 	users, _ := models.ListUsers()

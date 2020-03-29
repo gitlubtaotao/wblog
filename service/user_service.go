@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"github.com/gitlubtaotao/wblog/database"
 	"github.com/gitlubtaotao/wblog/models"
 )
@@ -12,6 +13,7 @@ type IUserService interface {
 	FirstOrCreate(user *models.User) (*models.User, error)
 	GetUserByID(id interface{}) (*models.User, error)
 	UpdateUser() (err error)
+	Update(user *models.User, attr map[string]interface{}) error
 	UpdateUserAttr(attr map[string]interface{}) error
 	GetModel() (*models.User, error)
 	SetModel(user *models.User) error
@@ -72,12 +74,17 @@ func (u *UserService) FirstOrCreate(user *models.User) (*models.User, error) {
 	return user, err
 }
 
+func (u *UserService) Update(user *models.User, attr map[string]interface{}) error {
+	return database.DBCon.Model(&user).Update(attr).Error
+}
+
 //get model value
 func (u *UserService) GetModel() (*models.User, error) {
 	return u.Model, nil
 }
 
 func (u *UserService) SetModel(user *models.User) error {
+	fmt.Println("sdssdsdsdsd")
 	u.Model = user
 	return nil
 }
