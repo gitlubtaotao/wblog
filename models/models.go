@@ -495,17 +495,6 @@ func (u *User) UpdateGithubUserInfo() error {
 	}).Error
 }
 
-func (u *User) Lock() error {
-	return DB.Model(u).Update(map[string]interface{}{
-		"lock_state": u.LockState,
-	}).Error
-}
-
-func ListUsers() ([]*User, error) {
-	var users []*User
-	err := DB.Find(&users, "is_admin = ?", false).Error
-	return users, err
-}
 
 // Comment
 func (comment *Comment) Insert() error {

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/gitlubtaotao/wblog/database"
 	"github.com/gitlubtaotao/wblog/models"
+	"github.com/gitlubtaotao/wblog/system"
+	"github.com/jinzhu/gorm"
 )
 
 type IUserService interface {
@@ -11,7 +13,7 @@ type IUserService interface {
 	FirstUser() error
 	Insert() error
 	FirstOrCreate(user *models.User) (*models.User, error)
-	GetUserByID(id interface{}) (*models.User, error)
+	GetUserByID(id int64) (*models.User, error)
 	UpdateUser() (err error)
 	Update(user *models.User, attr map[string]interface{}) error
 	UpdateUserAttr(attr map[string]interface{}) error
@@ -19,6 +21,8 @@ type IUserService interface {
 	SetModel(user *models.User) error
 	FindUserAll(attr map[string]interface{}) ([]*models.User, error)
 	ReloadGithub(user *models.User) error
+	ListAdminUsers(per, page int, columns []string) ([]*models.User, error)
+	Lock() error
 }
 type UserService struct {
 	Model *models.User
@@ -47,7 +51,7 @@ func (u *UserService) FirstUser() error {
 	return database.DBCon.First(&u.Model).Error
 }
 
-func (u *UserService) GetUserByID(id interface{}) (*models.User, error) {
+func (u *UserService) GetUserByID(id int64) (*models.User, error) {
 	var user models.User
 	err := database.DBCon.First(&user, id).Error
 	return &user, err
@@ -92,4 +96,28 @@ func (u *UserService) SetModel(user *models.User) error {
 //reloadGithub: 加载github
 func (u *UserService) ReloadGithub(user *models.User) error {
 	return database.DBCon.Model(&user).Related(&user.GithubUserInfo).Error
+}
+
+func (u *UserService) ListAdminUsers(per, page int, columns []string) (users []*models.User, err error) {
+	//取默认的分页数
+	if per == 0 {
+		per = system.GetConfiguration().PageSize
+	}
+	var temp *gorm.DB
+	temp = database.DBCon.Find(&users, "is_admin = ?", true)
+	if page != 0 {
+		temp = temp.Limit(per).Offset((page - 1) * per)
+	}
+	if len(columns) == 0 {
+		err = temp.Error
+	} else {
+		err = temp.Select(columns).Error
+	}
+	return
+}
+
+func (u *UserService) Lock() error {
+	return database.DBCon.Model(&u.Model).Update(map[string]interface{}{
+		"lock_state": u.Model.LockState,
+	}).Error
 }

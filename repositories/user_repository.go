@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"errors"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gitlubtaotao/wblog/encrypt"
 	"github.com/gitlubtaotao/wblog/helpers"
@@ -14,11 +13,15 @@ import (
 type IUserRepository interface {
 	Register() (err error)
 	SignIn(account string, password string) (user *models.User, err error)
+	FirstUser() (*models.User, error)
+	GetUserByID(id int64) (*models.User, error)
 	FirstUserByEmail(email string) (models.User, error)
 	Update(user *models.User, attr map[string]interface{}) error
 	UpdateUserAttr(attr map[string]interface{}) error
-	
+	ListAllAdminUsers(columns []string) ([]*models.User, error)
+	ListAdminUsers(per, page int, columns []string) ([]*models.User, error)
 	ReloadGithub(user *models.User) (err error)
+	Lock(user *models.User) (err error)
 	GetUser() (*models.User, error)
 	SetUser(user *models.User) error
 }
@@ -81,20 +84,45 @@ func (u *UserRepository) FirstUserByEmail(email string) (models.User, error) {
 	return u.userService.FindUserByEmail(email)
 }
 
+func (u *UserRepository) FirstUser() (user *models.User, err error) {
+	err = u.userService.FirstUser()
+	user, _ = u.userService.GetModel()
+	return
+}
+
+/*
+ 
+ */
+func (u *UserRepository) GetUserByID(id int64) (user *models.User, err error) {
+	return u.userService.GetUserByID(id)
+}
+
 func (u *UserRepository) Update(user *models.User, attr map[string]interface{}) error {
 	return u.userService.Update(user, attr)
 }
 func (u *UserRepository) UpdateUserAttr(attr map[string]interface{}) error {
 	return u.userService.UpdateUserAttr(attr)
 }
+
+func (u *UserRepository) Lock(user *models.User) error {
+	_ = u.userService.SetModel(user)
+	return u.userService.Lock()
+}
 func (u *UserRepository) GetUser() (user *models.User, err error) {
 	return u.userService.GetModel()
 }
 func (u *UserRepository) SetUser(user *models.User) error {
-	fmt.Println("sdsdsdsdsds", user)
 	return u.userService.SetModel(user)
 }
 
 func (u *UserRepository) ReloadGithub(user *models.User) (err error) {
 	return u.userService.ReloadGithub(user)
+}
+
+func (u *UserRepository) ListAllAdminUsers(columns []string) ([]*models.User, error) {
+	return u.ListAdminUsers(0, 0, columns)
+}
+
+func (u *UserRepository) ListAdminUsers(per, page int, columns []string) ([]*models.User, error) {
+	return u.userService.ListAdminUsers(per, page, columns)
 }

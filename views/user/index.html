@@ -1,6 +1,6 @@
 {{define "user/index.html"}}
     <!DOCTYPE html>
-    <html>
+    <html lang="zh-CN">
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -17,13 +17,15 @@
         <div class="content-wrapper">
             <!-- Content Header (Page header) -->
             <section class="content-header">
-                <h1>
-                    <small>用户管理</small>
+                <h1 style="float: left;">
+                    <small>User Manage</small>
                 </h1>
+                <a href="/admin/signup" target="_blank" class="btn btn-primary btn-sm " style="float: left;margin-left: 10px;">New User</a>
                 <ol class="breadcrumb">
                     <li><a href="/admin/index"><i class="fa fa-dashboard"></i> Home</a></li>
-                    <li class="active"><a href="#">用户管理</a></li>
+                    <li class="active"><a href="#">User</a></li>
                 </ol>
+                <div class="clearfix"></div>
             </section>
 
             <!-- Main content -->
@@ -39,35 +41,47 @@
                                 <table id="example2" class="table table-bordered table-hover">
                                     <thead>
                                     <tr>
+                                        <th>Operation</th>
                                         <th>ID</th>
-                                        {{/*<th>邮箱</th>*/}}
-                                        <th>管理员</th>
+                                        <th>Email</th>
+                                        <th>Nick Name</th>
+                                        <th>Telephone</th>
+                                        <th>Is Admin</th>
                                         <th>github</th>
-                                        <th>注册时间</th>
-                                        <th>状态</th>
+                                        <th>Register Time</th>
+                                        <th>Avatar Url</th>
+
                                     </tr>
                                     </thead>
                                     <tbody>
                                     {{range .users}}
                                         <tr>
+                                            <td>
+                                                {{if not .LockState}}
+                                                    <a href="javascript:void(0);" class="lock-button btn btn-sm btn-danger"
+                                                       data-href="/admin/user/{{.ID}}/lock">锁定</a>
+                                                {{else}}
+                                                    <a href="javascript:void(0);" class="lock-button btn btn-sm btn-primary"
+                                                       data-href="/admin/user/{{.ID}}/lock">解除锁定</a>
+                                                {{end}}
+                                                <a href="/admin/user/profile?id={{.ID}}" target="_blank" class="btn btn-primary btn-sm">查看</a>
+                                            </td>
                                             <td>{{.ID}}</td>
-                                            {{/* <td>{{.Email}}</td>*/}}
+                                            <td>{{.Email}}</td>
+                                            <td>{{.NickName}}</td>
+                                            <td>{{.Telephone}}</td>
                                             <td>{{if .IsAdmin}}√{{else}}×{{end}}</td>
                                             <td><a href="https://github.com/{{.GithubLoginId}}"
                                                    target="_blank">{{.GithubLoginId}}</a></td>
                                             <td>{{dateFormat .CreatedAt "06-01-02 15:04"}}</td>
-                                            <td>
-                                                {{if not .LockState}}
-                                                    <a href="javascript:void(0);" class="btn btn-danger btnlock"
-                                                       data-href="/admin/user/{{.ID}}/lock">锁定</a>
-                                                {{else}}
-                                                    <a href="javascript:void(0);" class="btn btn-primary btnlock"
-                                                       data-href="/admin/user/{{.ID}}/lock">解除锁定</a>
-                                                {{end}}
-                                            </td>
+                                            <td><a href="{{.ShowAvatarURL}}" target="_blank">
+                                                    <img src="{{.ShowAvatarURL}}" style="width: 160px;"
+                                                         class="image user-image" alt=""/>
+                                                </a></td>
+
                                         </tr>
                                     {{end}}
-                                    </tfoot>
+                                    </tbody>
                                 </table>
                             </div>
                             <!-- /.box-body -->
@@ -84,29 +98,7 @@
         <!-- /.content-wrapper -->
     </div>
     {{template "layouts/footer.html"}}
-    <script>
-        $(function () {
-            $('#example1').DataTable();
-            $('#example2').DataTable({
-                'paging': true,
-                'lengthChange': false,
-                'searching': false,
-                'ordering': true,
-                'info': true,
-                'autoWidth': false
-            })
-        });
-
-        $(document).ready(function () {
-            $('.btnlock').on('click', function (e) {
-                $.post($(e.target).data("href"), {}, function (data) {
-                    if (data.succeed) {
-                        window.location.href = window.location.href;
-                    }
-                }, 'json');
-            });
-        });
-    </script>
+    <script src="/static/libs/page_assets/user/index.js"></script>
     </body>
     </html>
 {{end}}

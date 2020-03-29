@@ -122,12 +122,14 @@ func (r *Routes) adminRouter() {
 		authorized.POST("/post/:id/delete", post.Delete)
 		// tag
 		authorized.POST("/new_tag", api.TagCreate)
-		authorized.GET("/user", admin.UserIndex)
-		authorized.POST("/user/:id/lock", admin.UserLock)
-		// profile
+		
+		// user info
 		user := &admin.UserApi{}
 		authorized.GET("/user/profile", user.ProfileGet)
 		authorized.POST("/user/:id/profile", user.ProfileUpdate)
+		authorized.GET("/user", user.UserIndex)
+		authorized.POST("/user/:id/lock", user.UserLock)
+		//auth info
 		auth := api.AuthApi{}
 		authorized.POST("/profile/email/bind", auth.BindEmail)
 		authorized.POST("/profile/email/unbind", auth.UnbindEmail)

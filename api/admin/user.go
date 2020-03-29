@@ -19,12 +19,26 @@ type UserApi struct {
 func (u *UserApi) ProfileGet(ctx *gin.Context) {
 	repository := repositories.NewUserRepository(ctx)
 	u.repository = repository
-	tempUser, err := u.CurrentUser(ctx)
-	if err == nil {
-		err := u.repository.ReloadGithub(tempUser)
-		if err != nil {
-			_ = seelog.Critical(err)
-		}
+	userId := ctx.Query("id")
+	var (
+		tempUser *models.User
+		err      error
+	)
+	if userId == "" {
+		tempUser, err = u.CurrentUser(ctx)
+	} else {
+		id, _ := strconv.ParseInt(userId, 10, 64)
+		tempUser, err = repository.GetUserByID(id)
+	}
+	if err != nil {
+		_ = seelog.Critical(err)
+		u.HandleMessage(ctx, "service inter is error")
+		return
+	}
+	
+	err = u.repository.ReloadGithub(tempUser)
+	if err != nil {
+		_ = seelog.Critical(err)
 	}
 	var url = "/admin/user/" + strconv.Itoa(int(tempUser.ID)) + "/profile"
 	u.RenderHtml(ctx, "user/show.html",
@@ -63,13 +77,13 @@ func (u *UserApi) ProfileUpdate(c *gin.Context) {
 	if c.PostForm("nick_name") != "" {
 		attr["nick_name"] = c.PostForm("nick_name")
 	}
-	if c.PostForm("telephone") != ""{
+	if c.PostForm("telephone") != "" {
 		attr["telephone"] = c.PostForm("telephone")
 	}
 	if password != "" {
 		attr["password"] = password
 	}
-	if c.PostForm("secret_key") != ""{
+	if c.PostForm("secret_key") != "" {
 		attr["secret_key"] = c.PostForm("secret_key")
 	}
 	repository := repositories.NewUserRepository(c)
@@ -81,37 +95,38 @@ func (u *UserApi) ProfileUpdate(c *gin.Context) {
 	res["succeed"] = true
 }
 
-func UserIndex(c *gin.Context) {
-	users, _ := models.ListUsers()
+func (u *UserApi) UserIndex(c *gin.Context) {
+	repository := repositories.NewUserRepository(c)
+	columns := []string{"telephone", "email", "nick_name", "github_login_id",
+		"created_at", "id", "is_admin", "avatar_url", "secret_key"}
+	users, _ := repository.ListAllAdminUsers(columns)
 	user, _ := c.Get(api.CONTEXT_USER_KEY)
-	c.HTML(http.StatusOK, "user/index.html", gin.H{
-		"users":    users,
-		"user":     user,
-		"comments": models.MustListUnreadComment(),
-	})
+	c.HTML(http.StatusOK, "user/index.html",
+		u.RenderComments(gin.H{"user": user, "users": users,}))
 }
 
-func UserLock(c *gin.Context) {
+func (u *UserApi) UserLock(c *gin.Context) {
 	var (
 		err  error
 		_id  uint64
 		res  = gin.H{}
 		user *models.User
 	)
-	defer api.WriteJSON(c, res)
+	defer u.WriteJSON(c, res)
 	id := c.Param("id")
 	_id, err = strconv.ParseUint(id, 10, 64)
 	if err != nil {
 		res["message"] = err.Error()
 		return
 	}
-	user, err = models.GetUser(uint(_id))
+	repository := repositories.NewUserRepository(c)
+	user, err = repository.GetUserByID(int64(_id))
 	if err != nil {
 		res["message"] = err.Error()
 		return
 	}
 	user.LockState = !user.LockState
-	err = user.Lock()
+	err = repository.Lock(user)
 	if err != nil {
 		res["message"] = err.Error()
 		return
