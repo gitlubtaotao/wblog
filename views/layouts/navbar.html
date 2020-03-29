@@ -47,8 +47,8 @@
                     <!-- User Account: style can be found in dropdown.less -->
                     <li class="dropdown user user-menu">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                            {{if gt (len .user.AvatarUrl) 0}}
-                                <img src="{{.user.AvatarUrl}}" class="user-image" alt="User Image">
+                            {{if gt (len .user.ShowAvatarURL) 0}}
+                                <img src="{{.user.ShowAvatarURL}}" class="user-image" alt="User Image">
                             {{else}}
                                 <img src="/static/libs/AdminLTE/img/user2-160x160.jpg" class="user-image"
                                      alt="User Image">

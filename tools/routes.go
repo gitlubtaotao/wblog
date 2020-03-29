@@ -127,7 +127,7 @@ func (r *Routes) adminRouter() {
 		// profile
 		user := &admin.UserApi{}
 		authorized.GET("/user/profile", user.ProfileGet)
-		authorized.POST("/profile", admin.ProfileUpdate)
+		authorized.POST("/user/:id/profile", user.ProfileUpdate)
 		auth := api.AuthApi{}
 		authorized.POST("/profile/email/bind", auth.BindEmail)
 		authorized.POST("/profile/email/unbind", auth.UnbindEmail)

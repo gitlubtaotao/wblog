@@ -6,8 +6,8 @@
         <!-- Sidebar user panel -->
         <div class="user-panel">
             <div class="pull-left image">
-                {{if gt (len .user.AvatarUrl) 0}}
-                <img src="{{.user.AvatarUrl}}" class="img-circle" alt="User Image">
+                {{if gt (len .user.ShowAvatarURL) 0}}
+                <img src="{{.user.ShowAvatarURL}}" class="img-circle" alt="User Image">
                 {{else}}
                 <img src="/static/libs/AdminLTE/img/user2-160x160.jpg" class="img-circle" alt="User Image">
                 {{end}}

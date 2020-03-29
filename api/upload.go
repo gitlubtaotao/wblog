@@ -24,6 +24,7 @@ func Upload(c *gin.Context) {
 	}
 	uploader := qiniu.NewUploaderDefault()
 	url, key, err = uploader.Upload(file, fh)
+	url = uploader.PrivateReadURL(key)
 	if err != nil {
 		res["message"] = err.Error()
 		return

@@ -3,6 +3,7 @@ package models
 import (
 	"database/sql"
 	"fmt"
+	"github.com/gitlubtaotao/wblog/tools/upload/qiniu"
 	"strconv"
 	"time"
 	
@@ -50,14 +51,14 @@ type User struct {
 	Telephone          string    `gorm:"unique_index;default:null" json:"telephone" form:"telephone" validate:"required"` //手机号码
 	Password           string    `gorm:"default:null" json:"password" form:"password" validate:"required"`                //密码
 	VerifyState        string    `gorm:"default:'0'" json:"verify_state"`                                                 //邮箱验证状态
-	SecretKey          string    `gorm:"default:null" json:"secret_key"`                                                  //密钥
+	SecretKey          string    `gorm:"default:null" form:"secret_key"  json:"secret_key"`                               //密钥
 	OutTime            time.Time //过期时间
 	GithubLoginId      string    `gorm:"unique_index;default:null" json:"github_login_id"` // github唯一标识
 	GithubUrl          string    //github地址
 	IsAdmin            bool      //是否是管理员
-	AvatarUrl          string    `form:"avatar_url"`                 // 头像链接
-	NickName           string    `form:"nick_name" json:"nick_name"` // 昵称
-	LockState          bool      `gorm:"default:'0'"`                //锁定状态
+	AvatarUrl          string    `form:"avatar_url" json:"avatar_url"` // 头像链接
+	NickName           string    `form:"nick_name" json:"nick_name"`   // 昵称
+	LockState          bool      `gorm:"default:'0'"`                  //锁定状态
 	ModifyPasswordHash string    `gorm:"default:null"`
 	ModifyPasswordTime time.Time `gorm:"default:'1990-01-01 00:00:00'"`
 	GithubUserInfo     GithubUserInfo
@@ -152,6 +153,20 @@ type GithubUserInfo struct {
 }
 
 var DB *gorm.DB
+
+//显示用户的AvatarUrl
+func (u *User) ShowAvatarURL() string {
+	if len(u.SecretKey) == 0 {
+		if u.AvatarUrl == "" {
+			return "/static/libs/AdminLTE/img/user2-160x160.jpg"
+		} else {
+			return u.AvatarUrl
+		}
+	} else {
+		upload := qiniu.NewUploaderDefault()
+		return upload.PrivateReadURL(u.SecretKey)
+	}
+}
 
 // Page
 func (page *Page) Insert() error {
@@ -414,13 +429,13 @@ func DeletePostTagByPostId(postId uint) error {
 
 // user
 // insert user
-func (user *User) Insert() error {
-	return DB.Create(user).Error
+func (u *User) Insert() error {
+	return DB.Create(u).Error
 }
 
 // update user
-func (user *User) Update() error {
-	return DB.Save(user).Error
+func (u *User) Update() error {
+	return DB.Save(u).Error
 }
 
 //
@@ -437,9 +452,9 @@ func GetUserByWhere(user User) (*User, error) {
 }
 
 //
-func (user *User) FirstOrCreate() (*User, error) {
-	err := DB.FirstOrCreate(user, "github_login_id = ?", user.GithubLoginId).Error
-	return user, err
+func (u *User) FirstOrCreate() (*User, error) {
+	err := DB.FirstOrCreate(u, "github_login_id = ?", u.GithubLoginId).Error
+	return u, err
 }
 
 func IsGithubIdExists(githubId string, id uint) (*User, error) {
@@ -454,35 +469,35 @@ func GetUser(id interface{}) (*User, error) {
 	return &user, err
 }
 
-func (user *User) UpdateProfile(avatarUrl, nickName string) error {
-	return DB.Model(user).Update(User{AvatarUrl: avatarUrl, NickName: nickName}).Error
+func (u *User) UpdateProfile(avatarUrl, nickName string) error {
+	return DB.Model(u).Update(User{AvatarUrl: avatarUrl, NickName: nickName}).Error
 }
 
-func (user *User) UpdateEmail(email string) error {
+func (u *User) UpdateEmail(email string) error {
 	if len(email) > 0 {
-		return DB.Model(user).Update("email", email).Error
+		return DB.Model(u).Update("email", email).Error
 	} else {
-		return DB.Model(user).Update("email", gorm.Expr("NULL")).Error
+		return DB.Model(u).Update("email", gorm.Expr("NULL")).Error
 	}
 }
 
-func (user *User) UpdateGithubUserInfo() error {
+func (u *User) UpdateGithubUserInfo() error {
 	var githubLoginId interface{}
-	if len(user.GithubLoginId) == 0 {
+	if len(u.GithubLoginId) == 0 {
 		githubLoginId = gorm.Expr("NULL")
 	} else {
-		githubLoginId = user.GithubLoginId
+		githubLoginId = u.GithubLoginId
 	}
-	return DB.Model(user).Update(map[string]interface{}{
+	return DB.Model(u).Update(map[string]interface{}{
 		"github_login_id": githubLoginId,
-		"avatar_url":      user.AvatarUrl,
-		"github_url":      user.GithubUrl,
+		"avatar_url":      u.AvatarUrl,
+		"github_url":      u.GithubUrl,
 	}).Error
 }
 
-func (user *User) Lock() error {
-	return DB.Model(user).Update(map[string]interface{}{
-		"lock_state": user.LockState,
+func (u *User) Lock() error {
+	return DB.Model(u).Update(map[string]interface{}{
+		"lock_state": u.LockState,
 	}).Error
 }
 

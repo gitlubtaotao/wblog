@@ -1,7 +1,7 @@
 signup_enabled: true
 qiniu_accesskey: eod8fVA_L4wDR7yOwzdYfOblLp4pCvflQF5BS8JC
 qiniu_secretkey: wsFuW0M4obMFvO9K6GVVTlDWjzVi3doJPrDj5eZh
-qiniu_fileserver: wblog-taotao.s3-cn-south-1.qiniucs.com
+qiniu_fileserver: http://q7xvlw9i4.bkt.clouddn.com/
 qiniu_bucket: wblog-taotao
 github_clientid: 8fc369fefbb9c176bd35
 github_clientsecret: d3856f6a85625de7749e222701ffdb149f4e92cb
