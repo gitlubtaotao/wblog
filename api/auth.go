@@ -148,9 +148,10 @@ func (a *AuthApi) BindEmail(ctx *gin.Context) {
 	_ = repository.SetUser(user)
 	err = repository.UpdateUserAttr(map[string]interface{}{"email": email})
 	if err != nil {
-		res["message"] = "Bind user is error"
+		res["message"] = "Bind email is error"
 		return
 	}
+	res["message"] = "Bind email is successful"
 	res["succeed"] = true
 }
 

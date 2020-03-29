@@ -93,6 +93,7 @@ func (a *AuthRepository) GithubUserBing(sessionUser interface{}, githubUser *mod
 		user.GithubLoginId = githubUser.Login
 		user.AvatarUrl = githubUser.AvatarURL
 		user.GithubUrl = githubUser.HTMLURL
+		user.Email = githubUser.Email
 		_ = service.SetModel(user)
 		return user, service.UpdateUser()
 	} else {
