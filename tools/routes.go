@@ -88,11 +88,10 @@ func (r *Routes) subscriberRouter() {
 }
 
 func (r *Routes) otherRouter() {
-	r.engine.GET("/page/:id", api.PageGet)
 	r.engine.GET("/post/:id", admin.PostGet)
 	r.engine.GET("/tag/:tag", api.TagGet)
 	r.engine.GET("/archives/:year/:month", api.ArchiveGet)
-	link := api.LinkApi{}
+	link := admin.LinkApi{}
 	r.engine.GET("/link/:id", link.LinkGet)
 }
 
@@ -104,13 +103,17 @@ func (r *Routes) adminRouter() {
 		authorized.GET("", admin.Home)
 		authorized.GET("/index", admin.Home)
 		authorized.POST("/upload", api.Upload)
-		authorized.GET("/page", api.PageIndex)
-		authorized.GET("/new_page", api.PageNew)
-		authorized.POST("/new_page", api.PageCreate)
-		authorized.GET("/page/:id/edit", api.PageEdit)
-		authorized.POST("/page/:id/edit", api.PageUpdate)
-		authorized.POST("/page/:id/publish", api.PagePublish)
-		authorized.POST("/page/:id/delete", api.PageDelete)
+		
+		page := admin.PageApi{}
+		authorized.GET("/page", page.Index)
+		authorized.POST("/page", page.Create)
+		authorized.GET("/page/new", page.New)
+		authorized.GET("/page/edit/:id",page.Edit)
+		authorized.GET("/page/get/:id", page.Get)
+		authorized.PATCH("/page/:id", page.Update)
+		authorized.DELETE("/page/:id",page.Delete)
+		authorized.POST("/page/publish/:id", page.PagePublish)
+		
 		
 		// post
 		post := new(admin.PostApi)
@@ -141,7 +144,7 @@ func (r *Routes) adminRouter() {
 		authorized.POST("/subscriber", api.SubscriberPost)
 		
 		// link
-		link := &api.LinkApi{}
+		link := &admin.LinkApi{}
 		authorized.GET("/link", link.Index)
 		authorized.POST("/link", link.LinkCreate)
 		authorized.GET("/link/:id/show", link.Show)

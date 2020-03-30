@@ -1,7 +1,8 @@
-package api
+package admin
 
 import (
 	"github.com/cihub/seelog"
+	"github.com/gitlubtaotao/wblog/api"
 	"github.com/gitlubtaotao/wblog/repositories"
 	"net/http"
 	"strconv"
@@ -11,7 +12,7 @@ import (
 )
 
 type LinkApi struct {
-	*BaseApi
+	*api.BaseApi
 }
 
 func (l *LinkApi) Index(ctx *gin.Context) {
@@ -41,7 +42,7 @@ func (l *LinkApi) LinkCreate(c *gin.Context) {
 		res = gin.H{}
 	)
 	_, err = repository.Create()
-	defer WriteJSON(c, res)
+	defer api.WriteJSON(c, res)
 	if err != nil {
 		res["message"] = err.Error()
 		return
@@ -70,7 +71,7 @@ func (l *LinkApi) LinkUpdate(c *gin.Context) {
 		err error
 		res = gin.H{}
 	)
-	defer WriteJSON(c, res)
+	defer api.WriteJSON(c, res)
 	_, err = repository.UpdateAttr()
 	if err != nil {
 		res["message"] = err.Error()
@@ -88,7 +89,7 @@ func (l *LinkApi) LinkDelete(c *gin.Context) {
 		res = gin.H{}
 		id  uint
 	)
-	defer WriteJSON(c, res)
+	defer api.WriteJSON(c, res)
 	id, err = reposition.Delete()
 	if err != nil {
 		res["message"] = err.Error()

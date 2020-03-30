@@ -1,18 +1,23 @@
-package api
+package admin
 
 import (
+	"github.com/gitlubtaotao/wblog/api"
 	"net/http"
 	"strconv"
-
+	
 	"github.com/gin-gonic/gin"
 	"github.com/gitlubtaotao/wblog/models"
 )
+
+type PageApi struct {
+	*api.BaseApi
+}
 
 func PageGet(c *gin.Context) {
 	id := c.Param("id")
 	page, err := models.GetPageById(id)
 	if err != nil || !page.IsPublished {
-		Handle404(c)
+		api.Handle404(c)
 		return
 	}
 	page.View++
@@ -22,11 +27,11 @@ func PageGet(c *gin.Context) {
 	})
 }
 
-func PageNew(c *gin.Context) {
+func (p *PageApi) New(c *gin.Context) {
 	c.HTML(http.StatusOK, "page/new.html", nil)
 }
 
-func PageCreate(c *gin.Context) {
+func (p *PageApi) Create(c *gin.Context) {
 	title := c.PostForm("title")
 	body := c.PostForm("body")
 	isPublished := c.PostForm("isPublished")
@@ -47,18 +52,18 @@ func PageCreate(c *gin.Context) {
 	c.Redirect(http.StatusMovedPermanently, "/admin/page")
 }
 
-func PageEdit(c *gin.Context) {
+func (p *PageApi) Edit(c *gin.Context) {
 	id := c.Param("id")
 	page, err := models.GetPageById(id)
 	if err != nil {
-		Handle404(c)
+		api.Handle404(c)
 	}
 	c.HTML(http.StatusOK, "page/modify.html", gin.H{
 		"page": page,
 	})
 }
 
-func PageUpdate(c *gin.Context) {
+func (p *PageApi) Update(c *gin.Context) {
 	id := c.Param("id")
 	title := c.PostForm("title")
 	body := c.PostForm("body")
@@ -79,12 +84,12 @@ func PageUpdate(c *gin.Context) {
 	c.Redirect(http.StatusMovedPermanently, "/admin/page")
 }
 
-func PagePublish(c *gin.Context) {
+func (p *PageApi) PagePublish(c *gin.Context) {
 	var (
 		err error
 		res = gin.H{}
 	)
-	defer WriteJSON(c, res)
+	defer api.WriteJSON(c, res)
 	id := c.Param("id")
 	page, err := models.GetPageById(id)
 	if err == nil {
@@ -100,12 +105,12 @@ func PagePublish(c *gin.Context) {
 	res["succeed"] = true
 }
 
-func PageDelete(c *gin.Context) {
+func (p *PageApi) Delete(c *gin.Context) {
 	var (
 		err error
 		res = gin.H{}
 	)
-	defer WriteJSON(c, res)
+	defer api.WriteJSON(c, res)
 	id := c.Param("id")
 	pid, err := strconv.ParseUint(id, 10, 64)
 	if err != nil {
@@ -122,12 +127,16 @@ func PageDelete(c *gin.Context) {
 	res["succeed"] = true
 }
 
-func PageIndex(c *gin.Context) {
+func (p *PageApi) Index(c *gin.Context) {
 	pages, _ := models.ListAllPage()
-	user, _ := c.Get(CONTEXT_USER_KEY)
+	user, _ := c.Get(api.CONTEXT_USER_KEY)
 	c.HTML(http.StatusOK, "admin/page.html", gin.H{
 		"pages":    pages,
 		"user":     user,
 		"comments": models.MustListUnreadComment(),
 	})
+}
+
+func (p *PageApi) Get(c *gin.Context) {
+
 }
