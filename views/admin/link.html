@@ -53,7 +53,7 @@
                                     </thead>
                                     <tbody>
                                     {{range .links}}
-                                        <tr>
+                                        <tr id="tr_{{.ID}}">
                                             <td><a href="javascript:void(0);" class="edit-row btn-sm b btn btn-primary"
                                                    data-href="/admin/link/{{.ID}}/update" data-id="{{.ID}}">编辑</a>
                                                 <a href="javascript:void(0);" class="btn btn-sm btn-danger confirm-delete"

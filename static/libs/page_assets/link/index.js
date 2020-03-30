@@ -29,12 +29,26 @@ $(document).ready(function () {
 
     });
 
-    $('#confirm-delete').on('show.bs.modal', function (e) {
-        $(this).find('.btn-ok').click(function () {
-            $.post($(e.relatedTarget).data('href'), {}, function (reuslt) {
-                window.location.href = window.location.href;
-            }, 'json');
-
+    $('.confirm-delete').on('click', function (e) {
+        var _this = $(this);
+        dialog.find('.modal-header').find('h3').text("Delete Link");
+        dialog.find('.modal-body').empty().html($('#delete_record').html());
+        dialog.modal('show');
+        dialog.find('.btn-save').click(function () {
+            $.ajax({
+                url: _this.attr('data-href'),
+                type: 'delete',
+                dataType: 'json',
+                success: function (data) {
+                    if (data.succeed) {
+                        $('tbody').find($('#tr_'+data['id'])).remove();
+                        toastr.success("operation is successful")
+                    } else {
+                        toastr.error(data.message)
+                    }
+                }
+            });
+            dialog.modal("hide");
         });
     });
 
@@ -48,7 +62,9 @@ $(document).ready(function () {
                 dialog.find('#add-form').serializeArray(), function (result) {
                     if (result.succeed) {
                         toastr.success("operation is successful");
-                        window.location.reload();
+                        setTimeout(function () {
+                            window.location.reload();
+                        }, 1000)
                     } else {
                         toastr.error(result.message);
                     }

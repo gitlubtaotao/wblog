@@ -65,38 +65,13 @@ func (l *LinkApi) Show(ctx *gin.Context) {
 }
 
 func (l *LinkApi) LinkUpdate(c *gin.Context) {
+	repository := repositories.NewLinkRepository(c)
 	var (
-		_id   uint64
-		_sort int64
-		err   error
-		res   = gin.H{}
+		err error
+		res = gin.H{}
 	)
 	defer WriteJSON(c, res)
-	id := c.Param("id")
-	name := c.PostForm("name")
-	url := c.PostForm("url")
-	sort := c.PostForm("sort")
-	if len(id) == 0 || len(name) == 0 || len(url) == 0 {
-		res["message"] = "error parameter"
-		return
-	}
-	_id, err = strconv.ParseUint(id, 10, 64)
-	if err != nil {
-		res["message"] = err.Error()
-		return
-	}
-	_sort, err = strconv.ParseInt(sort, 10, 64)
-	if err != nil {
-		res["message"] = err.Error()
-		return
-	}
-	link := &models.Link{
-		Name: name,
-		Url:  url,
-		Sort: int(_sort),
-	}
-	link.ID = uint(_id)
-	err = link.Update()
+	_, err = repository.UpdateAttr()
 	if err != nil {
 		res["message"] = err.Error()
 		return
@@ -106,28 +81,20 @@ func (l *LinkApi) LinkUpdate(c *gin.Context) {
 
 //
 
-
 func (l *LinkApi) LinkDelete(c *gin.Context) {
+	reposition := repositories.NewLinkRepository(c)
 	var (
 		err error
-		_id uint64
 		res = gin.H{}
+		id  uint
 	)
 	defer WriteJSON(c, res)
-	id := c.Param("id")
-	_id, err = strconv.ParseUint(id, 10, 64)
+	id, err = reposition.Delete()
 	if err != nil {
 		res["message"] = err.Error()
 		return
 	}
-	
-	link := new(models.Link)
-	link.ID = uint(_id)
-	err = link.Delete()
-	if err != nil {
-		res["message"] = err.Error()
-		return
-	}
+	res["id"] = id
 	res["succeed"] = true
 }
 

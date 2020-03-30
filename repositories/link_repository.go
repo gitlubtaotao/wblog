@@ -14,12 +14,18 @@ type ILinkRepository interface {
 	Create() (link models.Link, err error)
 	UpdateAttr() (models.Link, error)
 	Update(link *models.Link) error
+	Delete() (uint, error)
 	Show() (link models.Link, err error)
 }
 
 type LinkRepository struct {
 	Ctx     *gin.Context
 	service service2.ILinkService
+}
+
+func (l *LinkRepository) Delete() (uint, error) {
+	id := l.getId()
+	return id, l.service.Delete(id)
 }
 
 func (l *LinkRepository) Update(link *models.Link) error {

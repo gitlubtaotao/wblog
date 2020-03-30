@@ -14,6 +14,7 @@ type ILinkService interface {
 	Update(link *models.Link) error
 	UpdateAttr(link *models.Link, attr map[string]interface{}) error
 	UpdateLink() error
+	Delete(id uint) error
 	MaxSort() int
 	FirstLink(id uint) (models.Link, error)
 }
@@ -21,6 +22,11 @@ type ILinkService interface {
 //
 type LinkService struct {
 	Models *models.Link
+}
+
+//删除
+func (l *LinkService) Delete(id uint) error {
+	return database.DBCon.Where("id = ?", id).Delete(&models.Link{}).Error
 }
 
 func (l *LinkService) Update(link *models.Link) error {

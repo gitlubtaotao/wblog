@@ -146,7 +146,7 @@ func (r *Routes) adminRouter() {
 		authorized.POST("/link", link.LinkCreate)
 		authorized.GET("/link/:id/show", link.Show)
 		authorized.POST("/link/:id/update", link.LinkUpdate)
-		authorized.POST("/link/:id/delete", link.LinkDelete)
+		authorized.DELETE("/link/:id/delete", link.LinkDelete)
 		// comment
 		authorized.POST("/comment/:id", api.CommentRead)
 		authorized.POST("/read_all", api.CommentReadAll)
