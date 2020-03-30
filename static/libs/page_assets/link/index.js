@@ -7,27 +7,26 @@ $(document).ready(function () {
         'info': true,
         'autoWidth': false
     });
+    var dialog = $('#jquery_dialog');
 
+    //新增link
     $('#add-dialog').on('click', function (e) {
-        var dialog = $('#jquery_dialog');
-        dialog.modal('show');
-        dialog.find(".modal-body").empty().append($('#new_record').html());
-        var data = $('#example2').DataTable().row($(e.relatedTarget).parents('tr')).data();
-        console.log(data);
-        if (data) {
-            var fields = $("#add-form").serializeArray();
-            $.each(fields, function (i, field) {
-                //jquery根据name属性查找
-                $(":input[name='" + field.name + "']").val(data[i]);
-            });
-        }
-        $(this).find('.btn-save').unbind("click"); //移除click
-        $(this).find('.btn-save').click(function () {
-            $.post($(e.relatedTarget).data('href'),
-                $('#add-form').serialize(), function (result) {
-                window.location.href = window.location.href;
-            }, 'json')
-        });
+        renderHtml("/admin/link")
+    });
+
+    $('.edit-row').on('click', function (e) {
+        url = $(this).attr('data-href');
+        renderHtml(url);
+        var dataId = $(this).attr('data-id');
+        $.get("/admin/link/" + dataId + '/show', {}, function (data) {
+            if (data.succeed) {
+                var form = dialog.find("#add-form");
+                var link = data['link'];
+                form.find('input[name="name"]').val(link['name']);
+                form.find('input[name="url"]').val(link['url'])
+            }
+        }, "json")
+
     });
 
     $('#confirm-delete').on('show.bs.modal', function (e) {
@@ -38,4 +37,23 @@ $(document).ready(function () {
 
         });
     });
+
+    function renderHtml(url) {
+        dialog.find(".modal-header").find("h3").text('Add/Edit Link');
+        dialog.modal('show');
+        dialog.find(".modal-body").empty().append($('#new_record').html());
+        dialog.find('.btn-save').unbind("click"); //移除click
+        dialog.find('.btn-save').click(function () {
+            $.post(url,
+                dialog.find('#add-form').serializeArray(), function (result) {
+                    if (result.succeed) {
+                        toastr.success("operation is successful");
+                        window.location.reload();
+                    } else {
+                        toastr.error(result.message);
+                    }
+                }, 'json')
+        });
+    }
+
 });

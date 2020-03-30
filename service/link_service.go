@@ -10,6 +10,12 @@ import (
 type ILinkService interface {
 	ListAllLink(columns []string) (links []*models.Link, err error)
 	ListLink(per, page int, columns []string) (links []*models.Link, err error)
+	Create(link models.Link) (models.Link, error)
+	Update(link *models.Link) error
+	UpdateAttr(link *models.Link, attr map[string]interface{}) error
+	UpdateLink() error
+	MaxSort() int
+	FirstLink(id uint) (models.Link, error)
 }
 
 //
@@ -17,7 +23,25 @@ type LinkService struct {
 	Models *models.Link
 }
 
-func NewLinkService() ILinkService  {
+func (l *LinkService) Update(link *models.Link) error {
+	return database.DBCon.Save(&link).Error
+}
+
+func (l *LinkService) UpdateAttr(link *models.Link, attr map[string]interface{}) error {
+	return database.DBCon.Model(&link).Update(attr).Error
+}
+
+func (l *LinkService) UpdateLink() error {
+	return database.DBCon.Save(&l.Models).Error
+}
+
+func (l *LinkService) FirstLink(id uint) (models.Link, error) {
+	var link models.Link
+	err := database.DBCon.First(&link, id).Error
+	return link, err
+}
+
+func NewLinkService() ILinkService {
 	return &LinkService{}
 }
 func (l *LinkService) ListAllLink(columns []string) (links []*models.Link, err error) {
@@ -38,4 +62,17 @@ func (l *LinkService) ListLink(per, page int, columns []string) (links []*models
 	}
 	err = temp.Error
 	return
+}
+
+//查询当前最大的排序
+func (l *LinkService) MaxSort() int {
+	var count int
+	database.DBCon.Model(&l.Models).Select("sum(sort) as max_sort").Scan(&count)
+	return count
+}
+
+//创建链接
+func (l *LinkService) Create(link models.Link) (models.Link, error) {
+	err := database.DBCon.Create(&link).Error
+	return link, err
 }

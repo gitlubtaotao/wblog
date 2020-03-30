@@ -143,8 +143,9 @@ func (r *Routes) adminRouter() {
 		// link
 		link := &api.LinkApi{}
 		authorized.GET("/link", link.Index)
-		authorized.POST("/new_link", link.LinkCreate)
-		authorized.POST("/link/:id/edit", link.LinkUpdate)
+		authorized.POST("/link", link.LinkCreate)
+		authorized.GET("/link/:id/show", link.Show)
+		authorized.POST("/link/:id/update", link.LinkUpdate)
 		authorized.POST("/link/:id/delete", link.LinkDelete)
 		// comment
 		authorized.POST("/comment/:id", api.CommentRead)

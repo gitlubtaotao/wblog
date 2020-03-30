@@ -91,8 +91,8 @@ type Subscriber struct {
 // table link
 type Link struct {
 	gorm.Model
-	Name string //名称
-	Url  string //地址
+	Name string `json:"name" form:"name" validate:"required"`
+	Url  string `json:"url" form:"url" validate:"required,url"`
 	Sort int    `gorm:"default:'0'"` //排序
 	View int    //访问次数
 }
@@ -494,7 +494,6 @@ func (u *User) UpdateGithubUserInfo() error {
 		"github_url":      u.GithubUrl,
 	}).Error
 }
-
 
 // Comment
 func (comment *Comment) Insert() error {
