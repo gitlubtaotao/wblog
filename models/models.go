@@ -118,6 +118,7 @@ type SmmsFile struct {
 	Path      string `json:"path"`
 }
 
+//Github User Info
 type GithubUserInfo struct {
 	AvatarURL         string `json:"avatar_url"`
 	Bio               string `json:"bio"`
@@ -438,18 +439,9 @@ func (u *User) Update() error {
 	return DB.Save(u).Error
 }
 
-//
-func GetUserByUsername(username string) (*User, error) {
-	var user User
-	err := DB.First(&user, "email = ?", username).Error
-	return &user, err
-}
 
-//查询用户
-func GetUserByWhere(user User) (*User, error) {
-	err := DB.Where(&user).Or(User{Telephone: user.Email, Password: user.Password}).First(&user).Error
-	return &user, err
-}
+
+
 
 //
 func (u *User) FirstOrCreate() (*User, error) {
@@ -457,43 +449,10 @@ func (u *User) FirstOrCreate() (*User, error) {
 	return u, err
 }
 
-func IsGithubIdExists(githubId string, id uint) (*User, error) {
-	var user User
-	err := DB.First(&user, "github_login_id = ? and id != ?", githubId, id).Error
-	return &user, err
-}
 
-func GetUser(id interface{}) (*User, error) {
-	var user User
-	err := DB.First(&user, id).Error
-	return &user, err
-}
 
-func (u *User) UpdateProfile(avatarUrl, nickName string) error {
-	return DB.Model(u).Update(User{AvatarUrl: avatarUrl, NickName: nickName}).Error
-}
 
-func (u *User) UpdateEmail(email string) error {
-	if len(email) > 0 {
-		return DB.Model(u).Update("email", email).Error
-	} else {
-		return DB.Model(u).Update("email", gorm.Expr("NULL")).Error
-	}
-}
 
-func (u *User) UpdateGithubUserInfo() error {
-	var githubLoginId interface{}
-	if len(u.GithubLoginId) == 0 {
-		githubLoginId = gorm.Expr("NULL")
-	} else {
-		githubLoginId = u.GithubLoginId
-	}
-	return DB.Model(u).Update(map[string]interface{}{
-		"github_login_id": githubLoginId,
-		"avatar_url":      u.AvatarUrl,
-		"github_url":      u.GithubUrl,
-	}).Error
-}
 
 // Comment
 func (comment *Comment) Insert() error {
@@ -633,11 +592,7 @@ func GetLinkById(id uint) (*Link, error) {
 	return &link, err
 }
 
-/*func GetLinkByUrl(url string) (*Link, error) {
-	var link Link
-	err := DB.Find(&link, "url = ?", url).Error
-	return &link, err
-}*/
+
 
 func (sf SmmsFile) Insert() (err error) {
 	err = DB.Create(&sf).Error
