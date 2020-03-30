@@ -11,6 +11,7 @@ import (
 	"github.com/gitlubtaotao/wblog/system"
 	"github.com/pkg/errors"
 	"net/http"
+	"sync"
 	"time"
 )
 
@@ -171,11 +172,18 @@ func (s *SessionApi) SendNotice(ctx *gin.Context) {
 		s.errorHandler(ctx, err, path, message)
 		return
 	}
-	err = helpers.SendToMail(email, "Reset password", s.sendPasswordContext(modifyPasswordHash), "html")
-	if err != nil {
-		s.errorHandler(ctx, err, path, message)
-		return
-	}
+	
+	//sync.WaitGroup 进行管理
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go func(email, modifyPasswordHash string) {
+		err := helpers.SendToMail(email, "Reset password", s.sendPasswordContext(modifyPasswordHash), "html")
+		if err != nil {
+			_ = seelog.Error(err)
+		}
+		wg.Done()
+	}(email, modifyPasswordHash)
+	wg.Wait()
 	ctx.HTML(http.StatusOK, "auth/signin.html", gin.H{
 		"title":   "Wblog | Log in",
 		"message": "Reset password has been sent to your email",
