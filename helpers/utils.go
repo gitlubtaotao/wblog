@@ -6,12 +6,9 @@ import (
 	"crypto/md5"
 	"crypto/rand"
 	"encoding/hex"
-	"github.com/gitlubtaotao/wblog/system"
 	"io"
-	"net/smtp"
 	"os"
 	"regexp"
-	"strings"
 	"time"
 	
 	"github.com/pkg/errors"
@@ -40,24 +37,6 @@ func UUID() string {
 func GetCurrentTime() time.Time {
 	loc, _ := time.LoadLocation("Asia/Shanghai")
 	return time.Now().In(loc)
-}
-
-func SendToMail(to, subject, body, mailtype string) error {
-	config := system.GetConfiguration()
-	user := config.SmtpUsername
-	password := config.SmtpPassword
-	host := config.SmtpHost
-	hp := strings.Split(host, ":")
-	auth := smtp.PlainAuth("", user, password, hp[0])
-	var contentType string
-	if mailtype == "html" {
-		contentType = "Content-Type: text/" + mailtype + "; charset=UTF-8"
-	} else {
-		contentType = "Content-Type: text/plain" + "; charset=UTF-8"
-	}
-	msg := []byte("To: " + to + "\r\nFrom: " + user + "\r\nSubject: " + subject + "\r\n" + contentType + "\r\n\r\n" + body)
-	sendTo := strings.Split(to, ";")
-	return smtp.SendMail(host, auth, user, sendTo, msg)
 }
 
 func PathExists(path string) (bool, error) {

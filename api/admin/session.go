@@ -6,7 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gitlubtaotao/wblog/api"
 	"github.com/gitlubtaotao/wblog/encrypt"
-	"github.com/gitlubtaotao/wblog/helpers"
 	"github.com/gitlubtaotao/wblog/repositories"
 	"github.com/gitlubtaotao/wblog/system"
 	"github.com/pkg/errors"
@@ -177,7 +176,7 @@ func (s *SessionApi) SendNotice(ctx *gin.Context) {
 	var wg sync.WaitGroup
 	wg.Add(1)
 	go func(email, modifyPasswordHash string) {
-		err := helpers.SendToMail(email, "Reset password", s.sendPasswordContext(modifyPasswordHash), "html")
+		err := s.SendMailHtml(email, "Reset password", s.sendPasswordContext(modifyPasswordHash))
 		if err != nil {
 			_ = seelog.Error(err)
 		}

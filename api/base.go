@@ -86,3 +86,15 @@ func (b *BaseApi) CurrentUser(c *gin.Context) (*models.User, error) {
 	}
 	return user, nil
 }
+
+//发送邮件
+func (b *BaseApi) SendMailHtml(to, subject, body string) error {
+	repository := repositories.NewMailRepository(subject, body, "html")
+	return repository.SendToMail(to)
+}
+
+//系统默认推送方式
+func (b *BaseApi) DefaultNoticeMailHtml(subject, body string) error {
+	repository := repositories.NewMailRepository(subject, body, "html")
+	return repository.SystemDefaultNotify()
+}

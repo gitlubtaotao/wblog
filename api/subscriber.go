@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 	"time"
-
+	
 	"github.com/gin-gonic/gin"
 	"github.com/gitlubtaotao/wblog/helpers"
 	"github.com/gitlubtaotao/wblog/models"
@@ -13,14 +13,18 @@ import (
 	"github.com/pkg/errors"
 )
 
-func SubscribeGet(c *gin.Context) {
+type SubscribeApi struct {
+	*BaseApi
+}
+
+func (s *SubscribeApi) SubscribeGet(c *gin.Context) {
 	count, _ := models.CountSubscriber()
 	c.HTML(http.StatusOK, "other/subscribe.html", gin.H{
 		"total": count,
 	})
 }
 
-func Subscribe(c *gin.Context) {
+func (s *SubscribeApi) Subscribe(c *gin.Context) {
 	mail := c.PostForm("mail")
 	var err error
 	if len(mail) > 0 {
@@ -28,7 +32,7 @@ func Subscribe(c *gin.Context) {
 		subscriber, err = models.GetSubscriberByEmail(mail)
 		if err == nil {
 			if !subscriber.VerifyState && helpers.GetCurrentTime().After(subscriber.OutTime) { //激活链接超时
-				err = sendActiveEmail(subscriber)
+				err = s.sendActiveEmail(subscriber)
 				if err == nil {
 					count, _ := models.CountSubscriber()
 					c.HTML(http.StatusOK, "other/subscribe.html", gin.H{
@@ -52,7 +56,7 @@ func Subscribe(c *gin.Context) {
 			}
 			err = subscriber.Insert()
 			if err == nil {
-				err = sendActiveEmail(subscriber)
+				err = s.sendActiveEmail(subscriber)
 				if err == nil {
 					count, _ := models.CountSubscriber()
 					c.HTML(http.StatusOK, "other/subscribe.html", gin.H{
@@ -73,14 +77,17 @@ func Subscribe(c *gin.Context) {
 	})
 }
 
-func sendActiveEmail(subscriber *models.Subscriber) (err error) {
+func (s *SubscribeApi) sendActiveEmail(subscriber *models.Subscriber) (err error) {
 	uuid := helpers.UUID()
 	duration, _ := time.ParseDuration("30m")
 	subscriber.OutTime = helpers.GetCurrentTime().Add(duration)
 	subscriber.SecretKey = uuid
 	signature := helpers.Md5(subscriber.Email + uuid + subscriber.OutTime.Format("20060102150405"))
 	subscriber.Signature = signature
-	err = sendMail(subscriber.Email, "[Wblog]邮箱验证", fmt.Sprintf("%s/active?sid=%s", system.GetConfiguration().Domain, signature))
+	
+	err = s.SendMailHtml(subscriber.Email, "[Wblog]邮箱验证", fmt.Sprintf("%s/active?sid=%s",
+		system.GetConfiguration().Domain,
+		signature))
 	if err != nil {
 		return
 	}
@@ -146,7 +153,7 @@ func GetUnSubcribeUrl(subscriber *models.Subscriber) (string, error) {
 	return fmt.Sprintf("%s/unsubscribe?sid=%s", system.GetConfiguration().Domain, signature), err
 }
 
-func sendEmailToSubscribers(subject, body string) (err error) {
+func (s *SubscribeApi) sendEmailToSubscribers(subject, body string) (err error) {
 	var (
 		subscribers []*models.Subscriber
 		emails      = make([]string, 0)
@@ -162,7 +169,7 @@ func sendEmailToSubscribers(subject, body string) (err error) {
 		err = errors.New("no subscribers!")
 		return
 	}
-	err = sendMail(strings.Join(emails, ";"), subject, body)
+	err = s.SendMailHtml(strings.Join(emails, ";"), subject, body)
 	return
 }
 
@@ -177,7 +184,7 @@ func SubscriberIndex(c *gin.Context) {
 }
 
 // 邮箱为空时，发送给所有订阅者
-func SubscriberPost(c *gin.Context) {
+func (s *SubscribeApi) SubscriberPost(c *gin.Context) {
 	var (
 		err error
 		res = gin.H{}
@@ -187,9 +194,9 @@ func SubscriberPost(c *gin.Context) {
 	subject := c.PostForm("subject")
 	body := c.PostForm("body")
 	if len(mail) > 0 {
-		err = sendMail(mail, subject, body)
+		err = s.SendMailHtml(mail, subject, body)
 	} else {
-		err = sendEmailToSubscribers(subject, body)
+		err = s.sendEmailToSubscribers(subject, body)
 	}
 	if err != nil {
 		res["message"] = err.Error()

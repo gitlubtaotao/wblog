@@ -8,8 +8,6 @@ import (
 	"os"
 	"path"
 	
-	"strings"
-	
 	"github.com/denisbakhtin/sitemap"
 	"github.com/gin-gonic/gin"
 	"github.com/gitlubtaotao/wblog/helpers"
@@ -35,27 +33,6 @@ func HandleMessage(c *gin.Context, message string) {
 }
 
 
-//发送邮件
-func sendMail(to, subject, body string) error {
-	return helpers.SendToMail(to, subject, body, "html")
-}
-// 通知邮件
-func NotifyEmail(subject, body string) error {
-	notifyEmailsStr := system.GetConfiguration().NotifyEmails
-	if notifyEmailsStr != "" {
-		notifyEmails := strings.Split(notifyEmailsStr, ";")
-		emails := make([]string, 0)
-		for _, email := range notifyEmails {
-			if email != "" {
-				emails = append(emails, email)
-			}
-		}
-		if len(emails) > 0 {
-			return sendMail(strings.Join(emails, ";"), subject, body)
-		}
-	}
-	return nil
-}
 
 func CreateXMLSitemap() {
 	configuration := system.GetConfiguration()

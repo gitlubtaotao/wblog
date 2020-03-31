@@ -74,15 +74,17 @@ func (r *Routes) visitorRouter() {
 	visitor := r.engine.Group("/visitor")
 	visitor.Use(authRequired())
 	{
-		visitor.POST("/new_comment", api.CommentPost)
-		visitor.POST("/comment/:id/delete", api.CommentDelete)
+		comment := &api.CommentApi{}
+		visitor.POST("/new_comment", comment.CommentPost)
+		visitor.POST("/comment/:id/delete", comment.CommentDelete)
 	}
 }
 
 //订阅者访问
 func (r *Routes) subscriberRouter() {
-	r.engine.GET("/subscribe", api.SubscribeGet)
-	r.engine.POST("/subscribe", api.Subscribe)
+	subscriber := api.SubscribeApi{}
+	r.engine.GET("/subscribe", subscriber.SubscribeGet)
+	r.engine.POST("/subscribe", subscriber.Subscribe)
 	r.engine.GET("/active", api.ActiveSubscriber)
 	r.engine.GET("/unsubscribe", api.UnSubscribe)
 }
@@ -108,12 +110,11 @@ func (r *Routes) adminRouter() {
 		authorized.GET("/page", page.Index)
 		authorized.POST("/page", page.Create)
 		authorized.GET("/page/new", page.New)
-		authorized.GET("/page/edit/:id",page.Edit)
+		authorized.GET("/page/edit/:id", page.Edit)
 		authorized.GET("/page/get/:id", page.Get)
 		authorized.POST("/page/update/:id", page.Update)
-		authorized.DELETE("/page/delete/:id",page.Delete)
+		authorized.DELETE("/page/delete/:id", page.Delete)
 		authorized.POST("/page/publish/:id", page.Publish)
-		
 		
 		// post
 		post := new(admin.PostApi)
@@ -140,8 +141,9 @@ func (r *Routes) adminRouter() {
 		authorized.POST("/profile/github/unbind", auth.UnbindGithub)
 		
 		// subscriber
-		authorized.GET("/subscriber", api.SubscriberIndex)
-		authorized.POST("/subscriber", api.SubscriberPost)
+		adminSub := admin.SubscriberApi{}
+		authorized.GET("/subscriber", adminSub.SubscriberIndex)
+		authorized.POST("/subscriber", adminSub.SubscriberPost)
 		
 		// link
 		link := &admin.LinkApi{}
@@ -151,16 +153,18 @@ func (r *Routes) adminRouter() {
 		authorized.POST("/link/:id/update", link.Update)
 		authorized.DELETE("/link/:id/delete", link.Delete)
 		// comment
-		authorized.POST("/comment/:id", api.CommentRead)
-		authorized.POST("/read_all", api.CommentReadAll)
+		comment := admin.CommentApi{}
+		authorized.POST("/comment/:id", comment.CommentRead)
+		authorized.POST("/read_all", comment.CommentReadAll)
 		
 		// backup
 		authorized.POST("/backup", api.BackupPost)
 		authorized.POST("/restore", api.RestorePost)
 		
 		// mail
-		authorized.POST("/new_mail", api.SendMail)
-		authorized.POST("/new_batchmail", api.SendBatchMail)
+		mail := admin.MailApi{}
+		authorized.POST("/new_mail", mail.Send)
+		authorized.POST("/new_batchmail", mail.SendBatch)
 	}
 	
 }

@@ -1,26 +1,30 @@
-package api
+package admin
 
 import (
+	"github.com/gitlubtaotao/wblog/api"
 	"strings"
-
+	
 	"strconv"
-
+	
 	"github.com/gin-gonic/gin"
 	"github.com/gitlubtaotao/wblog/models"
 )
 
-func SendMail(c *gin.Context) {
+type MailApi struct {
+	*api.BaseApi
+}
+
+func (m *MailApi) Send(c *gin.Context) {
 	var (
 		err        error
 		res        = gin.H{}
 		uid        uint64
 		subscriber *models.Subscriber
 	)
-	defer WriteJSON(c, res)
+	defer api.WriteJSON(c, res)
 	subject := c.PostForm("subject")
 	content := c.PostForm("content")
 	userId := c.Query("userId")
-
 	if subject == "" || content == "" || userId == "" {
 		res["message"] = "error parameter"
 		return
@@ -35,7 +39,7 @@ func SendMail(c *gin.Context) {
 		res["message"] = err.Error()
 		return
 	}
-	err = sendMail(subscriber.Email, subject, content)
+	err = m.SendMailHtml(subscriber.Email, subject, content)
 	if err != nil {
 		res["message"] = err.Error()
 		return
@@ -43,14 +47,14 @@ func SendMail(c *gin.Context) {
 	res["succeed"] = true
 }
 
-func SendBatchMail(c *gin.Context) {
+func (m *MailApi) SendBatch(c *gin.Context) {
 	var (
 		err         error
 		res         = gin.H{}
 		subscribers []*models.Subscriber
 		emails      = make([]string, 0)
 	)
-	defer WriteJSON(c, res)
+	defer api.WriteJSON(c, res)
 	subject := c.PostForm("subject")
 	content := c.PostForm("content")
 	if subject == "" || content == "" {
@@ -65,7 +69,7 @@ func SendBatchMail(c *gin.Context) {
 	for _, subscriber := range subscribers {
 		emails = append(emails, subscriber.Email)
 	}
-	err = sendMail(strings.Join(emails, ";"), subject, content)
+	err = m.SendMailHtml(strings.Join(emails, ";"), subject, content)
 	if err != nil {
 		res["message"] = err.Error()
 		return

@@ -2,9 +2,9 @@ package api
 
 import (
 	"strconv"
-
+	
 	"fmt"
-
+	
 	"github.com/dchest/captcha"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -12,7 +12,11 @@ import (
 	"github.com/gitlubtaotao/wblog/system"
 )
 
-func CommentPost(c *gin.Context) {
+type CommentApi struct {
+	*BaseApi
+}
+
+func (comm *CommentApi) CommentPost(c *gin.Context) {
 	var (
 		err  error
 		res  = gin.H{}
@@ -22,7 +26,7 @@ func CommentPost(c *gin.Context) {
 	s := sessions.Default(c)
 	sessionUserID := s.Get(SESSION_KEY)
 	userId, _ := sessionUserID.(uint)
-
+	
 	verifyCode := c.PostForm("verifyCode")
 	captchaId := s.Get(SESSION_CAPTCHA)
 	s.Delete(SESSION_CAPTCHA)
@@ -31,14 +35,14 @@ func CommentPost(c *gin.Context) {
 		res["message"] = "error verifycode"
 		return
 	}
-
+	
 	postId := c.PostForm("postId")
 	content := c.PostForm("content")
 	if len(content) == 0 {
 		res["message"] = "content cannot be empty."
 		return
 	}
-
+	
 	post, err = models.GetPostById(postId)
 	if err != nil {
 		res["message"] = err.Error()
@@ -59,22 +63,22 @@ func CommentPost(c *gin.Context) {
 		res["message"] = err.Error()
 		return
 	}
-	NotifyEmail("[wblog]您有一条新评论", fmt.Sprintf("<a href=\"%s/post/%d\" target=\"_blank\">%s</a>:%s", system.GetConfiguration().Domain, post.ID, post.Title, content))
+	_ = comm.DefaultNoticeMailHtml("[wblog]您有一条新评论", fmt.Sprintf("<a href=\"%s/post/%d\" target=\"_blank\">%s</a>:%s", system.GetConfiguration().Domain, post.ID, post.Title, content))
 	res["succeed"] = true
 }
 
-func CommentDelete(c *gin.Context) {
+func (comm *CommentApi) CommentDelete(c *gin.Context) {
 	var (
 		err error
 		res = gin.H{}
 		cid uint64
 	)
 	defer WriteJSON(c, res)
-
+	
 	s := sessions.Default(c)
 	sessionUserID := s.Get(SESSION_KEY)
 	userId, _ := sessionUserID.(uint)
-
+	
 	commentId := c.Param("id")
 	cid, err = strconv.ParseUint(commentId, 10, 64)
 	if err != nil {
@@ -93,7 +97,7 @@ func CommentDelete(c *gin.Context) {
 	res["succeed"] = true
 }
 
-func CommentRead(c *gin.Context) {
+func (comm *CommentApi) CommentRead(c *gin.Context) {
 	var (
 		id  string
 		_id uint64
