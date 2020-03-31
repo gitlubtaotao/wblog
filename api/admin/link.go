@@ -5,10 +5,8 @@ import (
 	"github.com/gitlubtaotao/wblog/api"
 	"github.com/gitlubtaotao/wblog/repositories"
 	"net/http"
-	"strconv"
 	
 	"github.com/gin-gonic/gin"
-	"github.com/gitlubtaotao/wblog/models"
 )
 
 type LinkApi struct {
@@ -35,7 +33,7 @@ func (l *LinkApi) Index(ctx *gin.Context) {
 	}))
 }
 
-func (l *LinkApi) LinkCreate(c *gin.Context) {
+func (l *LinkApi) Create(c *gin.Context) {
 	repository := repositories.NewLinkRepository(c)
 	var (
 		err error
@@ -51,7 +49,7 @@ func (l *LinkApi) LinkCreate(c *gin.Context) {
 }
 
 //显示link info
-func (l *LinkApi) Show(ctx *gin.Context) {
+func (l *LinkApi) Get(ctx *gin.Context) {
 	repository := repositories.NewLinkRepository(ctx)
 	var res = gin.H{}
 	defer l.WriteJSON(ctx, res)
@@ -65,7 +63,7 @@ func (l *LinkApi) Show(ctx *gin.Context) {
 	res["succeed"] = true
 }
 
-func (l *LinkApi) LinkUpdate(c *gin.Context) {
+func (l *LinkApi) Update(c *gin.Context) {
 	repository := repositories.NewLinkRepository(c)
 	var (
 		err error
@@ -82,7 +80,7 @@ func (l *LinkApi) LinkUpdate(c *gin.Context) {
 
 //
 
-func (l *LinkApi) LinkDelete(c *gin.Context) {
+func (l *LinkApi) Delete(c *gin.Context) {
 	reposition := repositories.NewLinkRepository(c)
 	var (
 		err error
@@ -99,15 +97,23 @@ func (l *LinkApi) LinkDelete(c *gin.Context) {
 	res["succeed"] = true
 }
 
-func (l *LinkApi) LinkGet(c *gin.Context) {
-	id := c.Param("id")
-	_id, _ := strconv.ParseInt(id, 10, 64)
-	link, err := models.GetLinkById(uint(_id))
-	if err != nil {
-		c.AbortWithStatus(http.StatusInternalServerError)
-		return
-	}
-	link.View++
-	link.Update()
-	c.Redirect(http.StatusFound, link.Url)
+func (l *LinkApi) Edit(ctx *gin.Context) {
+
 }
+
+func (l *LinkApi) New(ctx *gin.Context) {
+
+}
+
+//func (l *LinkApi) LinkGet(c *gin.Context) {
+////	id := c.Param("id")
+////	_id, _ := strconv.ParseInt(id, 10, 64)
+////	link, err := models.GetLinkById(uint(_id))
+////	if err != nil {
+////		c.AbortWithStatus(http.StatusInternalServerError)
+////		return
+////	}
+////	link.View++
+////	link.Update()
+////	c.Redirect(http.StatusFound, link.Url)
+////}

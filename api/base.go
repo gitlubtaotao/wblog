@@ -63,6 +63,10 @@ func (b *BaseApi) GetSessionValue(ctx *gin.Context, key string, isDelete bool) (
 	return value, nil
 }
 
+func (b *BaseApi) Handle404(c *gin.Context) {
+	HandleMessage(c, "Sorry,I lost myself!")
+}
+
 func (b *BaseApi) HandleMessage(c *gin.Context, message string) {
 	c.HTML(http.StatusNotFound, "errors/error.html", gin.H{
 		"message": message,

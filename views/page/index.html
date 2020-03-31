@@ -1,24 +1,23 @@
-{{define "admin/page.html"}}
+{{define "page/index.html"}}
     <!DOCTYPE html>
     <html lang="zh-CN">
     <head>
-        {{template  "admin/start"}}
-        <link rel="stylesheet" href="/static/libs/datatables.net-bs/css/dataTables.bootstrap.min.css">
-        <title></title>
+        {{template  "layouts/header.html"}}
+        <title>wblog-Page Manage</title>
     </head>
     <body class="hold-transition skin-blue sidebar-mini">
     <div class="wrapper">
-
-        {{template "admin/navbar.html" .}}
-        {{template "admin/sidebar.html" .}}
+        {{template "layouts/navbar.html" .}}
+        {{template "layouts/sidebar.html" .}}
 
         <!-- Content Wrapper. Contains page content -->
         <div class="content-wrapper">
             <!-- Content Header (Page header) -->
             <section class="content-header">
                 <h1>
-                    <small>页面管理<a class="btn btn-primary" href="/admin/new_page" target="_blank"><span
-                                    class="glyphicon glyphicon-plus"></span>新增</a></small>
+                    <small>页面管理<a class="btn btn-primary" href="/admin/page/new" target="_blank"
+                                  style="margin-left: 10px;"><span
+                                    class="glyphicon glyphicon-plus"></span>Add Page</a></small>
                 </h1>
                 <ol class="breadcrumb">
                     <li><a href="/admin/index"><i class="fa fa-dashboard"></i> Home</a></li>
@@ -39,34 +38,36 @@
                                 <table id="example2" class="table table-bordered table-hover">
                                     <thead>
                                     <tr>
+                                        <th>Operation</th>
                                         <th>ID</th>
-                                        <th>标题</th>
-                                        <th>公开</th>
-                                        <th>创建时间</th>
-                                        <th>更新时间</th>
-                                        <th>操作</th>
+                                        <th>Title</th>
+                                        <th>Published</th>
+                                        <th>Created At</th>
+                                        <th>Updated At</th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     {{range .pages}}
-                                        <tr>
+                                        <tr id="tr_{{.ID}}">
+                                            <td><a href="/admin/page/edit/{{.ID}}" target="_blank"
+                                                   class="btn btn-primary btn-sm">Edit</a>
+                                                <a href="#" class="btn btn-danger btn-sm"
+                                                   data-href="/admin/page/delete/{{.ID}}" data-toggle="modal"
+                                                   data-target="#confirm-delete" data-id="{{.ID}}">Delete</a>
+                                            </td>
                                             <td>{{.ID}}</td>
                                             <td><a href="/page/{{.ID}}" target="_blank">{{.Title}}</a></td>
                                             <td>
                                                 <a href="javascript:void(0);"
-                                                   onclick="pushlish('{{.ID}}')"> {{if .IsPublished}}√{{else}}×{{end}}</a>
+                                                   class="published" data-id="{{.ID}}"
+                                                   data-status="{{.IsPublished}}"> {{if .IsPublished}}√{{else}}×{{end}}</a>
                                             </td>
-                                            <td>{{dateFormat .CreatedAt "06-01-02 15:04"}}</td>
-                                            <td>{{dateFormat .UpdatedAt "06-01-02 15:04"}}</td>
-                                            <td><a href="/admin/page/{{.ID}}/edit" target="_blank"
-                                                   class="btn btn-primary">编辑</a>
-                                                <a href="#" class="btn btn-danger"
-                                                   data-href="/admin/page/{{.ID}}/delete" data-toggle="modal"
-                                                   data-target="#confirm-delete">删除</a>
-                                            </td>
+                                            <td>{{dateFormat .CreatedAt "2006-01-02 15:04"}}</td>
+                                            <td>{{dateFormat .UpdatedAt "2006-01-02 15:04"}}</td>
+
                                         </tr>
                                     {{end}}
-                                    </tfoot>
+                                    </tbody>
                                 </table>
                             </div>
                             <!-- /.box-body -->
@@ -103,45 +104,9 @@
     </div>
 
     <!-- jQuery 3 -->
-    <script src="/static/libs/jquery/jquery.min.js"></script>
-    <!-- Bootstrap 3.3.7 -->
-    <script src="/static/libs/bootstrap/js/bootstrap.min.js"></script>
-    <!-- DataTables -->
-    <script src="/static/libs/datatables.net/js/jquery.dataTables.min.js"></script>
-    <script src="/static/libs/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
-    <!-- AdminLTE App -->
-    <script src="/static/libs/AdminLTE/js/adminlte.min.js"></script>
+    {{template "layouts/footer.html" .}}
+    <script src="/static/libs/page_assets/page/index.js"></script>
     <!-- page script -->
-    <script>
-        $(function () {
-            $('#example2').DataTable({
-                'paging': true,
-                'lengthChange': false,
-                'searching': false,
-                'ordering': true,
-                'info': true,
-                'autoWidth': false
-            });
-        });
-
-        function pushlish(id) {
-            $.post("/admin/page/" + id + "/publish", {}, function (result) {
-                console.log(result);
-                if (result.succeed) {
-                    window.location.href = window.location.href;
-                }
-            }, "json")
-        }
-
-        $('#confirm-delete').on('show.bs.modal', function (e) {
-            $(this).find('.btn-ok').click(function () {
-                $.post($(e.relatedTarget).data('href'), {}, function (reuslt) {
-                    window.location.href = window.location.href;
-                }, 'json');
-
-            });
-        });
-    </script>
     </body>
     </html>
 {{end}}

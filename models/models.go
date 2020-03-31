@@ -24,10 +24,10 @@ type BaseModel struct {
 // table pages
 type Page struct {
 	gorm.Model
-	Title       string // title
-	Body        string // body
-	View        int    // view count
-	IsPublished bool   // published or not
+	Title       string `json:"title" form:"title" validate:"required"`               // title
+	Body        string `json:"body" form:"body"`                 // body
+	View        int    `form:"-" json:"-"`                       // view count
+	IsPublished bool   `json:"is_published" form:"is_published"` // published or not
 }
 
 // table tags
@@ -169,37 +169,14 @@ func (u *User) ShowAvatarURL() string {
 	}
 }
 
-// Page
-func (page *Page) Insert() error {
-	return DB.Create(page).Error
-}
 
-func (page *Page) Update() error {
-	return DB.Model(page).Updates(map[string]interface{}{
-		"title":        page.Title,
-		"body":         page.Body,
-		"is_published": page.IsPublished,
-	}).Error
-}
+
+
 
 func (page *Page) UpdateView() error {
 	return DB.Model(page).Updates(map[string]interface{}{
 		"view": page.View,
 	}).Error
-}
-
-func (page *Page) Delete() error {
-	return DB.Delete(page).Error
-}
-
-func GetPageById(id string) (*Page, error) {
-	pid, err := strconv.ParseUint(id, 10, 64)
-	if err != nil {
-		return nil, err
-	}
-	var page Page
-	err = DB.First(&page, "id = ?", pid).Error
-	return &page, err
 }
 
 func ListPublishedPage() ([]*Page, error) {
@@ -439,20 +416,11 @@ func (u *User) Update() error {
 	return DB.Save(u).Error
 }
 
-
-
-
-
 //
 func (u *User) FirstOrCreate() (*User, error) {
 	err := DB.FirstOrCreate(u, "github_login_id = ?", u.GithubLoginId).Error
 	return u, err
 }
-
-
-
-
-
 
 // Comment
 func (comment *Comment) Insert() error {
@@ -591,8 +559,6 @@ func GetLinkById(id uint) (*Link, error) {
 	err := DB.FirstOrCreate(&link, "id = ?", id).Error
 	return &link, err
 }
-
-
 
 func (sf SmmsFile) Insert() (err error) {
 	err = DB.Create(&sf).Error

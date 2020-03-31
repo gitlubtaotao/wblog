@@ -91,8 +91,8 @@ func (r *Routes) otherRouter() {
 	r.engine.GET("/post/:id", admin.PostGet)
 	r.engine.GET("/tag/:tag", api.TagGet)
 	r.engine.GET("/archives/:year/:month", api.ArchiveGet)
-	link := admin.LinkApi{}
-	r.engine.GET("/link/:id", link.LinkGet)
+	//link := admin.LinkApi{}
+	//r.engine.GET("/link/:id", link.LinkGet)
 }
 
 //后台路由
@@ -110,9 +110,9 @@ func (r *Routes) adminRouter() {
 		authorized.GET("/page/new", page.New)
 		authorized.GET("/page/edit/:id",page.Edit)
 		authorized.GET("/page/get/:id", page.Get)
-		authorized.PATCH("/page/:id", page.Update)
-		authorized.DELETE("/page/:id",page.Delete)
-		authorized.POST("/page/publish/:id", page.PagePublish)
+		authorized.POST("/page/update/:id", page.Update)
+		authorized.DELETE("/page/delete/:id",page.Delete)
+		authorized.POST("/page/publish/:id", page.Publish)
 		
 		
 		// post
@@ -146,10 +146,10 @@ func (r *Routes) adminRouter() {
 		// link
 		link := &admin.LinkApi{}
 		authorized.GET("/link", link.Index)
-		authorized.POST("/link", link.LinkCreate)
-		authorized.GET("/link/:id/show", link.Show)
-		authorized.POST("/link/:id/update", link.LinkUpdate)
-		authorized.DELETE("/link/:id/delete", link.LinkDelete)
+		authorized.POST("/link", link.Create)
+		authorized.GET("/link/:id/show", link.Get)
+		authorized.POST("/link/:id/update", link.Update)
+		authorized.DELETE("/link/:id/delete", link.Delete)
 		// comment
 		authorized.POST("/comment/:id", api.CommentRead)
 		authorized.POST("/read_all", api.CommentReadAll)

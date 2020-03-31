@@ -2,103 +2,98 @@ package admin
 
 import (
 	"github.com/gitlubtaotao/wblog/api"
+	"github.com/gitlubtaotao/wblog/repositories"
 	"net/http"
 	"strconv"
 	
 	"github.com/gin-gonic/gin"
-	"github.com/gitlubtaotao/wblog/models"
 )
 
 type PageApi struct {
 	*api.BaseApi
 }
 
-func PageGet(c *gin.Context) {
+func (p *PageApi) PageGet(c *gin.Context) {
+	repository := p.repository(c)
 	id := c.Param("id")
-	page, err := models.GetPageById(id)
+	uints, _ := strconv.ParseUint(id, 10, 64)
+	page, err := repository.FindPage(uint(uints))
 	if err != nil || !page.IsPublished {
-		api.Handle404(c)
+		p.Handle404(c)
 		return
 	}
 	page.View++
-	page.UpdateView()
+	_ = page.UpdateView()
 	c.HTML(http.StatusOK, "page/display.html", gin.H{
 		"page": page,
 	})
 }
 
 func (p *PageApi) New(c *gin.Context) {
-	c.HTML(http.StatusOK, "page/new.html", nil)
+	user, _ := p.CurrentUser(c)
+	repository := p.repository(c)
+	page, _ := repository.New()
+	c.HTML(http.StatusOK, "page/edit.html",
+		p.RenderComments(gin.H{"user": user,
+			"page":   page,
+			"action": "/admin/page"}))
 }
 
 func (p *PageApi) Create(c *gin.Context) {
-	title := c.PostForm("title")
-	body := c.PostForm("body")
-	isPublished := c.PostForm("isPublished")
-	published := "on" == isPublished
-	page := &models.Page{
-		Title:       title,
-		Body:        body,
-		IsPublished: published,
-	}
-	err := page.Insert()
+	var (
+		err error
+		res = gin.H{}
+	)
+	defer p.WriteJSON(c, res)
+	repository := p.repository(c)
+	err = repository.GinCreate()
 	if err != nil {
-		c.HTML(http.StatusOK, "page/new.html", gin.H{
-			"message": err.Error(),
-			"page":    page,
-		})
+		res["message"] = err.Error()
 		return
 	}
-	c.Redirect(http.StatusMovedPermanently, "/admin/page")
+	res["succeed"] = true
 }
 
 func (p *PageApi) Edit(c *gin.Context) {
-	id := c.Param("id")
-	page, err := models.GetPageById(id)
+	repository := p.repository(c)
+	user, _ := p.CurrentUser(c)
+	page, err := repository.FindPage(p.stringToUnit(c))
 	if err != nil {
-		api.Handle404(c)
+		p.Handle404(c)
+		return
 	}
-	c.HTML(http.StatusOK, "page/modify.html", gin.H{
-		"page": page,
-	})
+	id := strconv.FormatInt(int64(page.ID), 10)
+	c.HTML(http.StatusOK, "page/edit.html",
+		p.RenderComments(gin.H{"user": user, "page": page,
+			"action": "/admin/page/update/" + id}))
 }
 
 func (p *PageApi) Update(c *gin.Context) {
-	id := c.Param("id")
-	title := c.PostForm("title")
-	body := c.PostForm("body")
-	isPublished := c.PostForm("isPublished")
-	published := "on" == isPublished
-	pid, err := strconv.ParseUint(id, 10, 64)
+	var (
+		err error
+		res = gin.H{}
+	)
+	defer p.WriteJSON(c, res)
+	id := p.stringToUnit(c)
+	repository := p.repository(c)
+	err = repository.GinUpdate(id)
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		res["message"] = err.Error()
+		_ = c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
-	page := &models.Page{Title: title, Body: body, IsPublished: published}
-	page.ID = uint(pid)
-	err = page.Update()
-	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
-		return
-	}
-	c.Redirect(http.StatusMovedPermanently, "/admin/page")
+	res["succeed"] = true
 }
 
-func (p *PageApi) PagePublish(c *gin.Context) {
+func (p *PageApi) Publish(c *gin.Context) {
 	var (
 		err error
 		res = gin.H{}
 	)
 	defer api.WriteJSON(c, res)
-	id := c.Param("id")
-	page, err := models.GetPageById(id)
-	if err == nil {
-		res["message"] = err.Error()
-		return
-	}
-	page.IsPublished = !page.IsPublished
-	err = page.Update()
-	if err == nil {
+	repository := p.repository(c)
+	err = repository.Publish(p.stringToUnit(c))
+	if err != nil {
 		res["message"] = err.Error()
 		return
 	}
@@ -111,15 +106,9 @@ func (p *PageApi) Delete(c *gin.Context) {
 		res = gin.H{}
 	)
 	defer api.WriteJSON(c, res)
-	id := c.Param("id")
-	pid, err := strconv.ParseUint(id, 10, 64)
-	if err != nil {
-		res["message"] = err.Error()
-		return
-	}
-	page := &models.Page{}
-	page.ID = uint(pid)
-	err = page.Delete()
+	id := p.stringToUnit(c)
+	repository := p.repository(c)
+	err = repository.Delete(id)
 	if err != nil {
 		res["message"] = err.Error()
 		return
@@ -128,15 +117,24 @@ func (p *PageApi) Delete(c *gin.Context) {
 }
 
 func (p *PageApi) Index(c *gin.Context) {
-	pages, _ := models.ListAllPage()
-	user, _ := c.Get(api.CONTEXT_USER_KEY)
-	c.HTML(http.StatusOK, "admin/page.html", gin.H{
-		"pages":    pages,
-		"user":     user,
-		"comments": models.MustListUnreadComment(),
-	})
+	repository := p.repository(c)
+	pages, _ := repository.ListAllPage(map[string]interface{}{})
+	user, _ := p.CurrentUser(c)
+	
+	c.HTML(http.StatusOK, "page/index.html",
+		p.RenderComments(gin.H{"pages": pages, "user": user}))
 }
 
 func (p *PageApi) Get(c *gin.Context) {
 
+}
+
+func (p *PageApi) repository(c *gin.Context) repositories.IPageRepository {
+	return repositories.NewPageRepository(c)
+}
+
+func (p *PageApi) stringToUnit(c *gin.Context) uint {
+	id := c.Param("id")
+	units, _ := strconv.ParseUint(id, 10, 64)
+	return uint(units)
 }

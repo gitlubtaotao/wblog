@@ -1,0 +1,55 @@
+{{define "page/edit.html"}}
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <title>Page - New</title>
+        {{template "layouts/header.html"}}
+        {{template "layouts/text_rich.html"}}
+    </head>
+
+    <body class="hold-transition skin-blue sidebar-mini">
+    <div class="wrapper">
+        {{template "layouts/navbar.html" .}}
+        {{template "layouts/sidebar.html" .}}
+        <div class="content-wrapper">
+            <!-- Content Header (Page header) -->
+            <section class="content-header">
+                <h1>
+                    <small>页面管理
+                        <a class="btn btn-primary pageSave" id="pageSave" href="javascript:void(0);"
+                           style="margin-left: 10px;">
+                            <span class="glyphicon glyphicon-saved"></span>
+                            Save Page
+                        </a>
+                    </small>
+                </h1>
+                <ol class="breadcrumb">
+                    <li><a href="/admin/index"><i class="fa fa-dashboard"></i> Home</a></li>
+                    <li class="active"><a href="#">页面管理</a></li>
+                </ol>
+            </section>
+
+            <!-- Main content -->
+            <section class="content">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <!-- create or update a article -->
+                        <form action="{{.action}}" method="post" id="pageForm" class="form-group">
+                            <input name="title" type="text" class="form-control" value="{{.page.Title}}" placeholder="Title"/><br/>
+                            <textarea id="demo" name="body">{{.page.Body}}</textarea><br/>
+                            <div class="bootstrap-switch-small">
+                                <input id="switchbtn" name="isPublished" type="checkbox" {{if .page.IsPublished}}checked{{end}}/>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+    {{template "layouts/footer.html"}}
+    <script src="/static/libs/page_assets/simplemde.js"></script>
+    <script src="/static/libs/page_assets/page/edit.js"></script>
+
+    </body>
+    </html>
+{{end}}

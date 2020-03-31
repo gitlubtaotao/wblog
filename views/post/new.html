@@ -1,4 +1,4 @@
-{{define "post/new.html"}}
+{{define "post/edit.html"}}
     <!DOCTYPE html>
     <html lang="en">
 
@@ -78,6 +78,7 @@
                     uploadUrl: "/admin/upload",
                     jsonFieldName: "url",
                     onFileUploadResponse: function (xhr) {
+                        console.log(xhr);
                         var result = JSON.parse(xhr.responseText),
                             filename = result[this.settings.jsonFieldName];
 

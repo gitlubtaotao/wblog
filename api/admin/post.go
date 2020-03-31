@@ -30,7 +30,7 @@ func (p *PostApi) Index(c *gin.Context) {
 }
 
 func (p *PostApi) New(c *gin.Context) {
-	c.HTML(http.StatusOK, "post/new.html", nil)
+	c.HTML(http.StatusOK, "post/edit.html", nil)
 }
 
 func (p *PostApi) Create(c *gin.Context) {
@@ -68,7 +68,7 @@ func (p *PostApi) Create(c *gin.Context) {
 		return nil
 	})
 	if err != nil {
-		c.HTML(http.StatusOK, "post/new.html", gin.H{
+		c.HTML(http.StatusOK, "post/edit.html", gin.H{
 			"post":    post,
 			"message": err.Error(),
 		})
