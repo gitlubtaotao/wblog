@@ -108,6 +108,11 @@ func setSessions(router *gin.Engine) {
 //SharedData fills in common data, such as user info, etc...
 func SharedData() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		//静态资源不做判断
+		if strings.Contains(c.Request.URL.String(), "/static") {
+			c.Next()
+			return
+		}
 		session := sessions.Default(c)
 		if uID := session.Get(api.SESSION_KEY); uID != nil {
 			userString, err := encrypt.DeCryptData(uID.(string), true)

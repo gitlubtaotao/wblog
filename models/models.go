@@ -80,10 +80,10 @@ type Comment struct {
 // table subscribe
 type Subscriber struct {
 	gorm.Model
-	Email          string    `gorm:"unique_index"` //邮箱
-	VerifyState    bool      `gorm:"default:'0'"`  //验证状态
-	SubscribeState bool      `gorm:"default:'1'"`  //订阅状态
-	OutTime        time.Time //过期时间
+	Email          string    `gorm:"unique_index" json:"email" form:"email"`  //邮箱
+	VerifyState    bool      `gorm:"default:'0'" json:"verify_state" form:"verify_state" `  //验证状态
+	SubscribeState bool      `gorm:"default:'1'" json:"subscribe_state" form:"subscribe_state" `  //订阅状态
+	OutTime        time.Time   //过期时间
 	SecretKey      string    // 秘钥
 	Signature      string    //签名
 }

@@ -1,11 +1,10 @@
 package admin
 
-//TODO-TAO 查询前端订阅者，需要将admin和client进行拆分，分布启用两个不同的服务
-
 import (
+	"github.com/cihub/seelog"
 	"github.com/gin-gonic/gin"
 	"github.com/gitlubtaotao/wblog/api"
-	"github.com/gitlubtaotao/wblog/models"
+	"github.com/gitlubtaotao/wblog/repositories"
 	"net/http"
 )
 
@@ -13,9 +12,16 @@ type SubscriberApi struct {
 	*api.BaseApi
 }
 
-
 func (s *SubscriberApi) Index(ctx *gin.Context) {
-	subscribers, _ := models.ListSubscriber(false)
+	repository := repositories.NewSubscriberRepository(ctx)
+	attr := map[string]interface{}{}
+	columns := []string{"email", "verify_state", "subscribe_state", "created_at"}
+	subscribers, err := repository.AllListSubscriber(attr, columns)
+	if err != nil {
+		_ = seelog.Critical(err)
+		s.HandleMessage(ctx, err.Error())
+		ctx.Abort()
+	}
 	user, _ := s.CurrentUser(ctx)
 	ctx.HTML(http.StatusOK, "subscriber/index.html",
 		s.RenderComments(gin.H{
@@ -23,4 +29,3 @@ func (s *SubscriberApi) Index(ctx *gin.Context) {
 			"user":        user,
 		}))
 }
-
