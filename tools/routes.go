@@ -142,8 +142,7 @@ func (r *Routes) adminRouter() {
 		
 		// subscriber
 		adminSub := admin.SubscriberApi{}
-		authorized.GET("/subscriber", adminSub.SubscriberIndex)
-		authorized.POST("/subscriber", adminSub.SubscriberPost)
+		authorized.GET("/subscriber", adminSub.Index)
 		
 		// link
 		link := &admin.LinkApi{}
@@ -152,6 +151,7 @@ func (r *Routes) adminRouter() {
 		authorized.GET("/link/:id/show", link.Get)
 		authorized.POST("/link/:id/update", link.Update)
 		authorized.DELETE("/link/:id/delete", link.Delete)
+		
 		// comment
 		comment := admin.CommentApi{}
 		authorized.POST("/comment/:id", comment.CommentRead)
@@ -163,8 +163,8 @@ func (r *Routes) adminRouter() {
 		
 		// mail
 		mail := admin.MailApi{}
-		authorized.POST("/new_mail", mail.Send)
-		authorized.POST("/new_batchmail", mail.SendBatch)
+		authorized.POST("/mail/send", mail.Send)
+		authorized.POST("/mail/batch/send", mail.SendBatch)
 	}
 	
 }

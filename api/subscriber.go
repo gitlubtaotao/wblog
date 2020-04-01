@@ -176,7 +176,7 @@ func (s *SubscribeApi) sendEmailToSubscribers(subject, body string) (err error) 
 func SubscriberIndex(c *gin.Context) {
 	subscribers, _ := models.ListSubscriber(false)
 	user, _ := c.Get(CONTEXT_USER_KEY)
-	c.HTML(http.StatusOK, "admin/subscriber.html", gin.H{
+	c.HTML(http.StatusOK, "subscriber/index.html", gin.H{
 		"subscribers": subscribers,
 		"user":        user,
 		"comments":    models.MustListUnreadComment(),
