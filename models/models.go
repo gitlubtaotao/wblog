@@ -24,17 +24,18 @@ type BaseModel struct {
 // table pages
 type Page struct {
 	gorm.Model
-	Title       string `json:"title" form:"title" validate:"required"`               // title
-	Body        string `json:"body" form:"body"`                 // body
-	View        int    `form:"-" json:"-"`                       // view count
-	IsPublished bool   `json:"is_published" form:"is_published"` // published or not
+	Title       string `json:"title" form:"title" validate:"required"` // title
+	Body        string `json:"body" form:"body"`                       // body
+	View        int    `form:"-" json:"-"`                             // view count
+	IsPublished bool   `json:"is_published" form:"is_published"`       // published or not
 }
 
 // table tags
 type Tag struct {
 	BaseModel
-	Name  string // tag name
-	Total int    `gorm:"-"` // count of post
+	Name  string  // tag name
+	Total int     `gorm:"-"` // count of post
+	Posts []*Post `gorm:"many2many:post_tags;"`
 }
 
 // table post_tags
@@ -80,10 +81,10 @@ type Comment struct {
 // table subscribe
 type Subscriber struct {
 	gorm.Model
-	Email          string    `gorm:"unique_index" json:"email" form:"email"`  //邮箱
-	VerifyState    bool      `gorm:"default:'0'" json:"verify_state" form:"verify_state" `  //验证状态
-	SubscribeState bool      `gorm:"default:'1'" json:"subscribe_state" form:"subscribe_state" `  //订阅状态
-	OutTime        time.Time   //过期时间
+	Email          string    `gorm:"unique_index" json:"email" form:"email"`                     //邮箱
+	VerifyState    bool      `gorm:"default:'0'" json:"verify_state" form:"verify_state" `       //验证状态
+	SubscribeState bool      `gorm:"default:'1'" json:"subscribe_state" form:"subscribe_state" ` //订阅状态
+	OutTime        time.Time //过期时间
 	SecretKey      string    // 秘钥
 	Signature      string    //签名
 }
@@ -168,10 +169,6 @@ func (u *User) ShowAvatarURL() string {
 		return upload.PrivateReadURL(u.SecretKey)
 	}
 }
-
-
-
-
 
 func (page *Page) UpdateView() error {
 	return DB.Model(page).Updates(map[string]interface{}{

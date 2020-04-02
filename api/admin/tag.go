@@ -1,11 +1,12 @@
-package api
+package admin
 
 import (
+	"github.com/gitlubtaotao/wblog/repositories"
 	"net/http"
 	"strconv"
-
+	
 	"math"
-
+	
 	"github.com/gin-gonic/gin"
 	"github.com/gitlubtaotao/wblog/models"
 	"github.com/gitlubtaotao/wblog/system"
@@ -13,15 +14,22 @@ import (
 	"gopkg.in/russross/blackfriday.v2"
 )
 
-func TagCreate(c *gin.Context) {
+type TagApi struct {
+	*BaseApi
+	repository repositories.ITagRepository
+}
+
+func (t *TagApi) Create(ctx *gin.Context) {
+	repository := repositories.NewTagRepository(ctx)
+	
 	var (
 		err error
 		res = gin.H{}
 	)
-	defer WriteJSON(c, res)
-	name := c.PostForm("value")
-	tag := &models.Tag{Name: name}
-	err = tag.Insert()
+	defer t.WriteJSON(ctx, res)
+	name := ctx.PostForm("value")
+	tag := models.Tag{Name: name}
+	tag, err = repository.Create(tag)
 	if err != nil {
 		res["message"] = err.Error()
 		return

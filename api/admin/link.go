@@ -10,7 +10,7 @@ import (
 )
 
 type LinkApi struct {
-	*api.BaseApi
+	*BaseApi
 }
 
 func (l *LinkApi) Index(ctx *gin.Context) {
@@ -27,7 +27,7 @@ func (l *LinkApi) Index(ctx *gin.Context) {
 		l.HandleMessage(ctx, err.Error())
 		return
 	}
-	ctx.HTML(http.StatusOK, "admin/link.html", l.RenderComments(gin.H{
+	ctx.HTML(http.StatusOK, "link/index.html", l.RenderComments(gin.H{
 		"links": links,
 		"user":  user,
 	}))

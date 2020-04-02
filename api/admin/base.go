@@ -1,9 +1,10 @@
-package api
+package admin
 
 import (
 	"errors"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"github.com/gitlubtaotao/wblog/api"
 	"github.com/gitlubtaotao/wblog/models"
 	"github.com/gitlubtaotao/wblog/repositories"
 	"net/http"
@@ -64,7 +65,7 @@ func (b *BaseApi) GetSessionValue(ctx *gin.Context, key string, isDelete bool) (
 }
 
 func (b *BaseApi) Handle404(c *gin.Context) {
-	HandleMessage(c, "Sorry,I lost myself!")
+	api.HandleMessage(c, "Sorry,I lost myself!")
 }
 
 func (b *BaseApi) HandleMessage(c *gin.Context, message string) {
@@ -75,7 +76,7 @@ func (b *BaseApi) HandleMessage(c *gin.Context, message string) {
 }
 
 func (b *BaseApi) CurrentUser(c *gin.Context) (*models.User, error) {
-	sessionUser, exists := c.Get(CONTEXT_USER_KEY)
+	sessionUser, exists := c.Get(api.CONTEXT_USER_KEY)
 	if !exists {
 		return nil, errors.New("current user is not exist")
 	}

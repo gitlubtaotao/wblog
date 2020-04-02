@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/cihub/seelog"
 	"github.com/gin-gonic/gin"
+	"github.com/gitlubtaotao/wblog/api/admin"
 	"github.com/gitlubtaotao/wblog/encrypt"
 	"github.com/gitlubtaotao/wblog/helpers"
 	"github.com/gitlubtaotao/wblog/models"
@@ -13,7 +14,7 @@ import (
 
 //auth 其他登录开发
 type AuthApi struct {
-	*BaseApi
+	*admin.BaseApi
 	Auth repositories.IAuthRepository
 }
 

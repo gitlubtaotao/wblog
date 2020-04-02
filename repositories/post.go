@@ -1,106 +1,84 @@
 package repositories
 
 import (
-	"database/sql"
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"github.com/gitlubtaotao/wblog/models"
+	"github.com/gitlubtaotao/wblog/service"
 	"github.com/jinzhu/gorm"
 	"strconv"
+	"strings"
 )
 
 type IPostRepository interface {
+	ListAll(attr map[string]interface{}, column []string) (posts []*models.Post, err error)
+	Create() error
+	Delete(id uint) error
+	UpdateAttr(post *models.Post, attr map[string]interface{}) error
+	Update(post *models.Post) error
+	GetPostById(id uint, isTags bool) (*models.Post, error)
 }
 
 type PostRepository struct {
-	Object *models.Post
-	DB     *gorm.DB
+	ctx     *gin.Context
+	service service.IPostService
 }
 
-func NewPostRepository() *PostRepository {
-	return &PostRepository{Object: &models.Post{}}
+func (p *PostRepository) UpdateAttr(post *models.Post, attr map[string]interface{}) error {
+	return p.service.UpdateAttr(post, attr)
 }
 
-func (p *PostRepository) ListAll(tag string) (post []*models.Post, err error) {
-	return p.listPost(tag, false, 0, 0)
+func (p *PostRepository) Update(post *models.Post) (err error) {
+	return p.service.Update(post)
+}
+func (p *PostRepository) GetPostById(id uint, isTags bool) (*models.Post, error) {
+	return p.service.GetPostById(id,isTags)
+}
+func (p *PostRepository) Delete(id uint) error {
+	return p.service.Delete(id)
 }
 
-func (p *PostRepository) ListPublishedPost(tag string, pageIndex, pageSize int) ([]*models.Post, error) {
-	return p.listPost(tag, true, pageIndex, pageSize)
-}
-
-func (p *PostRepository) Delete() error {
-	return models.DB.Delete(p.Object).Error
-}
-
-func (p *PostRepository) GetPostById(id string) (*models.Post, error) {
-	pid, err := strconv.ParseUint(id, 10, 64)
+func (p *PostRepository) Create() error {
+	tagService := service.NewTagService()
+	var post models.Post
+	err := p.ctx.ShouldBindWith(&post, binding.Form)
 	if err != nil {
-		return nil, err
+		return nil
 	}
-	err = models.DB.First(&p.Object, "id=?", pid).Error
-	return p.Object, err
-}
-
-//更新博文信息
-func (p *PostRepository) Update() error {
-	
-	return models.DB.Model(&p.Object).Updates(map[string]interface{}{
-		"title":        p.Object.Title,
-		"body":         p.Object.Body,
-		"is_published": p.Object.IsPublished,
-	}).Error
-}
-
-func (p *PostRepository) listPost(tag string, published bool, pageIndex, pageSize int) ([]*models.Post, error) {
-	var posts []*models.Post
-	var err error
-	if len(tag) <= 0 {
-		posts, err = p.notTagsAllPosts(published, pageIndex, pageSize)
-		return posts, err
-	}
-	tagId, _err := strconv.ParseUint(tag, 10, 64)
-	if _err != nil {
-		return nil, _err
-	}
-	var rows *sql.Rows
-	if published {
-		temp := p.selectTagsAndPost(tagId)
-		if pageIndex > 0 {
-			temp = temp.Limit(pageSize).Offset((pageIndex - 1) * pageSize)
+	isPublished := p.ctx.PostForm("isPublished")
+	post.IsPublished = "on" == isPublished
+	tags := p.ctx.PostForm("tags")
+	err = models.DB.Transaction(func(tx *gorm.DB) error {
+		err := p.service.Create(&post)
+		if err != nil {
+			return err
 		}
-		rows, err = temp.Where("is_published = ?", true).Rows()
-	} else {
-		rows, err = p.selectTagsAndPost(tagId).Rows()
-	}
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	for rows.Next() {
-		var post models.Post
-		_ = models.DB.ScanRows(rows, &post)
-		posts = append(posts, &post)
-	}
-	return posts, err
-}
-
-func (p *PostRepository) notTagsAllPosts(published bool, pageIndex, pageSize int) ([]*models.Post, error) {
-	var (
-		posts []*models.Post
-		err   error
-	)
-	if published {
-		temp := models.DB.Where("is_published = ?", true).Order("id desc")
-		if pageIndex > 0 {
-			temp = temp.Limit(pageSize).Offset((pageIndex - 1) * pageSize)
+		if len(tags) > 0 {
+			tagArr := strings.Split(tags, ",")
+			for _, tag := range tagArr {
+				tagId, err := strconv.ParseUint(tag, 10, 64)
+				if err != nil {
+					continue
+				}
+				pt := &models.PostTag{PostId: post.ID, TagId: uint(tagId),}
+				err = tagService.PostTagCreate(pt)
+				if err != nil {
+					return nil
+				}
+			}
 		}
-		err = temp.Find(&posts).Error
-	} else {
-		err = models.DB.Order("id desc").Find(&posts).Error
-	}
-	return posts, err
+		return nil
+	})
+	return err
 }
 
-func (p *PostRepository) selectTagsAndPost(tagId uint64) *gorm.DB {
-	db := models.DB.Raw("select p.* from posts p inner join post_tags pt on p.id = pt.post_id where pt.tag_id = ? order by created_at desc", tagId)
-	return db
+/*
+@title: 获取所有的博客
+*/
+func (p PostRepository) ListAll(attr map[string]interface{}, column []string) (posts []*models.Post, err error) {
+	return p.service.AllListPost(attr, column)
+}
+
+func NewPostRepository(ctx *gin.Context) IPostRepository {
+	return &PostRepository{ctx: ctx, service: service.NewPostService()}
 }

@@ -16,9 +16,9 @@ type Post struct {
 	Body         string     `validate:"required"` // body
 	View         int        // view count
 	IsPublished  bool       // published or not
-	Tags         []*Tag     `gorm:"-"` // tags of post
-	Comments     []*Comment `gorm:"-"` // comments of post
-	CommentTotal int        `gorm:"-"` // count of comment
+	Tags         []*Tag     `gorm:"many2many:post_tags;"` // tags of post
+	Comments     []*Comment `gorm:"-"`                    // comments of post
+	CommentTotal int        `gorm:"-"`                    // count of comment
 	Keyword      string     `gorm:"size:255;not null" validate:"required"`
 }
 

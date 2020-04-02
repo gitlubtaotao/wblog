@@ -13,20 +13,22 @@ import (
 )
 
 type PostApi struct {
-	Base *api.BaseApi
-	Res  *repositories.PostRepository
+	*BaseApi
+	post repositories.IPostRepository
+	tag  repositories.ITagRepository
 }
 
-func (p *PostApi) Index(c *gin.Context) {
-	p.Res = repositories.NewPostRepository()
-	posts, _ := p.Res.ListAll("")
-	user := api.GetUser(c)
-	c.HTML(http.StatusOK, "admin/post.html", gin.H{
+func (p *PostApi) Index(ctx *gin.Context) {
+	repository := repositories.NewPostRepository(ctx)
+	posts, _ := repository.ListAll(map[string]interface{}{}, []string{})
+	user, _ := p.CurrentUser(ctx)
+	renderJson := p.RenderComments(gin.H{
 		"posts":    posts,
 		"Active":   "posts",
 		"user":     user,
 		"comments": models.MustListUnreadComment(),
 	})
+	ctx.HTML(http.StatusOK, "post/index.html", renderJson)
 }
 
 func (p *PostApi) New(c *gin.Context) {
@@ -34,128 +36,82 @@ func (p *PostApi) New(c *gin.Context) {
 }
 
 func (p *PostApi) Create(c *gin.Context) {
-	tags := c.PostForm("tags")
-	array := c.PostFormMap("post")
-	isPublished := c.PostForm("isPublished")
-	published := "on" == isPublished
-	post := &models.Post{
-		Title:       array["title"],
-		Body:        array["body"],
-		IsPublished: published,
-	}
-	err := models.DB.Transaction(func(tx *gorm.DB) error {
-		err := post.Insert()
-		if err != nil {
-			return err
-		}
-		if len(tags) > 0 {
-			tagArr := strings.Split(tags, ",")
-			for _, tag := range tagArr {
-				tagId, err := strconv.ParseUint(tag, 10, 64)
-				if err != nil {
-					continue
-				}
-				pt := &models.PostTag{
-					PostId: post.ID,
-					TagId:  uint(tagId),
-				}
-				err = pt.Insert()
-				if err != nil {
-					return nil
-				}
-			}
-		}
-		return nil
-	})
+	repository := p.getRepository(c)
+	err := repository.Create()
 	if err != nil {
-		c.HTML(http.StatusOK, "post/edit.html", gin.H{
-			"post":    post,
-			"message": err.Error(),
-		})
-		return
+		p.HandleMessage(c, err.Error())
 	}
 	c.Redirect(http.StatusMovedPermanently, "/admin/posts")
 }
 
-func (p *PostApi) Delete(c *gin.Context) {
+func (p *PostApi) Delete(ctx *gin.Context) {
 	var (
 		err error
-		gh  = gin.H{}
+		res = gin.H{}
 	)
-	defer p.Base.WriteJSON(c, gh)
-	id := c.Param("id")
-	pid, err := strconv.ParseUint(id, 10, 64)
+	repository := p.getRepository(ctx)
+	defer p.WriteJSON(ctx, res)
+	pid, err := strconv.ParseUint(ctx.Param("id"), 10, 64)
 	if err != nil {
-		gh["message"] = err.Error()
+		res["message"] = err.Error()
 		return
 	}
-	p.Res = repositories.NewPostRepository()
-	p.Res.Object.ID = uint(pid)
-	//TODO-使用transaction 3-4未完成
-	err = p.Res.Delete()
+	err = repository.Delete(uint(pid))
 	if err != nil {
-		gh["message"] = err.Error()
+		res["message"] = err.Error()
 		return
 	}
+	res["succeed"] = true
 }
 
 //编辑博文
 func (p *PostApi) Edit(c *gin.Context) {
-	id := c.Param("id")
-	p.Res = repositories.NewPostRepository()
-	post, err := p.Res.GetPostById(id)
+	id := p.stringToUnit(c.Param("id"))
+	repository := p.getRepository(c)
+	tagRepository := repositories.NewTagRepository(c)
+	post, err := repository.GetPostById(id,false)
 	if err != nil {
-		_ = api.HandlerError("post not published ", err)
-		api.Handle404(c)
+		p.HandleMessage(c, err.Error())
 		return
 	}
-	post.Tags, _ = models.ListTagByPostId(id)
+	post.Tags, _ = tagRepository.ListTagByPostId(id)
 	c.HTML(http.StatusOK, "post/modify.html", gin.H{
 		"post": post,
 	})
 }
 
 //保存博文信息
-func (p *PostApi) Update(c *gin.Context) {
-	id := c.Param("id")
-	tags := c.PostForm("tags")
-	array := c.PostFormMap("post")
-	isPublished := c.PostForm("isPublished")
-	published := "on" == isPublished
-	pid, err := strconv.ParseUint(id, 10, 64)
+func (p *PostApi) Update(ctx *gin.Context) {
+	Id := p.stringToUnit(ctx.Param("id"))
+	tags := ctx.PostForm("tags")
+	repository := p.getRepository(ctx)
+	tagRepository := repositories.NewTagRepository(ctx)
+	p.post = repository
+	p.tag = tagRepository
+	post, err := repository.GetPostById(Id,false)
 	if err != nil {
-		api.Handle404(c)
+		p.HandleMessage(ctx, err.Error())
 		return
 	}
-	p.Res = repositories.NewPostRepository()
-	
-	p.Res.Object = &models.Post{
-		Title:       array["title"],
-		Body:        array["body"],
-		IsPublished: published,
-	}
-	p.Res.Object.ID = uint(pid)
+	isPublished := ctx.PostForm("isPublished")
+	post.IsPublished = "on" == isPublished
 	err = models.DB.Transaction(func(tx *gorm.DB) error {
-		if err = p.Res.Update(); err != nil {
+		if err = repository.Update(post); err != nil {
 			return err
 		}
-		if err = models.DeletePostTagByPostId(p.Res.Object.ID); err != nil {
+		if err = tagRepository.DeletePostTagByPostId(post.ID); err != nil {
 			return err
 		}
-		if err = p.updateTag(tags); err != nil {
+		if err = p.updateTag(tags, post.ID); err != nil {
 			return err
 		}
 		return nil
 	})
 	if err != nil {
-		c.HTML(http.StatusOK, "post/modify.html", gin.H{
-			"post":    p.Res.Object,
-			"message": err.Error(),
-		})
+		p.HandleMessage(ctx, err.Error())
 		return
 	}
-	c.Redirect(http.StatusMovedPermanently, "/admin/posts")
-	
+	ctx.Redirect(http.StatusMovedPermanently, "/admin/posts")
 }
 
 func PostGet(c *gin.Context) {
@@ -177,69 +133,24 @@ func PostGet(c *gin.Context) {
 	})
 }
 
-func PostUpdate(c *gin.Context) {
-	id := c.Param("id")
-	tags := c.PostForm("tags")
-	title := c.PostForm("title")
-	body := c.PostForm("body")
-	isPublished := c.PostForm("isPublished")
-	published := "on" == isPublished
-	
-	pid, err := strconv.ParseUint(id, 10, 64)
-	if err != nil {
-		api.Handle404(c)
-		return
-	}
-	
-	post := &models.Post{
-		Title:       title,
-		Body:        body,
-		IsPublished: published,
-	}
-	post.ID = uint(pid)
-	err = post.Update()
-	if err != nil {
-		c.HTML(http.StatusOK, "post/modify.html", gin.H{
-			"post":    post,
-			"message": err.Error(),
-		})
-		return
-	}
-	// 删除tag
-	_ = models.DeletePostTagByPostId(post.ID)
-	// 添加tag
-	if len(tags) > 0 {
-		tagArr := strings.Split(tags, ",")
-		for _, tag := range tagArr {
-			tagId, err := strconv.ParseUint(tag, 10, 64)
-			if err != nil {
-				continue
-			}
-			pt := &models.PostTag{
-				PostId: post.ID,
-				TagId:  uint(tagId),
-			}
-			pt.Insert()
-		}
-	}
-	c.Redirect(http.StatusMovedPermanently, "/admin/post")
-}
-
-func PostPublish(c *gin.Context) {
+func (p *PostApi) PostPublish(c *gin.Context) {
 	var (
 		err  error
 		res  = gin.H{}
 		post *models.Post
 	)
 	defer api.WriteJSON(c, res)
-	id := c.Param("id")
-	post, err = models.GetPostById(id)
+	Id := p.stringToUnit(c.Param("id"))
+	repository := repositories.NewPostRepository(c)
+	post, err = repository.GetPostById(Id,false)
 	if err != nil {
 		res["message"] = err.Error()
 		return
 	}
-	post.IsPublished = !post.IsPublished
-	err = post.Update()
+	attr := map[string]interface{}{
+		"is_published": !post.IsPublished,
+	}
+	err = repository.UpdateAttr(post, attr)
 	if err != nil {
 		res["message"] = err.Error()
 		return
@@ -247,24 +158,32 @@ func PostPublish(c *gin.Context) {
 	res["succeed"] = true
 }
 
-func (p *PostApi) updateTag(tags string) error {
-	if len(tags) > 0 {
-		tagArr := strings.Split(tags, ",")
-		for _, tag := range tagArr {
-			tagId, err := strconv.ParseUint(tag, 10, 64)
-			if err != nil {
-				return err
-			}
-			pt := &models.PostTag{
-				PostId: p.Res.Object.ID,
-				TagId:  uint(tagId),
-			}
-			if err = pt.Insert(); err != nil {
-				return err
-			} else {
-				return nil
-			}
+func (p *PostApi) updateTag(tags string, id uint) error {
+	if len(tags) < 0 {
+		return nil
+	}
+	tagArr := strings.Split(tags, ",")
+	for _, tag := range tagArr {
+		tagId, err := strconv.ParseUint(tag, 10, 64)
+		if err != nil {
+			return err
+		}
+		pt := &models.PostTag{
+			PostId: id,
+			TagId:  uint(tagId),
+		}
+		if err = p.tag.PostTagCreate(pt); err != nil {
+			return err
 		}
 	}
 	return nil
+}
+
+func (p *PostApi) getRepository(ctx *gin.Context) repositories.IPostRepository {
+	return repositories.NewPostRepository(ctx)
+}
+
+func (p *PostApi) stringToUnit(id string) uint {
+	Id, _ := strconv.ParseUint(id, 10, 64)
+	return uint(Id)
 }

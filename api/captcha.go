@@ -6,6 +6,7 @@ import (
 	"github.com/dchest/captcha"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"github.com/gitlubtaotao/wblog/api/admin"
 	"github.com/gitlubtaotao/wblog/helpers"
 	"net/http"
 	"path"
@@ -13,7 +14,7 @@ import (
 )
 
 type CaptchaController struct {
-	*BaseApi
+	*admin.BaseApi
 }
 
 //获取验证码图片

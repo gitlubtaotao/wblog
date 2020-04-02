@@ -2,6 +2,7 @@ package api
 
 import (
 	"fmt"
+	"github.com/gitlubtaotao/wblog/api/admin"
 	"net/http"
 	"strings"
 	"time"
@@ -14,7 +15,7 @@ import (
 )
 
 type SubscribeApi struct {
-	*BaseApi
+	*admin.BaseApi
 }
 
 func (s *SubscribeApi) SubscribeGet(c *gin.Context) {

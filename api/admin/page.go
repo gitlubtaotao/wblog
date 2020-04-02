@@ -10,7 +10,7 @@ import (
 )
 
 type PageApi struct {
-	*api.BaseApi
+	*BaseApi
 }
 
 func (p *PageApi) PageGet(c *gin.Context) {

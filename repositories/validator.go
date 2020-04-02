@@ -11,6 +11,9 @@ import (
 	en_translations "github.com/go-playground/validator/v10/translations/en"
 )
 
+type IValidatorRepository interface {
+	HandlerError() error
+}
 type ValidatorRepository struct {
 	model interface{}
 }
@@ -19,6 +22,10 @@ var (
 	uni      *ut.UniversalTranslator
 	validate *validator.Validate
 )
+
+func NewValidatorRepository(model interface{}) IValidatorRepository {
+	return &ValidatorRepository{model: model}
+}
 
 //handler validator error
 func (v *ValidatorRepository) HandlerError() error {

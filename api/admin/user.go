@@ -13,7 +13,7 @@ import (
 
 type UserApi struct {
 	repository repositories.IUserRepository
-	*api.BaseApi
+	*BaseApi
 }
 
 func (u *UserApi) ProfileGet(ctx *gin.Context) {

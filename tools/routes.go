@@ -91,7 +91,7 @@ func (r *Routes) subscriberRouter() {
 
 func (r *Routes) otherRouter() {
 	r.engine.GET("/post/:id", admin.PostGet)
-	r.engine.GET("/tag/:tag", api.TagGet)
+	r.engine.GET("/tag/:tag", admin.TagGet)
 	r.engine.GET("/archives/:year/:month", api.ArchiveGet)
 	//link := admin.LinkApi{}
 	//r.engine.GET("/link/:id", link.LinkGet)
@@ -123,10 +123,11 @@ func (r *Routes) adminRouter() {
 		authorized.POST("/posts", post.Create)
 		authorized.GET("/post/:id/edit", post.Edit)
 		authorized.POST("/post/:id/edit", post.Update)
-		authorized.POST("/post/:id/publish", admin.PostPublish)
+		authorized.POST("/post/:id/publish", post.PostPublish)
 		authorized.POST("/post/:id/delete", post.Delete)
 		// tag
-		authorized.POST("/new_tag", api.TagCreate)
+		tag := admin.TagApi{}
+		authorized.POST("/tag", tag.Create)
 		
 		// user info
 		user := &admin.UserApi{}

@@ -1,17 +1,14 @@
-{{define "admin/post.html"}}
+{{define "post/index.html"}}
     <!DOCTYPE html>
     <html lang="zh-CN">
     <head>
-        {{template "admin/start.html"}}
+        {{template "layouts/header.html"}}
         <title>Wblog - Post</title>
-        <!-- DataTables -->
-        <link rel="stylesheet" href="/static/libs/datatables.net-bs/css/dataTables.bootstrap.min.css">
-        <!-- Theme style -->
     </head>
     <body class="hold-transition skin-blue sidebar-mini">
     <div class="wrapper">
-        {{template "admin/navbar.html" .}}
-        {{template "admin/sidebar.html" .}}
+        {{template "layouts/navbar.html" .}}
+        {{template "layouts/sidebar.html" .}}
         <!-- Content Wrapper. Contains page content -->
         <div class="content-wrapper">
             <!-- Content Header (Page header) -->
@@ -102,42 +99,9 @@
         </div>
     </div>
 
-    {{template "admin/end.html"}}
+    {{template "layouts/footer.html" .}}
     <!-- DataTables -->
-    <script src="/static/libs/datatables.net/js/jquery.dataTables.min.js"></script>
-    <script src="/static/libs/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
-
-    <script>
-        $(function () {
-            $('#example2').DataTable({
-                'paging': true,
-                'lengthChange': false,
-                'searching': false,
-                'ordering': true,
-                'info': true,
-                'autoWidth': false
-            });
-        });
-
-        function pushlish(id) {
-            $.post("/admin/post/" + id + "/publish", {}, function (result) {
-                console.log(result);
-                if (result.succeed) {
-                    location.href = window.location.href;
-                }
-            }, "json")
-        }
-
-        $('#confirm-delete').on('show.bs.modal', function (e) {
-            $(this).find('.btn-ok').click(function () {
-                $.post($(e.relatedTarget).data('href'), {}, function (result) {
-
-                    location.href = window.location.href;
-                }, 'json');
-
-            });
-        });
-    </script>
+    <script src="/static/libs/page_assets/post/index.js"></script>
     </body>
     </html>
 {{end}}
