@@ -11,11 +11,21 @@ type ITagRepository interface {
 	DeletePostTagByPostId(postId uint) error
 	Create(tag models.Tag) (models.Tag, error)
 	PostTagCreate(tag *models.PostTag) error
+	Delete(id uint) error
+	AllTag(attr map[string]interface{},columns []string)([]models.Tag,error)
 }
 
 type TagRepository struct {
 	ctx     *gin.Context
 	service service2.ITagService
+}
+
+func (t *TagRepository) AllTag(attr map[string]interface{}, columns []string)([]models.Tag,error) {
+	return t.service.ListTag(0,0,attr,columns)
+}
+
+func (t *TagRepository) Delete(id uint) error {
+	return t.service.Delete(id)
 }
 
 func (t *TagRepository) PostTagCreate(tag *models.PostTag) error {

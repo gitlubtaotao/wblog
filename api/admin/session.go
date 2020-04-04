@@ -15,7 +15,7 @@ import (
 )
 
 type SessionApi struct {
-	*BaseApi
+	*api.BaseApi
 	repository repositories.IUserRepository
 }
 

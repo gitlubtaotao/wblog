@@ -10,7 +10,7 @@ import (
 )
 
 type LinkApi struct {
-	*BaseApi
+	*api.BaseApi
 }
 
 func (l *LinkApi) Index(ctx *gin.Context) {

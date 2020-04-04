@@ -3,18 +3,44 @@ package service
 import (
 	"github.com/gitlubtaotao/wblog/database"
 	"github.com/gitlubtaotao/wblog/models"
+	"github.com/gitlubtaotao/wblog/system"
 )
 
 type ITagService interface {
 	Create(tag models.Tag) (models.Tag, error)
+	Delete(id uint) error
 	PostTagCreate(tag *models.PostTag) error
 	ListTagByPostId(postId uint) ([]*models.Tag, error)
 	DeletePostTagByPostId(postId uint) error
+	ListTag(per, page uint, attr map[string]interface{}, columns []string) ([]models.Tag, error)
 }
 
 //
 type TagService struct {
 	Model *models.Tag
+}
+
+func (t *TagService) ListTag(per, page uint, attr map[string]interface{}, columns []string) (tags []models.Tag, err error) {
+	var temp = database.DBCon
+	if len(columns) > 0 {
+		temp = database.DBCon.Select(columns)
+	}
+	temp = temp.Find(&tags)
+	if per == 0 {
+		per = uint(system.GetConfiguration().PageSize)
+	}
+	if page > 0 {
+		temp = temp.Limit(per).Offset((page - 1) * per)
+	}
+	if len(attr) > 0 {
+		temp = temp.Where(attr)
+	}
+	err = temp.Error
+	return tags, err
+}
+
+func (t *TagService) Delete(id uint) error {
+	return database.DBCon.Delete(&t.Model, "id=?", id).Error
 }
 
 func (t *TagService) DeletePostTagByPostId(postId uint) error {

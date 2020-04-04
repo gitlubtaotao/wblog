@@ -11,7 +11,7 @@ import (
 )
 
 type MailApi struct {
-	*BaseApi
+	*api.BaseApi
 }
 
 func (m *MailApi) Send(c *gin.Context) {

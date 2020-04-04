@@ -127,7 +127,9 @@ func (r *Routes) adminRouter() {
 		authorized.POST("/post/:id/delete", post.Delete)
 		// tag
 		tag := admin.TagApi{}
+		authorized.GET("/tag/:format", tag.Index)
 		authorized.POST("/tag", tag.Create)
+		authorized.DELETE("/tag/:id", tag.Delete)
 		
 		// user info
 		user := &admin.UserApi{}

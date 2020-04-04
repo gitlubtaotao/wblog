@@ -33,8 +33,8 @@ type Page struct {
 // table tags
 type Tag struct {
 	BaseModel
-	Name  string  // tag name
-	Total int     `gorm:"-"` // count of post
+	Name  string  `gorm:"UNIQUE_INDEX;not null" json:"name" form:"name" validate:"required"` // tag name
+	Total int     `gorm:"-" json:"total" form:"total"`                                                                 // count of post
 	Posts []*Post `gorm:"many2many:post_tags;"`
 }
 

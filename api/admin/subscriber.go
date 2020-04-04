@@ -3,12 +3,13 @@ package admin
 import (
 	"github.com/cihub/seelog"
 	"github.com/gin-gonic/gin"
+	"github.com/gitlubtaotao/wblog/api"
 	"github.com/gitlubtaotao/wblog/repositories"
 	"net/http"
 )
 
 type SubscriberApi struct {
-	*BaseApi
+	*api.BaseApi
 }
 
 func (s *SubscriberApi) Index(ctx *gin.Context) {

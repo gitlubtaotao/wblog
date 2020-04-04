@@ -1,7 +1,6 @@
 package api
 
 import (
-	"github.com/gitlubtaotao/wblog/api/admin"
 	"strconv"
 	
 	"fmt"
@@ -14,7 +13,7 @@ import (
 )
 
 type CommentApi struct {
-	*admin.BaseApi
+	*BaseApi
 }
 
 func (comm *CommentApi) CommentPost(c *gin.Context) {

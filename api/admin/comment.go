@@ -2,10 +2,11 @@ package admin
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/gitlubtaotao/wblog/api"
 )
 
 type CommentApi struct {
-	*BaseApi
+	*api.BaseApi
 }
 
 func (c *CommentApi) CommentRead(ctx *gin.Context) {

@@ -1,6 +1,8 @@
 package admin
 
 import (
+	"github.com/cihub/seelog"
+	"github.com/gitlubtaotao/wblog/api"
 	"github.com/gitlubtaotao/wblog/repositories"
 	"net/http"
 	"strconv"
@@ -15,13 +17,22 @@ import (
 )
 
 type TagApi struct {
-	*BaseApi
+	*api.BaseApi
 	repository repositories.ITagRepository
 }
 
+func (t *TagApi) Index(ctx *gin.Context) {
+	repository := repositories.NewTagRepository(ctx)
+	t.repository = repository
+	if ctx.Param("format") == "json" {
+		t.WriteJSON(ctx, t.json(ctx))
+	}
+	
+}
+
+//todo-taotao 新增标签和删除对应的标签管理
 func (t *TagApi) Create(ctx *gin.Context) {
 	repository := repositories.NewTagRepository(ctx)
-	
 	var (
 		err error
 		res = gin.H{}
@@ -36,6 +47,24 @@ func (t *TagApi) Create(ctx *gin.Context) {
 	}
 	res["succeed"] = true
 	res["data"] = tag
+}
+
+func (t *TagApi) Delete(ctx *gin.Context) {
+	var (
+		err error
+		res = gin.H{}
+	)
+	defer t.WriteJSON(ctx, res)
+	repository := repositories.NewTagRepository(ctx)
+	id := ctx.Param("id")
+	Id, _ := strconv.ParseUint(id, 10, 64)
+	err = repository.Delete(uint(Id))
+	if err != nil {
+		_ = seelog.Critical(err)
+		res["message"] = "Delete tag is error "
+		return
+	}
+	res["succeed"] = true
 }
 
 func TagGet(c *gin.Context) {
@@ -80,4 +109,27 @@ func TagGet(c *gin.Context) {
 		"maxReadPosts":    models.MustListMaxReadPost(),
 		"maxCommentPosts": models.MustListMaxCommentPost(),
 	})
+}
+
+func (t *TagApi) json(ctx *gin.Context) gin.H {
+	var (
+		res  = gin.H{}
+		data []map[string]interface{}
+	)
+	tags, err := t.repository.AllTag(map[string]interface{}{}, []string{"id", "name"})
+	if err != nil {
+		_ = seelog.Warn(err)
+		res["data"] = data
+		return res
+	}
+	for _, v := range tags {
+		temp := map[string]interface{}{
+			"text":  v.Name,
+			"value": v.ID,
+		}
+		data = append(data, temp)
+	}
+	res["succeed"] = true
+	res["data"] = data
+	return res
 }

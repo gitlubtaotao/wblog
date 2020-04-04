@@ -13,7 +13,7 @@ import (
 )
 
 type PostApi struct {
-	*BaseApi
+	*api.BaseApi
 	post repositories.IPostRepository
 	tag  repositories.ITagRepository
 }
@@ -32,7 +32,10 @@ func (p *PostApi) Index(ctx *gin.Context) {
 }
 
 func (p *PostApi) New(c *gin.Context) {
-	c.HTML(http.StatusOK, "post/edit.html", nil)
+	user, _ := p.CurrentUser(c)
+	c.HTML(http.StatusOK, "post/edit.html", p.RenderComments(gin.H{
+		"user": user,
+	}))
 }
 
 func (p *PostApi) Create(c *gin.Context) {
@@ -69,7 +72,7 @@ func (p *PostApi) Edit(c *gin.Context) {
 	id := p.stringToUnit(c.Param("id"))
 	repository := p.getRepository(c)
 	tagRepository := repositories.NewTagRepository(c)
-	post, err := repository.GetPostById(id,false)
+	post, err := repository.GetPostById(id, false)
 	if err != nil {
 		p.HandleMessage(c, err.Error())
 		return
@@ -88,7 +91,7 @@ func (p *PostApi) Update(ctx *gin.Context) {
 	tagRepository := repositories.NewTagRepository(ctx)
 	p.post = repository
 	p.tag = tagRepository
-	post, err := repository.GetPostById(Id,false)
+	post, err := repository.GetPostById(Id, false)
 	if err != nil {
 		p.HandleMessage(ctx, err.Error())
 		return
@@ -142,7 +145,7 @@ func (p *PostApi) PostPublish(c *gin.Context) {
 	defer api.WriteJSON(c, res)
 	Id := p.stringToUnit(c.Param("id"))
 	repository := repositories.NewPostRepository(c)
-	post, err = repository.GetPostById(Id,false)
+	post, err = repository.GetPostById(Id, false)
 	if err != nil {
 		res["message"] = err.Error()
 		return

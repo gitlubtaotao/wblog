@@ -2,12 +2,13 @@ package admin
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/gitlubtaotao/wblog/api"
 	"github.com/gitlubtaotao/wblog/repositories"
 	"net/http"
 )
 
 type RegisterApi struct {
-	*BaseApi
+	*api.BaseApi
 	repository repositories.IUserRepository
 }
 
