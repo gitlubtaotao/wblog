@@ -1,0 +1,44 @@
+defaults: &defaults
+
+  signup_enabled: true
+  qiniu_accesskey: eod8fVA_L4wDR7yOwzdYfOblLp4pCvflQF5BS8JC
+  qiniu_secretkey: wsFuW0M4obMFvO9K6GVVTlDWjzVi3doJPrDj5eZh
+  github_clientid: 8fc369fefbb9c176bd35
+  github_clientsecret: d3856f6a85625de7749e222701ffdb149f4e92cb
+  github_authurl: https://github.com/login/oauth/authorize?client_id=%s&scope=user:email&state=%s
+  # 与github配置的回调地址一致
+  github_tokenurl: https://github.com/login/oauth/access_token
+  github_scope:
+  smtp_username: taotao-it@youtulink.com
+  smtp_password: Xutaotao1215.
+  smtp_host: "smtp.mxhichina.com:25"
+  domain:
+  public: static
+  addr: :8081
+  backup_key:
+  #dsn: wblog.db?_loc=Asia/Shanghai
+  dsn: root:qweqwe123@tcp(127.0.0.1:3306)/wblog?charset=utf8mb4&parseTime=True&loc=Asia%2FShanghai&clientFoundRows=true&collation=utf8_unicode_ci
+  notify_emails:
+  page_size: 20
+  smms_fileserver: https://sm.ms/api/upload
+  password_valid: 60
+  client_addr: ":8082"
+  admin_addr: ":8081"
+  admin_secret: DIS**#KKKDJJSKDI
+  client_secret: DIS**#KKKDJJSKDI
+  admin_session_key: _admin_session_UserID
+  client_session_key: _client_session_UserID
+  admin_user: _admin_user
+  client_user: _client_user
+development:
+  <<: *defaults
+  qiniu_fileserver: http://q7xvlw9i4.bkt.clouddn.com/
+  qiniu_bucket: wblog-taotao
+  dsn: root:qweqwe123@tcp(127.0.0.1:3306)/wblog?charset=utf8mb4&parseTime=True&loc=Asia%2FShanghai&clientFoundRows=true&collation=utf8_unicode_ci
+  github_redirecturl: http://localhost:8081/githubCallback
+
+
+production:
+  <<: *defaults
+test:
+  <<: *defaults

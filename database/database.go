@@ -14,7 +14,7 @@ func InitDB() {
 	//db, err := gorm.Open("sqlite3", system.GetConfiguration().DSN)
 	db, err := gorm.Open("mysql", system.GetConfiguration().DSN)
 	if err != nil {
-		seelog.Critical("err open databases", err)
+		_ = seelog.Critical("err open databases", err)
 		panic(err)
 		return
 	}
@@ -24,7 +24,7 @@ func InitDB() {
 	db.DB().SetMaxIdleConns(1000)
 	db.DB().SetMaxOpenConns(2000)
 	if err = db.DB().Ping(); err != nil {
-		seelog.Critical("err open databases", err)
+		_ = seelog.Critical("err open databases", err)
 		panic(err)
 	}
 }

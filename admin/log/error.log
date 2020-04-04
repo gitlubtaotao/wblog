@@ -1,0 +1,26 @@
+2020-04-04 17:19:56 [CRT] [run.go:18] [main.main] err parsing config log filejson: unsupported type: map[interface {}]interface {}
+2020-04-04 17:20:04 [CRT] [run.go:18] [main.main] err parsing config log filejson: unsupported type: map[interface {}]interface {}
+2020-04-04 17:21:48 [CRT] [run.go:18] [main.main] err parsing config log filejson: unsupported type: map[interface {}]interface {}
+2020-04-04 17:24:51 [CRT] [run.go:18] [main.main] err parsing config log filejson: unsupported type: map[interface {}]interface {}
+2020-04-04 17:25:01 [CRT] [run.go:18] [main.main] err parsing config log filejson: unsupported type: map[interface {}]interface {}
+2020-04-04 17:25:19 [CRT] [run.go:18] [main.main] err parsing config log filejson: unsupported type: map[interface {}]interface {}
+2020-04-04 17:26:24 [CRT] [run.go:18] [main.main] err parsing config log filejson: cannot unmarshal number into Go struct field Configuration.admin_addr of type string
+2020-04-04 17:26:56 [CRT] [run.go:18] [main.main] err parsing config log filejson: cannot unmarshal number into Go struct field Configuration.admin_addr of type string
+2020-04-04 17:28:33 [CRT] [run.go:18] [main.main] err parsing config log filejson: unsupported type: map[interface {}]interface {}
+2020-04-04 17:38:15 [CRT] [run.go:18] [main.main] err parsing config log filejson: unsupported type: map[interface {}]interface {}
+2020-04-04 17:41:55 [CRT] [run.go:18] [main.main] err parsing config log fileyaml: unmarshal errors:
+  line 1: cannot unmarshal !!map into []map[string]interface {}
+  line 26: cannot unmarshal !!map into []map[string]interface {}
+  line 35: cannot unmarshal !!map into []map[string]interface {}
+  line 37: cannot unmarshal !!map into []map[string]interface {}
+2020-04-04 17:48:38 [CRT] [run.go:18] [main.main] err parsing config log filejson: unsupported type: map[interface {}]interface {}
+2020-04-04 17:52:30 [CRT] [run.go:18] [main.main] err parsing config log filejson: unsupported type: map[interface {}]interface {}
+2020-04-04 17:53:26 [CRT] [run.go:18] [main.main] err parsing config log fileinvalid character 'a' looking for beginning of value
+2020-04-04 17:53:52 [CRT] [run.go:18] [main.main] err parsing config log fileinvalid character 'a' looking for beginning of value
+2020-04-04 18:03:59 [CRT] [run.go:18] [main.main] err parsing config log fileunexpected end of JSON input
+2020-04-04 18:04:28 [CRT] [run.go:18] [main.main] err parsing config log fileunexpected end of JSON input
+2020-04-04 18:04:40 [CRT] [run.go:18] [main.main] err parsing config log fileunexpected end of JSON input
+2020-04-04 18:05:28 [CRT] [run.go:18] [main.main] err parsing config log fileunexpected end of JSON input
+2020-04-04 18:05:39 [CRT] [run.go:18] [main.main] err parsing config log fileunexpected end of JSON input
+2020-04-04 18:06:11 [CRT] [run.go:18] [main.main] err parsing config log fileunexpected end of JSON input
+2020-04-04 19:49:16 [CRT] [run.go:18] [main.main] err parsing config log fileunexpected end of JSON input
