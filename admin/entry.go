@@ -1,16 +1,20 @@
-package admin
+package main
 
 import (
 	"flag"
 	"github.com/cihub/seelog"
 	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	"github.com/gitlubtaotao/wblog/database"
 	"github.com/gitlubtaotao/wblog/encrypt"
+	"github.com/gitlubtaotao/wblog/helpers"
 	"github.com/gitlubtaotao/wblog/migration"
 	"github.com/gitlubtaotao/wblog/schedule"
 	"github.com/gitlubtaotao/wblog/service"
 	"github.com/gitlubtaotao/wblog/system"
+	"github.com/gitlubtaotao/wblog/tools"
+	"html/template"
 	"strconv"
 	"strings"
 )
@@ -19,10 +23,9 @@ func main() {
 	//配置环境变量
 	configEnv := flag.String("env", "development", "set env development or production")
 	flag.Parse()
-	system.SetSeelogPath("../conf/seelog.xml")
-	
+	setSeelogPath("../conf/seelog.xml")
 	if err := system.LoadEnvConfiguration(*configEnv); err != nil {
-		seelog.Critical("err parsing config log file", err)
+		_ = seelog.Critical("err parsing config log file", err)
 		return
 	}
 	defer seelog.Flush()
@@ -32,10 +35,9 @@ func main() {
 	gin.SetMode(system.GetGinMode(*configEnv))
 	router := gin.Default()
 	router.Static("../static", "./static")
-	system.SetCommonTemplate(router)
-	system.SetSessions(router, "admin", map[string]interface{}{
-		"HttpOnly": true, "MaxAge": 7 * 86400, "Path": "/admin",
-	})
+	router.SetFuncMap(setCommonTemplate())
+	router.LoadHTMLGlob("web/**/*")
+	setSessions(router)
 	schedule.GoCron()
 	router.Use(SharedData())
 	err := router.Run(system.GetConfiguration().AdminAddr)
@@ -68,4 +70,54 @@ func SharedData() gin.HandlerFunc {
 		}
 		c.Next()
 	}
+}
+
+/*
+ @title: 设置session
+*/
+func setSessions(router *gin.Engine) {
+	config := system.GetConfiguration()
+	var sessionSecret = config.AdminSecret
+	//https://github.com/gin-gonic/contrib/tree/master/sessions
+	store := cookie.NewStore([]byte(sessionSecret))
+	store.Options(sessions.Options{
+		HttpOnly: true,
+		MaxAge:   7 * 86400,
+		Path:     "/admin",
+	}) //Also set Secure: true if using SSL, you should though
+	router.Use(sessions.Sessions("gin-session", store))
+}
+
+/*
+@title: 配置seelog
+@description: 配置系统日志管理
+@auth: taotao
+@date: 2020.4.4
+*/
+func setSeelogPath(logConfigPath string) {
+	logger, err := seelog.LoggerFromConfigAsFile(logConfigPath)
+	if err != nil {
+		_ = seelog.Critical("err parsing seelog config file", err)
+		return
+	}
+	_ = seelog.ReplaceLogger(logger)
+}
+
+
+/*
+@title: set common template
+
+*/
+func setCommonTemplate() template.FuncMap {
+	funcMap := template.FuncMap{
+		"dateFormat": tools.DateFormat,
+		"substring":  tools.Substring,
+		"isOdd":      tools.IsOdd,
+		"isEven":     tools.IsEven,
+		"truncate":   helpers.Truncate,
+		"add":        tools.Add,
+		"minus":      tools.Minus,
+		"listtag":    tools.ListTag,
+	}
+	return funcMap
 }

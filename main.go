@@ -8,22 +8,22 @@ import (
 	"github.com/gitlubtaotao/wblog/encrypt"
 	"github.com/gitlubtaotao/wblog/service"
 	"strconv"
-	
+
 	"github.com/gitlubtaotao/wblog/migration"
 	"github.com/gitlubtaotao/wblog/schedule"
-	
+
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	"github.com/gitlubtaotao/wblog/helpers"
 	"github.com/gitlubtaotao/wblog/system"
-	
+
 	"github.com/gitlubtaotao/wblog/tools"
-	
+
 	"os"
 	"path/filepath"
 	"strings"
-	
+
 	"html/template"
 )
 
@@ -38,7 +38,7 @@ func main() {
 		return
 	}
 	_ = seelog.ReplaceLogger(logger)
-	
+
 	//加载配置文件
 	if err := system.LoadConfiguration(*configFilePath); err != nil {
 		seelog.Critical("err parsing config log file", err)
@@ -49,7 +49,7 @@ func main() {
 	database.InitDB()
 	defer database.DBCon.Close()
 	migration.Migrate()
-	
+
 	//设置设置gin模式。参数可以传递：gin.DebugMode、gin.ReleaseMode、gin.TestMode
 	//gin.SetMode(gin.DebugMode)
 	gin.SetMode(gin.DebugMode)
@@ -58,11 +58,11 @@ func main() {
 	setSessions(router)
 	router.Use(SharedData())
 	schedule.GoCron() //Periodic tasks
-	
+
 	//获取静态资源文件
 	router.Static("/static", "./static")
 	//router.Static("/static", filepath.Join(getCurrentDirectory(), "./static"))
-	
+
 	//注册路由
 	tools.NewRoutes(router).InitRouter()
 	err = router.Run(system.GetConfiguration().Addr)

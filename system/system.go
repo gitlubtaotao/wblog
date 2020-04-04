@@ -2,13 +2,6 @@ package system
 
 import (
 	"encoding/json"
-	"github.com/cihub/seelog"
-	"github.com/gin-contrib/sessions"
-	"github.com/gin-contrib/sessions/cookie"
-	"github.com/gin-gonic/gin"
-	"github.com/gitlubtaotao/wblog/helpers"
-	"github.com/gitlubtaotao/wblog/tools"
-	"html/template"
 	"io/ioutil"
 	
 	"github.com/go-yaml/yaml"
@@ -76,20 +69,7 @@ func GetConfiguration() *Configuration {
 	return configuration
 }
 
-/*
-@title: 配置seelog
-@description: 配置系统日志管理
-@auth: taotao
-@date: 2020.4.4
-*/
-func SetSeelogPath(logConfigPath string) {
-	logger, err := seelog.LoggerFromConfigAsFile(logConfigPath)
-	if err != nil {
-		_ = seelog.Critical("err parsing seelog config file", err)
-		return
-	}
-	_ = seelog.ReplaceLogger(logger)
-}
+
 
 /*
 @title: 设置不同的环境变量
@@ -118,59 +98,14 @@ func LoadEnvConfiguration(env string) error {
 func GetGinMode(env string) string {
 	switch env {
 	case "production":
-		return gin.ReleaseMode
+		return "release"
 	case "test":
-		return gin.TestMode
+		return "test"
 	default:
-		return gin.DebugMode
+		return "debug"
 	}
 }
 
-/*
-@title: set common template
 
-*/
-func SetCommonTemplate(engine *gin.Engine) {
-	funcMap := template.FuncMap{
-		"dateFormat": tools.DateFormat,
-		"substring":  tools.Substring,
-		"isOdd":      tools.IsOdd,
-		"isEven":     tools.IsEven,
-		"truncate":   helpers.Truncate,
-		"add":        tools.Add,
-		"minus":      tools.Minus,
-		"listtag":    tools.ListTag,
-	}
-	engine.SetFuncMap(funcMap)
-	//engine.LoadHTMLGlob(filepath.Join(getCurrentDirectory(), "./views/**/*"))
-	engine.LoadHTMLGlob("views/**/*")
-}
 
-/*
- @title: 设置session
-*/
-func SetSessions(router *gin.Engine, env string, options map[string]interface{}) {
-	config := GetConfiguration()
-	var sessionSecret = ""
-	if env == "admin" {
-		sessionSecret = config.AdminSecret
-	} else {
-		sessionSecret = config.ClientSecret
-	}
-	//https://github.com/gin-gonic/contrib/tree/master/sessions
-	store := cookie.NewStore([]byte(sessionSecret))
-	store.Options(sessions.Options{
-		HttpOnly: options["http_only"].(bool),
-		MaxAge:   options["MaxAge"].(int),
-		Path:     options["path"].(string)}) //Also set Secure: true if using SSL, you should though
-	router.Use(sessions.Sessions("gin-session", store))
-	//https://github.com/utrack/gin-csrf
-	
-	//router.Use(csrf.Middleware(csrf.Options{
-	//	Secret: sessionSecret,
-	//	ErrorFunc: func(c *gin.Context) {
-	//		c.String(400, "CSRF token mismatch")
-	//		c.Abort()
-	//	},
-	//}))
-}
+
