@@ -10,7 +10,6 @@ import (
 	"github.com/gitlubtaotao/wblog/encrypt"
 	"github.com/gitlubtaotao/wblog/helpers"
 	"github.com/gitlubtaotao/wblog/migration"
-	"github.com/gitlubtaotao/wblog/schedule"
 	"github.com/gitlubtaotao/wblog/service"
 	"github.com/gitlubtaotao/wblog/system"
 	"github.com/gitlubtaotao/wblog/tools"
@@ -36,11 +35,11 @@ func main() {
 	router := gin.Default()
 	router.Static("../static", "./static")
 	router.SetFuncMap(setCommonTemplate())
-	router.LoadHTMLGlob("web/**/*")
+	router.LoadHTMLGlob("view/**/*")
 	setSessions(router)
-	schedule.GoCron()
-	router.Use(SharedData())
-	err := router.Run(system.GetConfiguration().AdminAddr)
+	//schedule.GoCron()
+	//router.Use(SharedData())
+	err := router.Run(system.GetConfiguration().ClientAddr)
 	if err != nil {
 		panic(err)
 	}
@@ -77,12 +76,12 @@ func SharedData() gin.HandlerFunc {
 */
 func setSessions(router *gin.Engine) {
 	config := system.GetConfiguration()
-	var sessionSecret = config.AdminSecret
+	var sessionSecret = config.ClientSecret
 	//https://github.com/gin-gonic/contrib/tree/master/sessions
 	store := cookie.NewStore([]byte(sessionSecret))
 	store.Options(sessions.Options{
 		HttpOnly: true,
-		MaxAge:   15 * 86400,
+		MaxAge:   7 * 86400,
 		Path:     "/admin",
 	}) //Also set Secure: true if using SSL, you should though
 	router.Use(sessions.Sessions("gin-session", store))
@@ -102,7 +101,6 @@ func setSeelogPath(logConfigPath string) {
 	}
 	_ = seelog.ReplaceLogger(logger)
 }
-
 
 /*
 @title: set common template
