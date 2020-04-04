@@ -10,22 +10,9 @@ import (
 )
 
 // table posts
-type Post struct {
-	BaseModel
-	Title        string     `validate:"required"` // title
-	Body         string     `validate:"required"` // body
-	View         int        // view count
-	IsPublished  bool       // published or not
-	Tags         []*Tag     `gorm:"many2many:post_tags;"` // tags of post
-	Comments     []*Comment `gorm:"-"`                    // comments of post
-	CommentTotal int        `gorm:"-"`                    // count of comment
-	Keyword      string     `gorm:"size:255;not null" validate:"required"`
-}
 
-//获取所有的博文
-func ListAllPost(tag string) ([]*Post, error) {
-	return listPost(tag, false, 0, 0)
-}
+
+
 
 //获取已发布的博文
 func ListPublishedPost(tag string, pageIndex, pageSize int) ([]*Post, error) {

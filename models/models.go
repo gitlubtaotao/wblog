@@ -34,8 +34,20 @@ type Page struct {
 type Tag struct {
 	BaseModel
 	Name  string  `gorm:"UNIQUE_INDEX;not null" json:"name" form:"name" validate:"required"` // tag name
-	Total int     `gorm:"-" json:"total" form:"total"`                                                                 // count of post
+	Total int     `gorm:"-" json:"total" form:"total"`                                       // count of post
 	Posts []*Post `gorm:"many2many:post_tags;"`
+}
+
+type Post struct {
+	BaseModel
+	Title        string     `json:"title" form:"title" validate:"required"` // title
+	Body         string     `json:"body"  form:"body"  validate:"required"` // body
+	View         int        // view count
+	IsPublished  bool       // published or not
+	Tags         []*Tag     `gorm:"many2many:post_tags;"` // tags of post
+	Comments     []*Comment `gorm:"-"`                    // comments of post
+	CommentTotal int        `gorm:"-"`                    // count of comment
+	Keyword      string     `gorm:"size:255;not null" json:"keyword" form:"keyword" validate:"required"`
 }
 
 // table post_tags

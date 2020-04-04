@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"github.com/gitlubtaotao/wblog/database"
 	"github.com/gitlubtaotao/wblog/models"
 	"github.com/gitlubtaotao/wblog/system"
@@ -114,7 +115,7 @@ func (p *PostService) tempListPost(per, page uint, attr map[string]interface{}) 
 	if per == 0 {
 		per = uint(system.GetConfiguration().PageSize)
 	}
-	temp = database.DBCon.Table("post")
+	temp = database.DBCon.Table("posts")
 	if page != 0 {
 		temp = temp.Limit(per).Offset((page - 1) * per)
 	}
@@ -128,14 +129,16 @@ func (p *PostService) Delete(id uint) error {
 	return database.DBCon.Where("id = ?", id).Delete(&models.Post{}).Error
 }
 
-func (p *PostService) GetPostById(id uint, isTags bool) (post *models.Post, err error) {
+func (p *PostService) GetPostById(id uint, isTags bool) (*models.Post, error) {
 	var temp *gorm.DB
+	var post models.Post
 	temp = database.DBCon
+	fmt.Println(isTags)
 	if isTags {
-		temp = temp.Preloads("Tags")
+		temp = temp.Preload("Tags")
 	}
-	err = temp.First(&post, "id=?", id).Error
-	return
+	err := temp.Where("id=?", id).First(&post).Error
+	return &post, err
 }
 
 //更新博文信息

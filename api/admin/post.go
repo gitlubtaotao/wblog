@@ -1,6 +1,9 @@
 package admin
 
 import (
+	"fmt"
+	"github.com/cihub/seelog"
+	"github.com/gin-gonic/gin/binding"
 	"github.com/gitlubtaotao/wblog/api"
 	"github.com/gitlubtaotao/wblog/repositories"
 	"github.com/jinzhu/gorm"
@@ -23,10 +26,8 @@ func (p *PostApi) Index(ctx *gin.Context) {
 	posts, _ := repository.ListAll(map[string]interface{}{}, []string{})
 	user, _ := p.CurrentUser(ctx)
 	renderJson := p.RenderComments(gin.H{
-		"posts":    posts,
-		"Active":   "posts",
-		"user":     user,
-		"comments": models.MustListUnreadComment(),
+		"posts": posts,
+		"user":  user,
 	})
 	ctx.HTML(http.StatusOK, "post/index.html", renderJson)
 }
@@ -34,17 +35,44 @@ func (p *PostApi) Index(ctx *gin.Context) {
 func (p *PostApi) New(c *gin.Context) {
 	user, _ := p.CurrentUser(c)
 	c.HTML(http.StatusOK, "post/edit.html", p.RenderComments(gin.H{
-		"user": user,
+		"user":   user,
+		"post":   models.Post{},
+		"submit": "/admin/post",
 	}))
 }
 
-func (p *PostApi) Create(c *gin.Context) {
-	repository := p.getRepository(c)
-	err := repository.Create()
+func (p *PostApi) Create(ctx *gin.Context) {
+	var res = gin.H{}
+	defer p.WriteJSON(ctx, res)
+	var post models.Post
+	err := ctx.ShouldBindWith(&post, binding.Form)
 	if err != nil {
-		p.HandleMessage(c, err.Error())
+		res["message"] = err.Error()
+		return
 	}
-	c.Redirect(http.StatusMovedPermanently, "/admin/posts")
+	isPublished := ctx.PostForm("isPublished")
+	repository := p.getRepository(ctx)
+	post.IsPublished = "on" == isPublished
+	tags := ctx.PostForm("tags")
+	err = models.DB.Transaction(func(tx *gorm.DB) error {
+		err := repository.Create(&post)
+		if err != nil {
+			return err
+		}
+		if len(tags) > 0 {
+			if err := p.CreatePostTag(ctx, tags, post.ID); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		_ = seelog.Critical(err)
+		res["message"] = "create post is error"
+		return
+	}
+	res["message"] = "Create post is successful"
+	res["succeed"] = true
 }
 
 func (p *PostApi) Delete(ctx *gin.Context) {
@@ -71,29 +99,38 @@ func (p *PostApi) Delete(ctx *gin.Context) {
 func (p *PostApi) Edit(c *gin.Context) {
 	id := p.stringToUnit(c.Param("id"))
 	repository := p.getRepository(c)
-	tagRepository := repositories.NewTagRepository(c)
-	post, err := repository.GetPostById(id, false)
+	//tagRepository := repositories.NewTagRepository(c)
+	user, _ := p.CurrentUser(c)
+	post, err := repository.GetPostById(id, true)
 	if err != nil {
+		_ = seelog.Error(err)
 		p.HandleMessage(c, err.Error())
 		return
 	}
-	post.Tags, _ = tagRepository.ListTagByPostId(id)
-	c.HTML(http.StatusOK, "post/modify.html", gin.H{
-		"post": post,
-	})
+	fmt.Println(post.Tags)
+	c.HTML(http.StatusOK, "post/edit.html", p.RenderComments(gin.H{
+		"post":   post,
+		"user":   user,
+		"submit": "/admin/post/" + strconv.FormatInt(int64(post.ID), 10) + "/update",
+	}))
 }
 
 //保存博文信息
 func (p *PostApi) Update(ctx *gin.Context) {
+	var res  = gin.H{}
+	defer p.WriteJSON(ctx,res)
 	Id := p.stringToUnit(ctx.Param("id"))
 	tags := ctx.PostForm("tags")
 	repository := p.getRepository(ctx)
 	tagRepository := repositories.NewTagRepository(ctx)
-	p.post = repository
-	p.tag = tagRepository
 	post, err := repository.GetPostById(Id, false)
 	if err != nil {
-		p.HandleMessage(ctx, err.Error())
+		res["message"] = err.Error()
+		return
+	}
+	err = ctx.ShouldBindWith(&post, binding.Form)
+	if err != nil{
+		res["message"] = err.Error()
 		return
 	}
 	isPublished := ctx.PostForm("isPublished")
@@ -105,16 +142,17 @@ func (p *PostApi) Update(ctx *gin.Context) {
 		if err = tagRepository.DeletePostTagByPostId(post.ID); err != nil {
 			return err
 		}
-		if err = p.updateTag(tags, post.ID); err != nil {
+		if err = p.CreatePostTag(ctx, tags, post.ID); err != nil {
 			return err
 		}
 		return nil
 	})
 	if err != nil {
-		p.HandleMessage(ctx, err.Error())
+		res["message"] = err.Error()
 		return
 	}
-	ctx.Redirect(http.StatusMovedPermanently, "/admin/posts")
+	res["message"] = "Update post is successful"
+	res["succeed"] = true
 }
 
 func PostGet(c *gin.Context) {
@@ -161,27 +199,6 @@ func (p *PostApi) PostPublish(c *gin.Context) {
 	res["succeed"] = true
 }
 
-func (p *PostApi) updateTag(tags string, id uint) error {
-	if len(tags) < 0 {
-		return nil
-	}
-	tagArr := strings.Split(tags, ",")
-	for _, tag := range tagArr {
-		tagId, err := strconv.ParseUint(tag, 10, 64)
-		if err != nil {
-			return err
-		}
-		pt := &models.PostTag{
-			PostId: id,
-			TagId:  uint(tagId),
-		}
-		if err = p.tag.PostTagCreate(pt); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 func (p *PostApi) getRepository(ctx *gin.Context) repositories.IPostRepository {
 	return repositories.NewPostRepository(ctx)
 }
@@ -189,4 +206,21 @@ func (p *PostApi) getRepository(ctx *gin.Context) repositories.IPostRepository {
 func (p *PostApi) stringToUnit(id string) uint {
 	Id, _ := strconv.ParseUint(id, 10, 64)
 	return uint(Id)
+}
+
+func (p *PostApi) CreatePostTag(ctx *gin.Context, tags string, postId uint) error {
+	tagArr := strings.Split(tags, ",")
+	tagRepository := repositories.NewTagRepository(ctx)
+	for _, tag := range tagArr {
+		tagId, err := strconv.ParseUint(tag, 10, 64)
+		if err != nil {
+			continue
+		}
+		pt := &models.PostTag{PostId: postId, TagId: uint(tagId),}
+		err = tagRepository.PostTagCreate(pt)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }

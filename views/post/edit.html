@@ -36,19 +36,31 @@
                 </h1>
                 <ol class="breadcrumb">
                     <li><a href="/admin/index"><i class="fa fa-dashboard"></i> Home</a></li>
-                    <li class="active"><a href="#">页面管理</a></li>
+                    <li class="active"><a href="/admin/post">博文管理</a></li>
                 </ol>
             </section>
             <section class="content">
-                <div class="row" id="tag_content" style="margin-bottom: 10px;"></div>
+                <div class="row" id="tag_content" style="margin-bottom: 10px;padding-left: 14px;">
+                    {{range $tagkey,$tagvalue := .post.Tags}}
+                        <button class="btn btn-default btn-sm tagButton">
+                            <a href="/tag/{{$tagvalue.ID}}">{{$tagvalue.Name}}</a>
+                            <a class="removeArticleTag" href="#" onclick="deleteTag(this);">
+                                <span class="glyphicon glyphicon glyphicon-trash"></span>
+                            </a>
+                            <span class="tagId" hidden="hidden">{{$tagvalue.ID}}</span>
+                        </button>&nbsp;
+                    {{end}}
+                </div>
                 <div class="row">
                     <div class="col-xs-12">
                         <!-- add a new tag -->
                         <!-- create or update a article -->
-                        <form action="/admin/posts" method="post" id="postForm" class="form-group">
+                        <form action="{{.submit}}" method="post" id="postForm" class="form-group">
                             <input id="tags" name="tags" type="hidden">
-                            <input name="post[title]" type="text" class="form-control" placeholder="Title"/><br/>
-                            <textarea id="demo" name="post[body]"></textarea><br/>
+                            <input name="id" value="{{.post.ID}}" type="hidden">
+                            <input name="title" type="text" class="form-control" placeholder="Title" value="{{.post.Title}}"/><br/>
+                            <textarea name="keyword" class="form-control" rows="2" placeholder="Keyword" >{{.post.Keyword}}</textarea><br/>
+                            <textarea id="demo" name="body">{{.post.Body}}</textarea><br/>
                             <div class="bootstrap-switch-small">
                                 <input id="switchbtn" name="isPublished" type="checkbox"/>
                             </div>

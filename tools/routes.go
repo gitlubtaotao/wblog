@@ -122,7 +122,7 @@ func (r *Routes) adminRouter() {
 		authorized.GET("/posts/new", post.New)
 		authorized.POST("/posts", post.Create)
 		authorized.GET("/post/:id/edit", post.Edit)
-		authorized.POST("/post/:id/edit", post.Update)
+		authorized.POST("/post/:id/update", post.Update)
 		authorized.POST("/post/:id/publish", post.PostPublish)
 		authorized.POST("/post/:id/delete", post.Delete)
 		// tag

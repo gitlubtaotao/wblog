@@ -36,31 +36,34 @@
                                 <table id="example2" class="table table-bordered table-hover">
                                     <thead>
                                     <tr>
+                                        <th>Operation</th>
                                         <th>ID</th>
-                                        <th>标题</th>
-                                        <th>公开</th>
-                                        <th>创建时间</th>
-                                        <th>更新时间</th>
-                                        <th>操作</th>
+                                        <th>Title</th>
+                                        <th>Keyword</th>
+                                        <th>Publish</th>
+                                        <th>Created At</th>
+                                        <th>Updated At</th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     {{range .posts}}
                                         <tr>
+                                            <td><a href="/admin/post/{{.ID}}/edit" target="_blank"
+                                                   class="btn btn-primary btn-sm">编辑</a>
+                                                <a href="#" class="btn btn-danger btn-sm"
+                                                   data-href="/admin/post/{{.ID}}/delete" data-toggle="modal"
+                                                   data-target="#confirm-delete">删除</a>
+                                            </td>
                                             <td>{{.ID}}</td>
                                             <td><a href="/post/{{.ID}}" target="_blank">{{.Title}}</a></td>
+                                            <td>{{.Keyword}}</td>
                                             <td>
                                                 <a href="javascript:void(0);"
                                                    onclick="pushlish('{{.ID}}')"> {{if .IsPublished}}√{{else}}×{{end}}</a>
                                             </td>
                                             <td>{{dateFormat .CreatedAt "2006-01-02 15:04"}}</td>
                                             <td>{{dateFormat .UpdatedAt "2006-01-02 15:04"}}</td>
-                                            <td><a href="/admin/post/{{.ID}}/edit" target="_blank"
-                                                   class="btn btn-primary">编辑</a>
-                                                <a href="#" class="btn btn-danger"
-                                                   data-href="/admin/post/{{.ID}}/delete" data-toggle="modal"
-                                                   data-target="#confirm-delete">删除</a>
-                                            </td>
+
                                         </tr>
                                     {{end}}
                                     </tbody>

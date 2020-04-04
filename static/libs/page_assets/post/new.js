@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    $('#postSave').click(function (event) {
+    $('#pageSave').click(function (event) {
         event.preventDefault();
         $("#demo").text(simplemde.value());
         var tags = new Array();
@@ -7,7 +7,20 @@ $(document).ready(function () {
             tags.push($(element).text());
         });
         $("#tags").val(tags.join(","));
-        $("#postForm").submit();
+        var form = $("#postForm");
+        $.ajax({
+            url: form.attr('action'),
+            type: form.attr('method'),
+            dataType: "json",
+            data: form.serializeArray(),
+            success: function (data) {
+                if (data['succeed']) {
+                    toastr.success(data.message)
+                } else {
+                    toastr.error(data.message)
+                }
+            }
+        });
     });
     //选择标签
     $('#select_tag').editable({
@@ -79,7 +92,7 @@ $(document).ready(function () {
                     <span class="tagId" hidden="hidden">` + tagId + `</span>
                     </button>&nbsp;`;
 
-        $("#tag_content").before(button);
+        $("#tag_content").append(button);
     }
 });
 
