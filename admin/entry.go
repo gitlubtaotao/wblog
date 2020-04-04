@@ -6,6 +6,8 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
+	admin "github.com/gitlubtaotao/wblog/admin/router"
+	
 	"github.com/gitlubtaotao/wblog/database"
 	"github.com/gitlubtaotao/wblog/encrypt"
 	"github.com/gitlubtaotao/wblog/helpers"
@@ -14,6 +16,7 @@ import (
 	"github.com/gitlubtaotao/wblog/service"
 	"github.com/gitlubtaotao/wblog/system"
 	"github.com/gitlubtaotao/wblog/tools"
+	"github.com/utrack/gin-csrf"
 	"html/template"
 	"strconv"
 	"strings"
@@ -34,12 +37,13 @@ func main() {
 	migration.Migrate()
 	gin.SetMode(system.GetGinMode(*configEnv))
 	router := gin.Default()
-	router.Static("../static", "./static")
+	router.Static("./static", "../static")
 	router.SetFuncMap(setCommonTemplate())
 	router.LoadHTMLGlob("web/**/*")
 	setSessions(router)
 	schedule.GoCron()
 	router.Use(SharedData())
+	admin.NewRoutes(router).Register()
 	err := router.Run(system.GetConfiguration().AdminAddr)
 	if err != nil {
 		panic(err)
@@ -86,6 +90,13 @@ func setSessions(router *gin.Engine) {
 		Path:     "/admin",
 	}) //Also set Secure: true if using SSL, you should though
 	router.Use(sessions.Sessions("gin-session", store))
+	router.Use(csrf.Middleware(csrf.Options{
+		Secret: sessionSecret,
+		ErrorFunc: func(c *gin.Context) {
+			c.String(400, "CSRF token mismatch")
+			c.Abort()
+		},
+	}))
 }
 
 /*

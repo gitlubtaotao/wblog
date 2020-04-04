@@ -30,6 +30,7 @@ defaults: &defaults
   client_session_key: _client_session_UserID
   admin_user: _admin_user
   client_user: _client_user
+  gin_captcha: GIN_CAPTCHA
 development:
   <<: *defaults
   qiniu_fileserver: http://q7xvlw9i4.bkt.clouddn.com/

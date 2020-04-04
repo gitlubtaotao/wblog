@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gitlubtaotao/wblog/api"
 	"github.com/gitlubtaotao/wblog/repositories"
+	csrf "github.com/utrack/gin-csrf"
 	"net/http"
 )
 
@@ -12,32 +13,27 @@ type RegisterApi struct {
 	repository repositories.IUserRepository
 }
 
-
-
-
-
-//注册页面
-func (r *RegisterApi) SignUpGet(c *gin.Context) {
-	c.HTML(http.StatusOK, "auth/signup.html", gin.H{
+func (r *RegisterApi) New(ctx *gin.Context) {
+	ctx.HTML(http.StatusOK, "register/new.html", gin.H{
 		"title": "Wblog | Registeration Page",
+		"token": csrf.GetToken(ctx),
 	})
 }
-
-func (r *RegisterApi) SignUpPost(c *gin.Context) {
+func (r *RegisterApi) Create(ctx *gin.Context) {
 	var (
 		err error
 		res = gin.H{}
 	)
-	defer r.WriteJSON(c, res)
-	if c.PostForm("password") != c.PostForm("confirm_password") {
+	defer r.WriteJSON(ctx, res)
+	if ctx.PostForm("password") != ctx.PostForm("confirm_password") {
 		res["message"] = "Inconsistent password entry"
 		return
 	}
-	err = r.repository.Register()
+	repository := repositories.NewUserRepository(ctx)
+	err = repository.Register()
 	if err != nil {
 		res["message"] = err.Error()
 		return
 	}
-	res["contentType"] = c.ContentType()
 	res["succeed"] = true
 }

@@ -40,6 +40,7 @@ type Configuration struct {
 	ClientSessionKey   string `json:"client_session_key" yaml:"client_session_key"`
 	AdminUser          string `json:"admin_user" yaml:"admin_user"`
 	ClientUser         string `json:"client_user" yaml:"client_user"`
+	GinCaptcha         string `json:"gin_captcha" yaml:"gin_captcha"`
 }
 
 const (
@@ -68,8 +69,6 @@ func LoadConfiguration(path string) error {
 func GetConfiguration() *Configuration {
 	return configuration
 }
-
-
 
 /*
 @title: 设置不同的环境变量
@@ -105,7 +104,3 @@ func GetGinMode(env string) string {
 		return "debug"
 	}
 }
-
-
-
-

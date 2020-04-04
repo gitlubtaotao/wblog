@@ -33,11 +33,7 @@ func (r *Routes) InitRouter() {
 
 //captchaRoute
 func (r *Routes) captchaRoute() {
-	controller := new(api.CaptchaController)
-	r.engine.GET("/getCaptcha", controller.GetCaptcha)
-	r.engine.GET("/verifyCaptcha", controller.VerifyCaptcha)
-	r.engine.GET("/captcha/:source", controller.GetCaptchaPng)
-	r.engine.GET("/captcha", controller.Captcha)
+
 }
 
 func (r *Routes) indexInit() {

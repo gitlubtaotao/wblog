@@ -26,6 +26,7 @@ require (
 	github.com/qiniu/x v7.0.8+incompatible
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
 	github.com/snluu/uuid v0.0.0-20130306162636-1dd34a9ad6c0
+	github.com/utrack/gin-csrf v0.0.0-20190424104817-40fb8d2c8fca
 	golang.org/x/crypto v0.0.0-20191205180655-e7c4368fe9dd
 	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
 	gopkg.in/russross/blackfriday.v2 v2.0.0
