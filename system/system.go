@@ -1,6 +1,7 @@
 package system
 
 import (
+	"github.com/cihub/seelog"
 	"io/ioutil"
 	
 	"github.com/go-yaml/yaml"
@@ -30,7 +31,7 @@ type Configuration struct {
 	NotifyEmails       string `yaml:"notify_emails"`  //notify_emails
 	PageSize           int    `yaml:"page_size"`      //page_size
 	SmmsFileServer     string `yaml:"smms_fileserver"`
-	PasswordValid      int64 `yaml:"password_valid"`
+	PasswordValid      int64  `yaml:"password_valid"`
 }
 
 const (
@@ -58,4 +59,27 @@ func LoadConfiguration(path string) error {
 
 func GetConfiguration() *Configuration {
 	return configuration
+}
+
+/*
+@title: 配置seelog
+@description: 配置系统日志管理
+@auth: taotao
+@date: 2020.4.4
+*/
+func SetSeelogPath(logConfigPath string) {
+	logger, err := seelog.LoggerFromConfigAsFile(logConfigPath)
+	if err != nil {
+		_ = seelog.Critical("err parsing seelog config file", err)
+		return
+	}
+	_ = seelog.ReplaceLogger(logger)
+}
+
+/*
+@title: 设置不同的环境变量
+@auth: taotao
+ */
+func LoadEnvConfiguration(env string) {
+
 }
