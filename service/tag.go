@@ -51,7 +51,7 @@ func (t *TagService) DeletePostTagByPostId(postId uint) error {
  @title: list tags by post id
 */
 func (t *TagService) ListTagByPostId(postId uint) (tags []*models.Tag, err error) {
-	rows, err := database.DBCon.Table("tags").Joins("inner joins post_tags on post_tags.tag_id=tags.id and post_tags.post_id= ?",
+	rows, err := database.DBCon.Table("tags").Joins("INNER JOIN post_tags on post_tags.tag_id=tags.id WHERE post_tags.post_id = ?",
 		postId).Rows()
 	if err != nil {
 		return nil, err

@@ -137,7 +137,7 @@ func (p *PostService) GetPostById(id uint, isTags bool) (*models.Post, error) {
 	if isTags {
 		temp = temp.Preload("Tags")
 	}
-	err := temp.Where("id=?", id).First(&post).Error
+	err := temp.Where("id=?", id).First(&post).Order("id desc").Error
 	return &post, err
 }
 

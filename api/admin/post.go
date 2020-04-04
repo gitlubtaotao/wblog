@@ -92,6 +92,7 @@ func (p *PostApi) Delete(ctx *gin.Context) {
 		res["message"] = err.Error()
 		return
 	}
+	res["id"] = pid
 	res["succeed"] = true
 }
 
@@ -99,7 +100,6 @@ func (p *PostApi) Delete(ctx *gin.Context) {
 func (p *PostApi) Edit(c *gin.Context) {
 	id := p.stringToUnit(c.Param("id"))
 	repository := p.getRepository(c)
-	//tagRepository := repositories.NewTagRepository(c)
 	user, _ := p.CurrentUser(c)
 	post, err := repository.GetPostById(id, true)
 	if err != nil {
@@ -117,8 +117,8 @@ func (p *PostApi) Edit(c *gin.Context) {
 
 //保存博文信息
 func (p *PostApi) Update(ctx *gin.Context) {
-	var res  = gin.H{}
-	defer p.WriteJSON(ctx,res)
+	var res = gin.H{}
+	defer p.WriteJSON(ctx, res)
 	Id := p.stringToUnit(ctx.Param("id"))
 	tags := ctx.PostForm("tags")
 	repository := p.getRepository(ctx)
@@ -129,7 +129,7 @@ func (p *PostApi) Update(ctx *gin.Context) {
 		return
 	}
 	err = ctx.ShouldBindWith(&post, binding.Form)
-	if err != nil{
+	if err != nil {
 		res["message"] = err.Error()
 		return
 	}

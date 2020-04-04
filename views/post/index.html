@@ -47,7 +47,7 @@
                                     </thead>
                                     <tbody>
                                     {{range .posts}}
-                                        <tr>
+                                        <tr id="tr_{{.ID}}">
                                             <td><a href="/admin/post/{{.ID}}/edit" target="_blank"
                                                    class="btn btn-primary btn-sm">编辑</a>
                                                 <a href="#" class="btn btn-danger btn-sm"
@@ -59,7 +59,7 @@
                                             <td>{{.Keyword}}</td>
                                             <td>
                                                 <a href="javascript:void(0);"
-                                                   onclick="pushlish('{{.ID}}')"> {{if .IsPublished}}√{{else}}×{{end}}</a>
+                                                   data-id="{{.ID}}" class="publish-post"> {{if .IsPublished}}√{{else}}×{{end}}</a>
                                             </td>
                                             <td>{{dateFormat .CreatedAt "2006-01-02 15:04"}}</td>
                                             <td>{{dateFormat .UpdatedAt "2006-01-02 15:04"}}</td>
