@@ -40,3 +40,21 @@
 2020-04-04 23:58:54 [ERR] [session.go:54] [github.com/gitlubtaotao/wblog/admin/api.(*SessionApi).Create] crypto/aes: invalid key size 0
 2020-04-04 23:59:14 [ERR] [session.go:55] [github.com/gitlubtaotao/wblog/admin/api.(*SessionApi).Create] crypto/aes: invalid key size 0
 2020-04-05 00:05:51 [ERR] [session.go:55] [github.com/gitlubtaotao/wblog/admin/api.(*SessionApi).Create] crypto/aes: invalid key size 0
+2020-04-05 00:30:10 [CRT] [user.go:35] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] current user is not exist
+2020-04-05 00:31:38 [CRT] [user.go:35] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] current user is not exist
+2020-04-05 00:31:48 [CRT] [user.go:35] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] current user is not exist
+2020-04-05 00:34:21 [CRT] [user.go:35] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] current user is not exist
+2020-04-05 00:35:05 [CRT] [user.go:35] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] current user is not exist
+2020-04-05 00:35:13 [CRT] [user.go:35] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] current user is not exist
+2020-04-05 00:35:36 [CRT] [user.go:35] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] current user is not exist
+2020-04-05 00:40:38 [CRT] [user.go:35] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] current user is not exist
+2020-04-05 00:40:47 [CRT] [user.go:35] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] current user is not exist
+2020-04-05 00:41:23 [CRT] [user.go:35] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] current user is not exist
+2020-04-05 00:43:28 [CRT] [user.go:35] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] current user is not exist
+2020-04-05 00:44:22 [CRT] [user.go:35] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] current user is not exist
+2020-04-05 00:44:28 [CRT] [user.go:35] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] current user is not exist
+2020-04-05 00:44:45 [CRT] [user.go:35] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] current user is not exist
+2020-04-05 00:44:54 [CRT] [user.go:35] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] current user is not exist
+2020-04-05 00:45:13 [CRT] [user.go:35] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] current user is not exist
+2020-04-05 00:46:02 [CRT] [user.go:35] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] current user is not exist
+2020-04-05 00:47:04 [CRT] [user.go:44] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] record not found

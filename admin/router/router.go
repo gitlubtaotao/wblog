@@ -29,6 +29,7 @@ func (r *Routes) Register() {
 	r.group.Use(r.AdminScopeRequired())
 	{
 		r.homeRoute()
+		r.user()
 	}
 	
 }
@@ -71,6 +72,13 @@ func (r *Routes) homeRoute() {
 		r.group.GET("", home.Index)
 		r.group.GET("/index", home.Index)
 	}
+}
+func (r *Routes) user()  {
+	user := &admin.UserApi{}
+	r.group.GET("/user/profile", user.Get)
+	r.group.POST("/user/:id/profile", user.Update)
+	r.group.GET("/user", user.Index)
+	r.group.POST("/user/:id/lock", user.Lock)
 }
 
 //AuthRequired grants access to authenticated users, requires SharedData middleware

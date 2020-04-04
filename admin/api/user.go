@@ -16,7 +16,7 @@ type UserApi struct {
 	*api.BaseApi
 }
 
-func (u *UserApi) ProfileGet(ctx *gin.Context) {
+func (u *UserApi) Get(ctx *gin.Context) {
 	repository := repositories.NewUserRepository(ctx)
 	u.repository = repository
 	userId := ctx.Query("id")
@@ -25,11 +25,12 @@ func (u *UserApi) ProfileGet(ctx *gin.Context) {
 		err      error
 	)
 	if userId == "" {
-		tempUser, err = u.CurrentUser(ctx)
+		tempUser, err = u.AdminUser(ctx)
 	} else {
 		id, _ := strconv.ParseInt(userId, 10, 64)
 		tempUser, err = repository.GetUserByID(id)
 	}
+	
 	if err != nil {
 		_ = seelog.Critical(err)
 		u.HandleMessage(ctx, "service inter is error")
@@ -45,7 +46,7 @@ func (u *UserApi) ProfileGet(ctx *gin.Context) {
 		u.RenderComments(gin.H{"user": tempUser, "url": url,}))
 }
 
-func (u *UserApi) ProfileUpdate(c *gin.Context) {
+func (u *UserApi) Update(c *gin.Context) {
 	var (
 		err error
 		res = gin.H{}
@@ -63,7 +64,7 @@ func (u *UserApi) ProfileUpdate(c *gin.Context) {
 			res["message"] = "password is error"
 			return
 		}
-		password, err = encrypt.EnCryptData(password,"admin")
+		password, err = encrypt.EnCryptData(password, "admin")
 	}
 	if err != nil {
 		res["message"] = "pssword is error"
@@ -95,17 +96,17 @@ func (u *UserApi) ProfileUpdate(c *gin.Context) {
 	res["succeed"] = true
 }
 
-func (u *UserApi) UserIndex(c *gin.Context) {
+func (u *UserApi) Index(c *gin.Context) {
 	repository := repositories.NewUserRepository(c)
 	columns := []string{"telephone", "email", "nick_name", "github_login_id",
 		"created_at", "id", "is_admin", "avatar_url", "secret_key"}
 	users, _ := repository.ListAllAdminUsers(columns)
-	user, _ := c.Get(api.CONTEXT_USER_KEY)
+	user, _ := u.AdminUser(c)
 	c.HTML(http.StatusOK, "user/index.html",
 		u.RenderComments(gin.H{"user": user, "users": users,}))
 }
 
-func (u *UserApi) UserLock(c *gin.Context) {
+func (u *UserApi) Lock(c *gin.Context) {
 	var (
 		err  error
 		_id  uint64

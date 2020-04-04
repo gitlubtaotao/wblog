@@ -43,6 +43,7 @@ func (b *BaseApi) RenderHtml(ctx *gin.Context, path string, h gin.H) {
 func (b *BaseApi) RenderComments(h gin.H) gin.H {
 	repository := repositories.NewCommentRepository()
 	h["comments"], _ = repository.MustListUnreadComment()
+	h["message"] = ""
 	return h
 }
 

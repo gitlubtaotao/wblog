@@ -1,0 +1,36 @@
+{{define "errors/error.html"}}
+    <!DOCTYPE html>
+    <html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+        <title>Page - {{.message}}</title>
+        {{template "layouts/header.html"}}
+
+        <!-- Bootstrap Core CSS -->
+
+    </head>
+
+    <body class="hold-transition skin-blue sidebar-mini">
+    <div class="wrapper">
+        {{template "layouts/navbar.html" .}}
+        {{template "layouts/sidebar.html" .}}
+        <div class="content-wrapper">
+            <section class="content" style="margin-top: 20px;">
+                <div class="alert alert-error" role="alert">
+                    <a href="#" class="alert-error">{{.message}}</a>
+                </div>
+            </section>
+            </div>
+        </div>
+    </div>
+    {{template "layouts/footer.html"}}
+    </body>
+    </html>
+{{end}}

@@ -1,0 +1,104 @@
+{{define "user/index.html"}}
+    <!DOCTYPE html>
+    <html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Wblog - User</title>
+        <!-- Tell the browser to be responsive to screen width -->
+        {{template "layouts/header.html" .}}
+    </head>
+    <body class="hold-transition skin-blue sidebar-mini">
+    <div class="wrapper">
+        {{template "layouts/navbar.html" .}}
+        {{template "layouts/sidebar.html" .}}
+
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            <!-- Content Header (Page header) -->
+            <section class="content-header">
+                <h1 style="float: left;">
+                    <small>User Manage</small>
+                </h1>
+                <a href="/admin/signup" target="_blank" class="btn btn-primary btn-sm " style="float: left;margin-left: 10px;">New User</a>
+                <ol class="breadcrumb">
+                    <li><a href="/admin/index"><i class="fa fa-dashboard"></i> Home</a></li>
+                    <li class="active"><a href="#">User</a></li>
+                </ol>
+                <div class="clearfix"></div>
+            </section>
+
+            <!-- Main content -->
+            <section class="content">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="box">
+                            <!--<div class="box-header">
+                                <h3 class="box-title">Hover Data Table</h3>
+                            </div>
+                            <!-- /.box-header -->
+                            <div class="box-body">
+                                <table id="example2" class="table table-bordered table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th>Operation</th>
+                                        <th>ID</th>
+                                        <th>Email</th>
+                                        <th>Nick Name</th>
+                                        <th>Telephone</th>
+                                        <th>Is Admin</th>
+                                        <th>github</th>
+                                        <th>Register Time</th>
+                                        <th>Avatar Url</th>
+
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {{range .users}}
+                                        <tr>
+                                            <td>
+                                                {{if not .LockState}}
+                                                    <a href="javascript:void(0);" class="lock-button btn btn-sm btn-danger"
+                                                       data-href="/admin/user/{{.ID}}/lock">锁定</a>
+                                                {{else}}
+                                                    <a href="javascript:void(0);" class="lock-button btn btn-sm btn-primary"
+                                                       data-href="/admin/user/{{.ID}}/lock">解除锁定</a>
+                                                {{end}}
+                                                <a href="/admin/user/profile?id={{.ID}}" target="_blank" class="btn btn-primary btn-sm">查看</a>
+                                            </td>
+                                            <td>{{.ID}}</td>
+                                            <td>{{.Email}}</td>
+                                            <td>{{.NickName}}</td>
+                                            <td>{{.Telephone}}</td>
+                                            <td>{{if .IsAdmin}}√{{else}}×{{end}}</td>
+                                            <td><a href="https://github.com/{{.GithubLoginId}}"
+                                                   target="_blank">{{.GithubLoginId}}</a></td>
+                                            <td>{{dateFormat .CreatedAt "06-01-02 15:04"}}</td>
+                                            <td><a href="{{.ShowAvatarURL}}" target="_blank">
+                                                    <img src="{{.ShowAvatarURL}}" style="width: 160px;"
+                                                         class="image user-image" alt=""/>
+                                                </a></td>
+
+                                        </tr>
+                                    {{end}}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- /.box-body -->
+                        </div>
+                        <!-- /.box -->
+                    </div>
+                    <!-- /.col -->
+                </div>
+                <!-- /.row -->
+            </section>
+            <!-- /.content -->
+        </div>
+
+        <!-- /.content-wrapper -->
+    </div>
+    {{template "layouts/footer.html"}}
+    <script src="/static/libs/page_assets/user/index.js"></script>
+    </body>
+    </html>
+{{end}}
