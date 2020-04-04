@@ -24,3 +24,19 @@
 2020-04-04 18:05:39 [CRT] [run.go:18] [main.main] err parsing config log fileunexpected end of JSON input
 2020-04-04 18:06:11 [CRT] [run.go:18] [main.main] err parsing config log fileunexpected end of JSON input
 2020-04-04 19:49:16 [CRT] [run.go:18] [main.main] err parsing config log fileunexpected end of JSON input
+2020-04-04 23:51:48 [ERR] [session.go:52] [github.com/gitlubtaotao/wblog/admin/api.(*SessionApi).Create] crypto/aes: invalid key size 0
+2020-04-04 23:52:21 [ERR] [session.go:42] [github.com/gitlubtaotao/wblog/admin/api.(*SessionApi).Create] crypto/bcrypt: hashedPassword is not the hash of the given password
+2020-04-04 23:52:28 [ERR] [session.go:42] [github.com/gitlubtaotao/wblog/admin/api.(*SessionApi).Create] crypto/bcrypt: hashedPassword is not the hash of the given password
+2020-04-04 23:52:34 [ERR] [session.go:42] [github.com/gitlubtaotao/wblog/admin/api.(*SessionApi).Create] crypto/bcrypt: hashedPassword is not the hash of the given password
+2020-04-04 23:53:09 [ERR] [session.go:52] [github.com/gitlubtaotao/wblog/admin/api.(*SessionApi).Create] crypto/aes: invalid key size 0
+2020-04-04 23:53:15 [ERR] [session.go:52] [github.com/gitlubtaotao/wblog/admin/api.(*SessionApi).Create] crypto/aes: invalid key size 0
+2020-04-04 23:55:10 [ERR] [session.go:42] [github.com/gitlubtaotao/wblog/admin/api.(*SessionApi).Create] crypto/bcrypt: hashedPassword is not the hash of the given password
+2020-04-04 23:55:49 [ERR] [session.go:42] [github.com/gitlubtaotao/wblog/admin/api.(*SessionApi).Create] crypto/bcrypt: hashedPassword is not the hash of the given password
+2020-04-04 23:56:04 [ERR] [session.go:42] [github.com/gitlubtaotao/wblog/admin/api.(*SessionApi).Create] crypto/bcrypt: hashedPassword is not the hash of the given password
+2020-04-04 23:56:55 [ERR] [session.go:42] [github.com/gitlubtaotao/wblog/admin/api.(*SessionApi).Create] crypto/bcrypt: hashedPassword is not the hash of the given password
+2020-04-04 23:57:59 [ERR] [session.go:52] [github.com/gitlubtaotao/wblog/admin/api.(*SessionApi).Create] crypto/aes: invalid key size 0
+2020-04-04 23:58:27 [ERR] [session.go:52] [github.com/gitlubtaotao/wblog/admin/api.(*SessionApi).Create] crypto/aes: invalid key size 0
+2020-04-04 23:58:50 [ERR] [session.go:54] [github.com/gitlubtaotao/wblog/admin/api.(*SessionApi).Create] crypto/aes: invalid key size 0
+2020-04-04 23:58:54 [ERR] [session.go:54] [github.com/gitlubtaotao/wblog/admin/api.(*SessionApi).Create] crypto/aes: invalid key size 0
+2020-04-04 23:59:14 [ERR] [session.go:55] [github.com/gitlubtaotao/wblog/admin/api.(*SessionApi).Create] crypto/aes: invalid key size 0
+2020-04-05 00:05:51 [ERR] [session.go:55] [github.com/gitlubtaotao/wblog/admin/api.(*SessionApi).Create] crypto/aes: invalid key size 0

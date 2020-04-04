@@ -182,7 +182,7 @@ func (a *AuthApi) createUser(ctx *gin.Context, githubUser *models.GithubUserInfo
 		a.HandleMessage(ctx, "Your account have been locked.")
 		return
 	}
-	key, err := encrypt.EnCryptData(string(user.ID))
+	key, err := encrypt.EnCryptData(string(user.ID),"admin")
 	_ = a.OperationSession(ctx, SESSION_KEY, key)
 	if err != nil {
 		a.handlerError(ctx, err)

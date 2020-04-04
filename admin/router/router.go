@@ -77,14 +77,14 @@ func (r *Routes) homeRoute() {
 func (r *Routes) AdminScopeRequired() gin.HandlerFunc {
 	config := system.GetConfiguration()
 	return func(c *gin.Context) {
-		if user, _ := c.Get(config.AdminSessionKey); user != nil {
+		if user, _ := c.Get(config.AdminUser); user != nil {
 			if u, ok := user.(*models.User); ok && u.IsAdmin {
 				c.Next()
 				return
 			}
 		}
 		_ = seelog.Warnf("User not authorized to visit %s", c.Request.RequestURI)
-		c.Redirect(http.StatusSeeOther, "/admin/signin")
+		c.Redirect(http.StatusSeeOther, "/admin/login")
 		c.Abort()
 	}
 }

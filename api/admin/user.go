@@ -63,7 +63,7 @@ func (u *UserApi) ProfileUpdate(c *gin.Context) {
 			res["message"] = "password is error"
 			return
 		}
-		password, err = encrypt.EnCryptData(password)
+		password, err = encrypt.EnCryptData(password,"admin")
 	}
 	if err != nil {
 		res["message"] = "pssword is error"

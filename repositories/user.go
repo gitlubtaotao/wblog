@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gitlubtaotao/wblog/encrypt"
 	"github.com/gitlubtaotao/wblog/helpers"
@@ -75,6 +76,7 @@ func (u *UserRepository) SignIn(account string, password string) (*models.User, 
 		return nil, err
 	}
 	if err := encrypt.CompareHashSalt(user.Password, password); err != nil {
+		fmt.Println(err)
 		return nil, err
 	}
 	return user, err

@@ -60,7 +60,7 @@ func SharedData() gin.HandlerFunc {
 		config := system.GetConfiguration()
 		session := sessions.Default(c)
 		if uID := session.Get(config.AdminSessionKey); uID != nil {
-			userString, err := encrypt.DeCryptData(uID.(string), true)
+			userString, err := encrypt.DeCryptData(uID.(string), true,"admin")
 			intId, _ := strconv.ParseInt(userString, 10, 64)
 			user, err := service.NewUserService().GetUserByID(intId)
 			if err == nil {

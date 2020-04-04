@@ -11,8 +11,8 @@ import (
 	"strings"
 )
 
-func EnCryptData(originData string) (string, error) {
-	secret := system.GetConfiguration().SessionSecret
+func EnCryptData(originData string, env string) (string, error) {
+	secret := getSecret(env)
 	result, err := aesEncrypt([]byte(originData), []byte(secret))
 	if err != nil {
 		return "", err
@@ -20,24 +20,31 @@ func EnCryptData(originData string) (string, error) {
 	return base64.StdEncoding.EncodeToString(result), err
 }
 
-func DeCryptData(hash string,isInt bool) (string, error) {
+func DeCryptData(hash string, isInt bool,env string) (string, error) {
 	//解密base64字符串
-	secret := system.GetConfiguration().SessionSecret
+	secret := getSecret(env)
 	pwdByte, err := base64.StdEncoding.DecodeString(hash)
 	if err != nil {
 		return "", err
 	}
 	//执行AES解密
 	originData, err := aesDeCrypt(pwdByte, []byte(secret))
-	var s  string
-	if isInt{
+	var s string
+	if isInt {
 		s = convert(originData)
-	}else{
+	} else {
 		s = string(originData)
 	}
 	return s, err
 }
 
+func getSecret(env string) string  {
+	if env == "admin" {
+		return system.GetConfiguration().AdminSecret
+	} else {
+		return system.GetConfiguration().ClientSecret
+	}
+}
 //使用aes进行加密
 func aesEncrypt(originData []byte, key []byte) ([]byte, error) {
 	block, err := aes.NewCipher(key)

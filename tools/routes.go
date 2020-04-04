@@ -7,7 +7,6 @@ import (
 	"github.com/gitlubtaotao/wblog/api/admin"
 	"github.com/gitlubtaotao/wblog/api/client"
 	"github.com/gitlubtaotao/wblog/models"
-	"github.com/gitlubtaotao/wblog/system"
 	"net/http"
 )
 
@@ -22,7 +21,6 @@ func NewRoutes(engine *gin.Engine) *Routes {
 //初始化路由
 func (r *Routes) InitRouter() {
 	r.indexInit()
-	r.signUp()
 	r.signInAndOut()
 	r.visitorRouter()
 	r.subscriberRouter()
@@ -43,12 +41,7 @@ func (r *Routes) indexInit() {
 	r.engine.GET("/rss", api.RssGet)
 }
 
-func (r *Routes) signUp() {
-	if system.GetConfiguration().SignupEnabled {
-		r.engine.GET("/admin/signup", new(admin.RegisterApi).SignUpGet)
-		r.engine.POST("admin/signup", new(admin.RegisterApi).SignUpPost)
-	}
-}
+
 
 //登录和退出
 func (r *Routes) signInAndOut() {

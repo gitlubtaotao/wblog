@@ -52,7 +52,7 @@ func (s *SessionApi) PostSignIn(ctx *gin.Context) {
 		res["message"] = "Your account have been locked"
 		return
 	}
-	key, err := encrypt.EnCryptData(string(user.ID))
+	key, err := encrypt.EnCryptData(string(user.ID),"admin")
 	if err != nil {
 		_ = seelog.Error(err)
 		res["message"] = "Your account not exist"
@@ -83,7 +83,7 @@ func (s *SessionApi) ModifyPassword(ctx *gin.Context) {
 	path := "auth/modify_password.html"
 	s.repository = repositories.NewUserRepository(ctx)
 	hash := ctx.Param("hash")
-	email, err := encrypt.DeCryptData(hash, false)
+	email, err := encrypt.DeCryptData(hash, false,"admin")
 	if err != nil {
 		s.errorHandler(ctx, err, path, gin.H{
 			"message": "Your Account is not exist",
@@ -157,7 +157,7 @@ func (s *SessionApi) SendNotice(ctx *gin.Context) {
 		return
 	}
 	//生成对于的修改密码链接
-	modifyPasswordHash, err := encrypt.EnCryptData(email)
+	modifyPasswordHash, err := encrypt.EnCryptData(email,"admin")
 	if err != nil {
 		s.errorHandler(ctx, err, path, message)
 		return
