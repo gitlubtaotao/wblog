@@ -91,8 +91,6 @@ func (r *Routes) adminRouter() {
 	authorized := r.engine.Group("/admin")
 	authorized.Use(AdminScopeRequired())
 	{
-		authorized.GET("", admin.Home)
-		authorized.GET("/index", admin.Home)
 		authorized.POST("/upload", api.Upload)
 		
 		page := admin.PageApi{}
