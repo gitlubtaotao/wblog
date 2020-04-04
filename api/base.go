@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gitlubtaotao/wblog/models"
 	"github.com/gitlubtaotao/wblog/repositories"
+	"github.com/gitlubtaotao/wblog/system"
 	"net/http"
 )
 
@@ -75,6 +76,7 @@ func (b *BaseApi) HandleMessage(c *gin.Context, message string) {
 }
 
 func (b *BaseApi) CurrentUser(c *gin.Context) (*models.User, error) {
+	
 	sessionUser, exists := c.Get(CONTEXT_USER_KEY)
 	if !exists {
 		return nil, errors.New("current user is not exist")
@@ -97,4 +99,16 @@ func (b *BaseApi) SendMailHtml(to, subject, body string) error {
 func (b *BaseApi) DefaultNoticeMailHtml(subject, body string) error {
 	repository := repositories.NewMailRepository(subject, body, "html")
 	return repository.SystemDefaultNotify()
+}
+
+func (b *BaseApi) AdminUser(ctx *gin.Context) (*models.User, error) {
+	sessionUser, exists := ctx.Get(system.GetConfiguration().AdminUser)
+	if !exists {
+		return nil, errors.New("current user is not exist")
+	}
+	user, ok := sessionUser.(*models.User)
+	if !ok {
+		return nil, errors.New("server interval error")
+	}
+	return user, nil
 }
