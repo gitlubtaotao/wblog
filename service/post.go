@@ -1,6 +1,7 @@
 package service
 
 import (
+	"database/sql"
 	"fmt"
 	"github.com/gitlubtaotao/wblog/database"
 	"github.com/gitlubtaotao/wblog/models"
@@ -10,7 +11,7 @@ import (
 )
 
 type IPostService interface {
-	PublishPost(per, page uint, attr map[string]interface{}, columns []string) ([]*models.Post, error)
+	PublishPost(per, page uint, attr map[string]interface{}, columns []string, isTag bool) ([]*models.Post, error)
 	NotPublishPost(per, page uint, attr map[string]interface{}, columns []string) ([]*models.Post, error)
 	TagsPost(per, page uint, attr map[string]interface{}, columns []string, tag string) ([]*models.Post, error)
 	ListPost(per, page uint, attr map[string]interface{}, columns []string) ([]*models.Post, error)
@@ -20,10 +21,55 @@ type IPostService interface {
 	GetPostById(id uint, isTags bool) (*models.Post, error)
 	Update(post *models.Post) error
 	UpdateAttr(post *models.Post, attr map[string]interface{}) error
+	CountPostByTag(tag uint) (count int, err error)
+	CountPost(attr map[string]interface{}) (count int, err error)
+	ListMaxReadPost(column []string) ([]*models.Post, error)
+	ListMaxCommentPost(columns []string)([]*models.Post,error)
 }
 
 type PostService struct {
 	Model *models.Post
+}
+
+func (p *PostService) ListMaxCommentPost(columns []string) (posts []*models.Post, err error) {
+	var rows *sql.Rows
+	rows, err = database.DBCon.Raw("select p.title,p.id,c.total comment_total from posts p inner join (select post_id,count(*) total from comments group by post_id) c on p.id = c.post_id order by c.total desc limit 5").Rows()
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var post models.Post
+		_ = database.DBCon.ScanRows(rows, &post)
+		posts = append(posts, &post)
+	}
+	return
+}
+func (p *PostService) ListMaxReadPost(column []string) (posts []*models.Post, err error) {
+	temp := database.DBCon
+	if len(column) > 0 {
+		temp = temp.Select(column)
+	}
+	err = temp.Where("is_published = ?", true).Order("view desc").Limit(5).Find(&posts).Error
+	return
+}
+
+func (p *PostService) CountPost(attr map[string]interface{}) (count int, err error) {
+	temp := database.DBCon.Model(&models.Post{})
+	if len(attr) > 0 {
+		temp = temp.Where(attr)
+	}
+	err = temp.Count(&count).Error
+	return
+}
+
+func (p *PostService) CountPostByTag(tag uint) (count int, err error) {
+	if tag > 0 {
+		err = database.DBCon.Raw("select count(*) from posts p inner join post_tags pt on p.id = pt.post_id where pt.tag_id = ? and p.is_published = ?", tag, true).Row().Scan(&count)
+	} else {
+		err = database.DBCon.Raw("select count(*) from posts p where p.is_published = ?", true).Row().Scan(&count)
+	}
+	return
 }
 
 func (p *PostService) Create(post *models.Post) error {
@@ -33,13 +79,25 @@ func (p *PostService) Create(post *models.Post) error {
 /*
  查询已经发布过的文章
 */
-func (p *PostService) PublishPost(per, page uint, attr map[string]interface{}, columns []string) (posts []*models.Post, err error) {
-	temp := p.tempListPost(per, page, attr)
+func (p *PostService) PublishPost(per, page uint, attr map[string]interface{}, columns []string, isTag bool) (posts []*models.Post, err error) {
+	if per == 0 {
+		per = uint(system.GetConfiguration().PageSize)
+	}
+	temp := database.DBCon
+	if page != 0 {
+		temp = temp.Limit(per).Offset((page - 1) * per)
+	}
+	if len(attr) > 0 {
+		temp = temp.Where(attr)
+	}
+	if isTag {
+		temp = temp.Preload("Tags")
+	}
 	temp = temp.Where("is_published =?", true)
 	if len(columns) > 0 {
 		temp = temp.Select(columns)
 	}
-	err = temp.Scan(&posts).Error
+	err = temp.Find(&posts).Error
 	return
 }
 

@@ -12,7 +12,8 @@ type ITagRepository interface {
 	Create(tag models.Tag) (models.Tag, error)
 	PostTagCreate(tag *models.PostTag) error
 	Delete(id uint) error
-	AllTag(attr map[string]interface{},columns []string)([]models.Tag,error)
+	AllTag(attr map[string]interface{}, columns []string) ([]models.Tag, error)
+	PublishTagsList() ([]*models.Tag, error)
 }
 
 type TagRepository struct {
@@ -20,8 +21,12 @@ type TagRepository struct {
 	service service2.ITagService
 }
 
-func (t *TagRepository) AllTag(attr map[string]interface{}, columns []string)([]models.Tag,error) {
-	return t.service.ListTag(0,0,attr,columns)
+func (t *TagRepository) PublishTagsList() ([]*models.Tag, error) {
+	return t.service.PublishTagsList()
+}
+
+func (t *TagRepository) AllTag(attr map[string]interface{}, columns []string) ([]models.Tag, error) {
+	return t.service.ListTag(0, 0, attr, columns)
 }
 
 func (t *TagRepository) Delete(id uint) error {

@@ -13,11 +13,27 @@ type ITagService interface {
 	ListTagByPostId(postId uint) ([]*models.Tag, error)
 	DeletePostTagByPostId(postId uint) error
 	ListTag(per, page uint, attr map[string]interface{}, columns []string) ([]models.Tag, error)
+	PublishTagsList() ([]*models.Tag, error)
 }
 
 //
 type TagService struct {
 	Model *models.Tag
+}
+
+func (t *TagService) PublishTagsList() ([]*models.Tag, error) {
+	var tags []*models.Tag
+	rows, err := database.DBCon.Raw("select t.*,count(*) total from tags t inner join post_tags pt on t.id = pt.tag_id inner join posts p on pt.post_id = p.id where p.is_published = ? group by pt.tag_id", true).Rows()
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var tag models.Tag
+		_ = database.DBCon.ScanRows(rows, &tag)
+		tags = append(tags, &tag)
+	}
+	return tags, nil
 }
 
 func (t *TagService) ListTag(per, page uint, attr map[string]interface{}, columns []string) (tags []models.Tag, err error) {

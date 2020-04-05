@@ -6,6 +6,7 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
+	client "github.com/gitlubtaotao/wblog/client/route"
 	"github.com/gitlubtaotao/wblog/database"
 	"github.com/gitlubtaotao/wblog/encrypt"
 	"github.com/gitlubtaotao/wblog/migration"
@@ -34,12 +35,12 @@ func main() {
 	migration.Migrate()
 	gin.SetMode(system.GetGinMode(*configEnv))
 	router := gin.Default()
-	router.Static("../static", "./static")
+	router.Static("./static", "../static")
 	router.SetFuncMap(setCommonTemplate())
 	router.LoadHTMLGlob("view/**/*")
 	setSessions(router)
-	//schedule.GoCron()
 	router.Use(SharedData())
+	client.NewRoute(router).Register()
 	err := router.Run(system.GetConfiguration().ClientAddr)
 	if err != nil {
 		panic(err)
@@ -56,7 +57,7 @@ func SharedData() gin.HandlerFunc {
 		config := system.GetConfiguration()
 		session := sessions.Default(c)
 		if uID := session.Get(config.ClientSessionKey); uID != nil {
-			userString, err := encrypt.DeCryptData(uID.(string), true,"admin")
+			userString, err := encrypt.DeCryptData(uID.(string), true, "admin")
 			intId, _ := strconv.ParseInt(userString, 10, 64)
 			user, err := service.NewUserService().GetUserByID(intId)
 			if err == nil {

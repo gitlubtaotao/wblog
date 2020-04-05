@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gitlubtaotao/wblog/admin/api"
 	"github.com/gitlubtaotao/wblog/api"
+	"github.com/gitlubtaotao/wblog/api/client"
 	"github.com/gitlubtaotao/wblog/models"
 	"github.com/gitlubtaotao/wblog/system"
 	"net/http"
@@ -25,6 +26,7 @@ func NewRoutes(router *gin.Engine) IRoutes {
 func (r *Routes) Register() {
 	base := api.BaseApi{}
 	r.engine.NoRoute(base.Handle404)
+	
 	r.sessionRoute()
 	r.registerRoute()
 	r.passwordRoute()
@@ -103,7 +105,8 @@ func (r *Routes) captchaRoute() {
 func (r *Routes) homeRoute() {
 	home := admin.HomeApi{}
 	{
-		r.group.GET("", home.Index)
+		r.engine.GET("/", home.Index)
+		r.engine.GET("/index", client.Index)
 		r.group.GET("/index", home.Index)
 	}
 }

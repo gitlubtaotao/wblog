@@ -13,11 +13,37 @@ type IPostRepository interface {
 	UpdateAttr(post *models.Post, attr map[string]interface{}) error
 	Update(post *models.Post) error
 	GetPostById(id uint, isTags bool) (*models.Post, error)
+	PublishPost(per, page uint, attr map[string]interface{}, columns []string, isTags bool) ([]*models.Post, error)
+	CountPostByTag(tagId uint) (count int, err error)
+	CountPost(attr map[string]interface{}) (count int, err error)
+	ListMaxReadPost(column []string) ([]*models.Post, error)
+	ListMaxCommentPost(columns []string) ([]*models.Post, error)
+	
 }
 
 type PostRepository struct {
 	ctx     *gin.Context
 	service service.IPostService
+}
+
+func (p *PostRepository) ListMaxCommentPost(columns []string) ([]*models.Post, error) {
+	return p.service.ListMaxCommentPost(columns)
+}
+
+func (p *PostRepository) ListMaxReadPost(column []string) ([]*models.Post, error) {
+	return p.service.ListMaxReadPost(column)
+}
+
+func (p *PostRepository) CountPost(attr map[string]interface{}) (count int, err error) {
+	return p.service.CountPost(attr)
+}
+
+func (p *PostRepository) CountPostByTag(tagId uint) (count int, err error) {
+	return p.service.CountPostByTag(tagId)
+}
+
+func (p *PostRepository) PublishPost(per, page uint, attr map[string]interface{}, columns []string, isTag bool) ([]*models.Post, error) {
+	return p.service.PublishPost(per, page, attr, columns, isTag)
 }
 
 func (p *PostRepository) UpdateAttr(post *models.Post, attr map[string]interface{}) error {

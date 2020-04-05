@@ -66,6 +66,7 @@ func (l *LinkService) ListLink(per, page int, columns []string) (links []*models
 	if len(columns) > 0 {
 		temp = temp.Select(columns)
 	}
+	temp = temp.Order("sort asc")
 	err = temp.Error
 	return
 }

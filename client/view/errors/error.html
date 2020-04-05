@@ -1,0 +1,23 @@
+{{define "errors/error.html"}}
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        {{template "layouts/header.html"}}
+        <title>Page - {{.message}}</title>
+        <link href="/static/css/blog-post.css" rel="stylesheet">
+
+        <link rel="stylesheet" href="/static/css/base.css"/>
+
+    </head>
+    <body>
+    {{template "layouts/navigation.html"}}
+    <div class="container">
+        <div class="alert alert-warning" role="alert">
+            <a href="#" class="alert-link">{{.message}}</a>
+        </div>
+    </div>
+    {{template "layouts/footer.html"}}
+    </body>
+
+    </html>
+{{end}}

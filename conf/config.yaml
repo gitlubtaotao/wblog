@@ -22,8 +22,6 @@ defaults: &defaults
   page_size: 20
   smms_fileserver: https://sm.ms/api/upload
   password_valid: 60
-  client_addr: ":8082"
-  admin_addr: ":8081"
   admin_secret: DIS**#KKKDJJSKDI
   client_secret: DIS**#KKKDJJSKDI
   admin_session_key: _admin_session_UserID
@@ -37,8 +35,8 @@ development:
   qiniu_bucket: wblog-taotao
   dsn: root:qweqwe123@tcp(127.0.0.1:3306)/wblog?charset=utf8mb4&parseTime=True&loc=Asia%2FShanghai&clientFoundRows=true&collation=utf8_unicode_ci
   github_redirecturl: http://localhost:8081/githubCallback
-
-
+  client_addr: "localhost:8082"
+  admin_addr: "localhost:8081"
 production:
   <<: *defaults
 test:

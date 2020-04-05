@@ -43,7 +43,7 @@ type Post struct {
 	Title        string     `json:"title" form:"title" validate:"required"` // title
 	Body         string     `json:"body"  form:"body"  validate:"required"` // body
 	View         int        // view count
-	IsPublished  bool       // published or not
+	IsPublished  bool        `json:"is_published" form:"is_published"`
 	Tags         []*Tag     `gorm:"many2many:post_tags;"` // tags of post
 	Comments     []*Comment `gorm:"-"`                    // comments of post
 	CommentTotal int        `gorm:"-"`                    // count of comment
@@ -192,9 +192,6 @@ func ListPublishedPage() ([]*Page, error) {
 	return _listPage(true)
 }
 
-func ListAllPage() ([]*Page, error) {
-	return _listPage(false)
-}
 
 func _listPage(published bool) ([]*Page, error) {
 	var pages []*Page
@@ -410,9 +407,7 @@ func (pt *PostTag) Insert() error {
 	return DB.FirstOrCreate(pt, "post_id = ? and tag_id = ?", pt.PostId, pt.TagId).Error
 }
 
-func DeletePostTagByPostId(postId uint) error {
-	return DB.Delete(&PostTag{}, "post_id = ?", postId).Error
-}
+
 
 // user
 // insert user
@@ -563,11 +558,6 @@ func MustListLinks() []*Link {
 	return links
 }
 
-func GetLinkById(id uint) (*Link, error) {
-	var link Link
-	err := DB.FirstOrCreate(&link, "id = ?", id).Error
-	return &link, err
-}
 
 func (sf SmmsFile) Insert() (err error) {
 	err = DB.Create(&sf).Error
