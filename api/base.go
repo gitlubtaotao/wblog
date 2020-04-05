@@ -2,12 +2,18 @@ package api
 
 import (
 	"errors"
+	"fmt"
+	"github.com/cihub/seelog"
+	"github.com/denisbakhtin/sitemap"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/gitlubtaotao/wblog/models"
 	"github.com/gitlubtaotao/wblog/repositories"
 	"github.com/gitlubtaotao/wblog/system"
+	"github.com/gitlubtaotao/wblog/tools/helpers"
 	"net/http"
+	"os"
+	"path"
 )
 
 type IBaseApi interface {
@@ -66,7 +72,7 @@ func (b *BaseApi) GetSessionValue(ctx *gin.Context, key string, isDelete bool) (
 }
 
 func (b *BaseApi) Handle404(c *gin.Context) {
-	HandleMessage(c, "Sorry,I lost myself!")
+	HandleMessage(c, "Sorry,I lost myself! page")
 }
 
 func (b *BaseApi) HandleMessage(c *gin.Context, message string) {
@@ -112,4 +118,74 @@ func (b *BaseApi) AdminUser(ctx *gin.Context) (*models.User, error) {
 		return nil, errors.New("server interval error")
 	}
 	return user, nil
+}
+
+//处理共同错误信息
+func (b *BaseApi) HandlerError(message string, err error) bool {
+	if err != nil {
+		_ = seelog.Critical(message, err)
+		return false
+	}
+	return true
+}
+
+
+func CreateXMLSitemap() {
+	configuration := system.GetConfiguration()
+	folder := path.Join(configuration.Public, "sitemap")
+	os.MkdirAll(folder, os.ModePerm)
+	domain := configuration.Domain
+	now := helpers.GetCurrentTime()
+	items := make([]sitemap.Item, 0)
+	
+	items = append(items, sitemap.Item{
+		Loc:        domain,
+		LastMod:    now,
+		Changefreq: "daily",
+		Priority:   1,
+	})
+	
+	posts, err := models.ListPublishedPost("", 0, 0)
+	if err == nil {
+		for _, post := range posts {
+			items = append(items, sitemap.Item{
+				Loc:        fmt.Sprintf("%s/post/%d", domain, post.ID),
+				LastMod:    post.UpdatedAt,
+				Changefreq: "weekly",
+				Priority:   0.9,
+			})
+		}
+	}
+	
+	pages, err := models.ListPublishedPage()
+	if err == nil {
+		for _, page := range pages {
+			items = append(items, sitemap.Item{
+				Loc:        fmt.Sprintf("%s/page/%d", domain, page.ID),
+				LastMod:    page.UpdatedAt,
+				Changefreq: "monthly",
+				Priority:   0.8,
+			})
+		}
+	}
+	
+	if err := sitemap.SiteMap(path.Join(folder, "sitemap1.xml.gz"), items); err != nil {
+		return
+	}
+	if err := sitemap.SiteMapIndex(folder, "sitemap_index.xml", domain+"/static/sitemap/"); err != nil {
+		return
+	}
+}
+
+func WriteJSON(ctx *gin.Context, h gin.H) {
+	if _, ok := h["succeed"]; !ok {
+		h["succeed"] = false
+	}
+	ctx.JSON(http.StatusOK, h)
+}
+
+func HandleMessage(c *gin.Context, message string) {
+	c.HTML(http.StatusNotFound, "errors/error.html", gin.H{
+		"message": message,
+	})
 }

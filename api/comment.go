@@ -28,6 +28,7 @@ func (comm *CommentApi) CommentPost(c *gin.Context) {
 	userId, _ := sessionUserID.(uint)
 	
 	verifyCode := c.PostForm("verifyCode")
+	
 	captchaId := s.Get(SESSION_CAPTCHA)
 	s.Delete(SESSION_CAPTCHA)
 	_captchaId, _ := captchaId.(string)

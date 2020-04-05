@@ -6,10 +6,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gitlubtaotao/wblog/api"
 	"github.com/gitlubtaotao/wblog/encrypt"
-	"github.com/gitlubtaotao/wblog/helpers"
 	"github.com/gitlubtaotao/wblog/models"
 	"github.com/gitlubtaotao/wblog/repositories"
 	"github.com/gitlubtaotao/wblog/system"
+	"github.com/gitlubtaotao/wblog/tools/helpers"
 	"net/http"
 )
 
@@ -24,7 +24,8 @@ func (a *AuthApi) AuthGet(c *gin.Context) {
 	a.repository = repositories.NewAuthRepository()
 	authType := c.Param("authType")
 	uuid := helpers.UUID()
-	_ = a.OperationSession(c, api.SESSION_GITHUB_STATE, uuid)
+	
+	_ = a.OperationSession(c, system.GetConfiguration().SessionGithubState, uuid)
 	authUrl := "/admin/login"
 	switch authType {
 	case "github":

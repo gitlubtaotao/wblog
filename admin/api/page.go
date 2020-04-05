@@ -98,7 +98,7 @@ func (p *PageApi) Publish(c *gin.Context) {
 		err error
 		res = gin.H{}
 	)
-	defer api.WriteJSON(c, res)
+	defer p.WriteJSON(c, res)
 	repository := p.repository(c)
 	err = repository.Publish(p.stringToUnit(c))
 	if err != nil {
@@ -113,7 +113,7 @@ func (p *PageApi) Delete(c *gin.Context) {
 		err error
 		res = gin.H{}
 	)
-	defer api.WriteJSON(c, res)
+	defer p.WriteJSON(c, res)
 	id := p.stringToUnit(c)
 	repository := p.repository(c)
 	err = repository.Delete(id)

@@ -4,6 +4,7 @@ import (
 	"github.com/cihub/seelog"
 	"github.com/gin-gonic/gin"
 	"github.com/gitlubtaotao/wblog/admin/api"
+	"github.com/gitlubtaotao/wblog/api"
 	"github.com/gitlubtaotao/wblog/models"
 	"github.com/gitlubtaotao/wblog/system"
 	"net/http"
@@ -22,6 +23,8 @@ func NewRoutes(router *gin.Engine) IRoutes {
 }
 
 func (r *Routes) Register() {
+	base := api.BaseApi{}
+	r.engine.NoRoute(base.Handle404)
 	r.sessionRoute()
 	r.registerRoute()
 	r.passwordRoute()
@@ -56,8 +59,9 @@ func (r *Routes) Register() {
 		r.group.POST("/mail/send", mail.Send)
 		r.group.POST("/mail/batch/send", mail.SendBatch)
 		// backup
-		r.group.POST("/backup", admin.BackupPost)
-		r.group.POST("/restore", admin.RestorePost)
+		backup := admin.BackUpApi{}
+		r.group.POST("/backup", backup.BackupPost)
+		r.group.POST("/restore", backup.RestorePost)
 	}
 }
 

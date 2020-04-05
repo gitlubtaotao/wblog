@@ -44,7 +44,7 @@ func (l *LinkApi) Create(c *gin.Context) {
 		res = gin.H{}
 	)
 	_, err = repository.Create()
-	defer api.WriteJSON(c, res)
+	defer l.WriteJSON(c, res)
 	if err != nil {
 		res["message"] = err.Error()
 		return
@@ -73,7 +73,7 @@ func (l *LinkApi) Update(c *gin.Context) {
 		err error
 		res = gin.H{}
 	)
-	defer api.WriteJSON(c, res)
+	defer l.WriteJSON(c, res)
 	_, err = repository.UpdateAttr()
 	if err != nil {
 		res["message"] = err.Error()
@@ -91,7 +91,7 @@ func (l *LinkApi) Delete(c *gin.Context) {
 		res = gin.H{}
 		id  uint
 	)
-	defer api.WriteJSON(c, res)
+	defer l.WriteJSON(c, res)
 	id, err = reposition.Delete()
 	if err != nil {
 		res["message"] = err.Error()

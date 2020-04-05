@@ -12,18 +12,21 @@ import (
 	
 	"github.com/cihub/seelog"
 	"github.com/gin-gonic/gin"
-	"github.com/gitlubtaotao/wblog/helpers"
 	"github.com/gitlubtaotao/wblog/system"
+	"github.com/gitlubtaotao/wblog/tools/helpers"
 	"github.com/pkg/errors"
 )
 
-func BackupPost(c *gin.Context) {
+type BackUpApi struct {
+	*api.BaseApi
+}
+func (b *BackUpApi)BackupPost(c *gin.Context) {
 	var (
 		err error
 		res = gin.H{}
 	)
-	defer api.WriteJSON(c, res)
-	err = Backup()
+	defer b.WriteJSON(c, res)
+	err = b.Backup()
 	if err != nil {
 		res["message"] = err.Error()
 		return
@@ -31,7 +34,7 @@ func BackupPost(c *gin.Context) {
 	res["succeed"] = true
 }
 
-func RestorePost(c *gin.Context) {
+func (b *BackUpApi)RestorePost(c *gin.Context) {
 	var (
 		fileName  string
 		fileUrl   string
@@ -40,7 +43,7 @@ func RestorePost(c *gin.Context) {
 		resp      *http.Response
 		bodyBytes []byte
 	)
-	defer api.WriteJSON(c, res)
+	defer b.WriteJSON(c, res)
 	fileName = c.PostForm("fileName")
 	if fileName == "" {
 		res["message"] = "fileName cannot be empty."
@@ -75,7 +78,7 @@ func RestorePost(c *gin.Context) {
 }
 
 //备份
-func Backup() (err error) {
+func (b *BackUpApi)Backup() (err error) {
 	var (
 		u           *url.URL
 		exist       bool

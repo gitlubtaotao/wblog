@@ -27,7 +27,8 @@ func (r *Routes) InitRouter() {
 }
 
 func (r *Routes) indexInit() {
-	r.engine.NoRoute(api.Handle404)
+	base := api.BaseApi{}
+	r.engine.NoRoute(base.Handle404)
 	r.engine.GET("/", client.Index)
 	r.engine.GET("/index", client.Index)
 	r.engine.GET("/rss", api.RssGet)

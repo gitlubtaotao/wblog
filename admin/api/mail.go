@@ -21,7 +21,7 @@ func (m *MailApi) Send(c *gin.Context) {
 		uid        uint64
 		subscriber *models.Subscriber
 	)
-	defer api.WriteJSON(c, res)
+	defer m.WriteJSON(c, res)
 	subject := c.PostForm("subject")
 	content := c.PostForm("content")
 	userId := c.Query("userId")
@@ -54,7 +54,7 @@ func (m *MailApi) SendBatch(c *gin.Context) {
 		subscribers []*models.Subscriber
 		emails      = make([]string, 0)
 	)
-	defer api.WriteJSON(c, res)
+	defer m.WriteJSON(c, res)
 	subject := c.PostForm("subject")
 	content := c.PostForm("content")
 	if subject == "" || content == "" {
