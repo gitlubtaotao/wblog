@@ -25,7 +25,7 @@ func (s *SessionApi) New(ctx *gin.Context) {
 
 func (s *SessionApi) Create(ctx *gin.Context) {
 	var (
-		res      = gin.H{}
+		res = gin.H{}
 	)
 	repository := repositories.NewUserRepository(ctx)
 	defer s.WriteJSON(ctx, res)
@@ -48,7 +48,7 @@ func (s *SessionApi) Create(ctx *gin.Context) {
 		res["message"] = "Your account have been locked"
 		return
 	}
-	key, err := encrypt.EnCryptData(string(user.ID),"admin")
+	key, err := encrypt.EnCryptData(string(user.ID), "admin")
 	fmt.Println(err)
 	if err != nil {
 		_ = seelog.Error(err)
@@ -61,5 +61,6 @@ func (s *SessionApi) Create(ctx *gin.Context) {
 }
 
 func (s *SessionApi) Destroy(ctx *gin.Context) {
-
+	_, _ = s.GetSessionValue(ctx, system.GetConfiguration().AdminSessionKey, true)
+	ctx.Redirect(http.StatusSeeOther, "/admin/login")
 }

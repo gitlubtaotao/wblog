@@ -41,6 +41,7 @@ type Configuration struct {
 	AdminUser          string `json:"admin_user" yaml:"admin_user"`
 	ClientUser         string `json:"client_user" yaml:"client_user"`
 	GinCaptcha         string `json:"gin_captcha" yaml:"gin_captcha"`
+	SessionGithubState string `json:"session_github_state" yaml:"session_github_state"`
 }
 
 const (

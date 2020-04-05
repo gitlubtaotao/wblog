@@ -65,7 +65,7 @@ func (r *Routes) sessionRoute() {
 	session := admin.SessionApi{}
 	r.group.GET("/login", session.New)
 	r.group.POST("/login", session.Create)
-	r.group.DELETE("/destroy", session.Destroy)
+	r.group.GET("/session/destroy", session.Destroy)
 	auth := admin.AuthApi{}
 	r.engine.GET("/githubCallback", auth.GithubCallback)
 	r.engine.GET("/auth/:authType", auth.AuthGet)
@@ -80,9 +80,9 @@ func (r *Routes) registerRoute() {
 func (r *Routes) passwordRoute() {
 	password := admin.PasswordApi{}
 	r.group.GET("/password", password.New)
-	r.group.POST("/create", password.Create)
-	r.group.POST("/modify", password.Modify)
-	r.group.GET("/send_notice", password.SendEmail)
+	r.group.POST("/password", password.Create)
+	r.group.GET("/password/modify/:hash", password.Modify)
+	r.group.POST("/password/send_notice", password.SendEmail)
 }
 
 func (r *Routes) captchaRoute() {

@@ -1,5 +1,5 @@
 defaults: &defaults
-
+  session_github_state: GITHUB_STATE
   signup_enabled: true
   qiniu_accesskey: eod8fVA_L4wDR7yOwzdYfOblLp4pCvflQF5BS8JC
   qiniu_secretkey: wsFuW0M4obMFvO9K6GVVTlDWjzVi3doJPrDj5eZh

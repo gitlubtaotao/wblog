@@ -1,4 +1,4 @@
-{{define "auth/modify_password.html"}}
+{{define "password/new.html"}}
     <!DOCTYPE html>
     <html lang="zh-CN">
     <head>
@@ -17,32 +17,39 @@
             {{else}}
                 <p class="login-box-msg text-danger">{{.message}}</p>
             {{end}}
-            <form action="/password/updatePassword" method="post">
+            <form action="/admin/password/send_notice" method="post">
+                <input value="{{.token}}" name="_csrf" type="hidden">
                 <div class="form-group has-feedback">
-                    <input type="password" name="password" class="form-control" placeholder="Entry Your Password ">
-                    <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                    <input type="text" name="email" class="form-control" placeholder="Entry Your Email ">
+                    <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
                 </div>
-                <div class="form-group has-feedback">
-                    <input type="password" name="confirm_password" class="form-control"
-                           placeholder="Confirm Your Password ">
-                    <span class="glyphicon glyphicon-lock form-control-feedback"></span>
-                </div>
-                <input type="hidden" value="{{.email}}" name="email">
                 <div class="row">
                     <!-- /.col -->
                     <div class="col-xs-12">
-                        <button type="submit" class="btn btn-primary btn-block btn-flat">Save</button>
+                        <button type="submit" class="btn btn-primary btn-block btn-flat">Send Email</button>
                     </div>
                     <!-- /.col -->
                 </div>
             </form>
+
+            <div class="social-auth-links text-center">
+                <p>- OR -</p>
+                <a href="/auth/github" class="btn btn-block btn-social btn-github btn-flat"><i class="fa fa-github"></i>
+                    Sign in using
+                    Github</a>
+            </div>
+            <!-- /.social-auth-links -->
+
+            <a href="/admin/login">Sign in</a><br>
+            <a href="/admin/register" class="text-center">Register a new membership</a>
+
         </div>
+        <!-- /.login-box-body -->
     </div>
     {{template "layouts/footer.html" .}}
     <!-- /.login-box -->
     <script>
         $(function () {
-
         });
     </script>
     </body>

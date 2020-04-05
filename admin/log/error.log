@@ -6,3 +6,34 @@
 2020-04-05 11:24:44 [CRT] [user.go:43] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] record not found
 2020-04-05 11:25:47 [CRT] [user.go:43] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] record not found
 2020-04-05 11:25:52 [ERR] [auth.go:161] [github.com/gitlubtaotao/wblog/admin/api.(*AuthApi).handlerError] state is error 
+2020-04-05 12:37:24 [ERR] [auth.go:161] [github.com/gitlubtaotao/wblog/admin/api.(*AuthApi).handlerError] state is error 
+2020-04-05 12:40:28 [ERR] [password.go:141] [github.com/gitlubtaotao/wblog/admin/api.(*PasswordApi).errorHandler] illegal base64 data at input byte 0
+2020-04-05 12:40:28 [ERR] [password.go:141] [github.com/gitlubtaotao/wblog/admin/api.(*PasswordApi).errorHandler] record not found
+2020-04-05 12:40:28 [ERR] [password.go:141] [github.com/gitlubtaotao/wblog/admin/api.(*PasswordApi).errorHandler] record not found
+2020-04-05 12:40:32 [ERR] [password.go:141] [github.com/gitlubtaotao/wblog/admin/api.(*PasswordApi).errorHandler] illegal base64 data at input byte 0
+2020-04-05 12:40:32 [ERR] [password.go:141] [github.com/gitlubtaotao/wblog/admin/api.(*PasswordApi).errorHandler] record not found
+2020-04-05 12:40:32 [ERR] [password.go:141] [github.com/gitlubtaotao/wblog/admin/api.(*PasswordApi).errorHandler] record not found
+2020-04-05 12:43:30 [CRT] [user.go:43] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] record not found
+2020-04-05 12:45:20 [CRT] [user.go:43] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] record not found
+2020-04-05 12:47:15 [ERR] [auth.go:161] [github.com/gitlubtaotao/wblog/admin/api.(*AuthApi).handlerError] state is error 
+2020-04-05 12:48:25 [ERR] [auth.go:161] [github.com/gitlubtaotao/wblog/admin/api.(*AuthApi).handlerError] state is error 
+2020-04-05 12:52:52 [ERR] [auth.go:162] [github.com/gitlubtaotao/wblog/admin/api.(*AuthApi).handlerError] state is error 
+2020-04-05 12:55:22 [ERR] [auth.go:162] [github.com/gitlubtaotao/wblog/admin/api.(*AuthApi).handlerError] state is error 
+2020-04-05 12:57:40 [ERR] [auth.go:162] [github.com/gitlubtaotao/wblog/admin/api.(*AuthApi).handlerError] state is error 
+2020-04-05 12:59:15 [ERR] [auth.go:164] [github.com/gitlubtaotao/wblog/admin/api.(*AuthApi).handlerError] state is error 
+2020-04-05 12:59:47 [ERR] [auth.go:166] [github.com/gitlubtaotao/wblog/admin/api.(*AuthApi).handlerError] state is error 
+2020-04-05 13:00:00 [ERR] [auth.go:166] [github.com/gitlubtaotao/wblog/admin/api.(*AuthApi).handlerError] state is error 
+2020-04-05 13:00:31 [ERR] [auth.go:166] [github.com/gitlubtaotao/wblog/admin/api.(*AuthApi).handlerError] Get "https://api.github.com/user?access_token=15d10919486976d19d1009e10f9fabac1080e5fc": dial tcp 13.250.168.23:443: connect: connection refused
+2020-04-05 13:00:39 [ERR] [auth.go:166] [github.com/gitlubtaotao/wblog/admin/api.(*AuthApi).handlerError] Get "https://api.github.com/user?access_token=": dial tcp 13.250.168.23:443: connect: connection refused
+2020-04-05 13:00:43 [ERR] [auth.go:166] [github.com/gitlubtaotao/wblog/admin/api.(*AuthApi).handlerError] Get "https://api.github.com/user?access_token=": dial tcp 13.250.168.23:443: connect: connection refused
+2020-04-05 13:01:00 [ERR] [auth.go:166] [github.com/gitlubtaotao/wblog/admin/api.(*AuthApi).handlerError] Get "https://api.github.com/user?access_token=89a23ef79ee0653878324432e04f7a501135500a": dial tcp 13.250.168.23:443: connect: connection refused
+2020-04-05 13:01:15 [ERR] [auth.go:166] [github.com/gitlubtaotao/wblog/admin/api.(*AuthApi).handlerError] Get "https://api.github.com/user?access_token=": dial tcp 13.250.168.23:443: connect: connection refused
+2020-04-05 13:01:27 [ERR] [auth.go:166] [github.com/gitlubtaotao/wblog/admin/api.(*AuthApi).handlerError] Get "https://api.github.com/user?access_token=464c21bd66a9886c1db5690d6366d6f4934240b9": dial tcp 13.250.168.23:443: connect: connection refused
+2020-04-05 13:01:32 [ERR] [auth.go:166] [github.com/gitlubtaotao/wblog/admin/api.(*AuthApi).handlerError] Get "https://api.github.com/user?access_token=043b9b3b90e63700a13b18ae7dca671f068bb23f": dial tcp 13.250.168.23:443: connect: connection refused
+2020-04-05 13:01:54 [ERR] [auth.go:166] [github.com/gitlubtaotao/wblog/admin/api.(*AuthApi).handlerError] Get "https://api.github.com/user?access_token=39ec0ee67a02ddddfa0dd238412ad71050c3c032": dial tcp 13.250.168.23:443: connect: connection refused
+2020-04-05 13:02:00 [ERR] [auth.go:166] [github.com/gitlubtaotao/wblog/admin/api.(*AuthApi).handlerError] Get "https://api.github.com/user?access_token=31af9f02b4698ae6e5d28348bc3f7aec17fbf6ca": dial tcp 13.250.168.23:443: connect: connection refused
+2020-04-05 13:02:40 [CRT] [user.go:43] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] record not found
+2020-04-05 13:03:12 [CRT] [user.go:43] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] record not found
+2020-04-05 13:03:32 [CRT] [user.go:43] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] record not found
+2020-04-05 13:03:46 [CRT] [user.go:43] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] record not found
+2020-04-05 13:06:04 [CRT] [user.go:43] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] record not found

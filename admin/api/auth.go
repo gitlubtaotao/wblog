@@ -9,6 +9,7 @@ import (
 	"github.com/gitlubtaotao/wblog/helpers"
 	"github.com/gitlubtaotao/wblog/models"
 	"github.com/gitlubtaotao/wblog/repositories"
+	"github.com/gitlubtaotao/wblog/system"
 	"net/http"
 )
 
@@ -24,7 +25,7 @@ func (a *AuthApi) AuthGet(c *gin.Context) {
 	authType := c.Param("authType")
 	uuid := helpers.UUID()
 	_ = a.OperationSession(c, api.SESSION_GITHUB_STATE, uuid)
-	authUrl := "/signin"
+	authUrl := "/admin/login"
 	switch authType {
 	case "github":
 		authUrl = a.repository.GitHubAccessURL(uuid)
@@ -42,9 +43,10 @@ func (a *AuthApi) GithubCallback(ctx *gin.Context) {
 	a.repository = repositories.NewAuthRepository()
 	code := ctx.Query("code")
 	state := ctx.Query("state")
-	systemState, _ := a.GetSessionValue(ctx, api.SESSION_GITHUB_STATE, true)
+	systemState, _ := a.GetSessionValue(ctx, system.GetConfiguration().SessionGithubState, false)
 	//验证失败
-	if len(state) == 0 || state != systemState {
+	
+	if len(state) == 0 && state != systemState {
 		a.handlerError(ctx, errors.New("state is error "))
 		return
 	}
@@ -60,7 +62,7 @@ func (a *AuthApi) GithubCallback(ctx *gin.Context) {
 		return
 	}
 	//	联合创建
-	sessionUser, exists := a.CurrentUser(ctx)
+	sessionUser, exists := a.AdminUser(ctx)
 	if exists == nil { // 已登录
 		a.bindUser(ctx, sessionUser, githubUser)
 	} else {

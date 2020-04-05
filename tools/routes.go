@@ -5,7 +5,6 @@ import (
 	"github.com/gin-gonic/gin"
 	admin2 "github.com/gitlubtaotao/wblog/admin/api"
 	"github.com/gitlubtaotao/wblog/api"
-	"github.com/gitlubtaotao/wblog/api/admin"
 	"github.com/gitlubtaotao/wblog/api/client"
 	"github.com/gitlubtaotao/wblog/models"
 	"net/http"
@@ -22,17 +21,9 @@ func NewRoutes(engine *gin.Engine) *Routes {
 //初始化路由
 func (r *Routes) InitRouter() {
 	r.indexInit()
-	r.signInAndOut()
 	r.visitorRouter()
 	r.subscriberRouter()
 	r.otherRouter()
-	r.adminRouter()
-	r.captchaRoute()
-}
-
-//captchaRoute
-func (r *Routes) captchaRoute() {
-
 }
 
 func (r *Routes) indexInit() {
@@ -42,23 +33,6 @@ func (r *Routes) indexInit() {
 	r.engine.GET("/rss", api.RssGet)
 }
 
-
-
-//登录和退出
-func (r *Routes) signInAndOut() {
-	session := admin.SessionApi{}
-	auth := admin2.AuthApi{}
-	r.engine.GET("/admin/signin", session.GetSignIn)
-	r.engine.POST("/admin/signin", session.PostSignIn)
-	r.engine.GET("/logout", session.LogoutGet)
-	r.engine.GET("/githubCallback", auth.GithubCallback)
-	r.engine.GET("/auth/:authType", auth.AuthGet)
-	r.engine.GET("/password/index", session.GetPassword)
-	r.engine.GET("/password/modifyPassword/:hash", session.ModifyPassword)
-	r.engine.POST("/password/updatePassword", session.UpdatePassword)
-	r.engine.POST("/passwords", session.UpdatePassword)
-	r.engine.POST("/password/sendNotice", session.SendNotice)
-}
 
 func (r *Routes) visitorRouter() {
 	visitor := r.engine.Group("/visitor")
@@ -87,21 +61,6 @@ func (r *Routes) otherRouter() {
 	//r.engine.GET("/link/:id", link.LinkGet)
 }
 
-//后台路由
-func (r *Routes) adminRouter() {
-	authorized := r.engine.Group("/admin")
-	authorized.Use(AdminScopeRequired())
-	{
-		
-		
-		
-		
-		
-		// mail
-		
-	}
-	
-}
 func authRequired() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if user, _ := c.Get(api.CONTEXT_USER_KEY); user != nil {
@@ -118,18 +77,4 @@ func authRequired() gin.HandlerFunc {
 	}
 }
 
-//AuthRequired grants access to authenticated users, requires SharedData middleware
-func AdminScopeRequired() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		if user, _ := c.Get(api.CONTEXT_USER_KEY); user != nil {
-			if u, ok := user.(*models.User); ok && u.IsAdmin {
-				c.Next()
-				return
-			}
-		}
-		
-		_ = seelog.Warnf("User not authorized to visit %s", c.Request.RequestURI)
-		c.Redirect(http.StatusSeeOther, "/admin/signin")
-		c.Abort()
-	}
-}
+
