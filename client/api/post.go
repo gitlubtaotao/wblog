@@ -2,7 +2,6 @@ package client
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/gitlubtaotao/wblog/api"
 	"github.com/gitlubtaotao/wblog/models"
 	"github.com/gitlubtaotao/wblog/repositories"
 	"net/http"
@@ -11,7 +10,7 @@ import (
 )
 
 type PostApi struct {
-	*api.BaseApi
+	*UtilApi
 }
 
 func (p *PostApi) Show(ctx *gin.Context) {
@@ -42,6 +41,10 @@ func (p *PostApi) Show(ctx *gin.Context) {
 		"post": post,
 		"user": user,
 	})
+}
+
+func (p *PostApi) Index(ctx *gin.Context) {
+
 }
 
 func (p *PostApi) commentList(ctx *gin.Context, postId uint) ([]*models.Comment, error) {

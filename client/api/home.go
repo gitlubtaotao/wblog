@@ -2,7 +2,6 @@ package client
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/gitlubtaotao/wblog/api"
 	"github.com/gitlubtaotao/wblog/models"
 	"github.com/gitlubtaotao/wblog/repositories"
 	"github.com/gitlubtaotao/wblog/system"
@@ -10,22 +9,21 @@ import (
 	"gopkg.in/russross/blackfriday.v2"
 	"math"
 	"net/http"
-	"strconv"
 )
 
 type HomeApi struct {
-	*api.BaseApi
+	*UtilApi
 }
 
 func (h *HomeApi) Index(ctx *gin.Context) {
 	var (
-		pageIndex int
-		pageSize  = system.GetConfiguration().PageSize
-		total     int
-		err       error
-		posts     []*models.Post
-		policy    *bluemonday.Policy
+		pageSize = system.GetConfiguration().PageSize
+		total    int
+		err      error
+		posts    []*models.Post
+		policy   *bluemonday.Policy
 	)
+	pageIndex, _ := h.PageIndex(ctx)
 	posts, err = h.listPost(ctx)
 	if err != nil {
 		h.HandlerError("", err)
@@ -58,10 +56,7 @@ func (h *HomeApi) Index(ctx *gin.Context) {
  */
 func (h *HomeApi) listPost(ctx *gin.Context) (posts []*models.Post, err error) {
 	repository := repositories.NewPostRepository(ctx)
-	page, _ := strconv.Atoi(ctx.Query("page"))
-	if page <= 0 {
-		page = 1
-	}
+	page, _ := h.PageIndex(ctx)
 	posts, err = repository.PublishPost(
 		uint(system.GetConfiguration().PageSize),
 		uint(page),

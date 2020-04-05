@@ -18,11 +18,41 @@ type IPageService interface {
 	ListPage(per, page uint, attr map[string]interface{}, columns []string) ([]*models.Page, error)
 	SetModel(model *models.Page) error
 	GetModel() (*models.Page, error)
+	PublishPage(per, page uint, attr map[string]interface{}, columns []string) (pages []*models.Page, err error)
+	TotalPage(attr map[string]interface{}) (total int, err error)
 }
 
 //
 type PageService struct {
 	Model *models.Page
+}
+
+func (p *PageService) TotalPage(attr map[string]interface{}) (total int, err error) {
+	temp := database.DBCon.Model(&models.Page{})
+	if len(attr) > 0 {
+		temp = temp.Where(attr)
+	}
+	err = temp.Count(&total).Error
+	return
+}
+
+func (p *PageService) PublishPage(per, page uint, attr map[string]interface{}, columns []string) (pages []*models.Page, err error) {
+	if per == 0 {
+		per = uint(system.GetConfiguration().PageSize)
+	}
+	temp := database.DBCon
+	if page != 0 {
+		temp = temp.Limit(per).Offset((page - 1) * per)
+	}
+	if len(attr) > 0 {
+		temp = temp.Where(attr)
+	}
+	temp = temp.Where("is_published =?", true)
+	if len(columns) > 0 {
+		temp = temp.Select(columns)
+	}
+	err = temp.Find(&pages).Error
+	return
 }
 
 func (p *PageService) Delete(page models.Page) error {

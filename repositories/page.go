@@ -20,11 +20,21 @@ type IPageRepository interface {
 	FindPage(id uint) (models.Page, error)
 	ListAllPage(attr map[string]interface{}) ([]*models.Page, error)
 	ListPage(per, page uint, attr map[string]interface{}, columns []string) ([]*models.Page, error)
+	PublishPage(per, page uint, attr map[string]interface{}, columns []string) (pages []*models.Page, err error)
+	TotalPage(attr map[string]interface{}) (total int, err error)
 }
 
 type PageRepository struct {
 	service service.IPageService
 	Ctx     *gin.Context
+}
+
+func (p *PageRepository) TotalPage(attr map[string]interface{}) (total int, err error) {
+	return p.service.TotalPage(attr)
+}
+
+func (p *PageRepository) PublishPage(per, page uint, attr map[string]interface{}, columns []string) (pages []*models.Page, err error) {
+	return p.service.PublishPage(per, page, attr, columns)
 }
 
 func (p *PageRepository) Delete(id uint) error {

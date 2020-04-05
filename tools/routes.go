@@ -5,7 +5,6 @@ import (
 	"github.com/gin-gonic/gin"
 	admin2 "github.com/gitlubtaotao/wblog/admin/api"
 	"github.com/gitlubtaotao/wblog/api"
-	"github.com/gitlubtaotao/wblog/api/client"
 	"github.com/gitlubtaotao/wblog/models"
 	"net/http"
 )
@@ -29,8 +28,8 @@ func (r *Routes) InitRouter() {
 func (r *Routes) indexInit() {
 	base := api.BaseApi{}
 	r.engine.NoRoute(base.Handle404)
-	r.engine.GET("/", client.Index)
-	r.engine.GET("/index", client.Index)
+	//r.engine.GET("/", client.Index)
+	//r.engine.GET("/index", client.Index)
 	r.engine.GET("/rss", api.RssGet)
 }
 

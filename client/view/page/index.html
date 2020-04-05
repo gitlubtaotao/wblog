@@ -1,0 +1,71 @@
+{{define "page/index.html"}}
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        {{template "layouts/header.html"}}
+        <title>Blog-资源</title>
+    </head>
+    <body class="">
+    {{template "layouts/navigation.html" .}}
+
+    <!-- Page Content -->
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-sm-6">
+                <ul class="nav nav-tabs box_white" role="tablist">
+                    <li role="presentation" id="tb-1" data-intro="分享来自互联网关于Go语言的精彩文章" class="active"><a
+                                href="/resources/cat/1">精彩文章</a></li>
+                    <li role="presentation" id="tb-2" data-intro="收集优秀的开源项目、第三方库"><a href="/resources/cat/2">开源项目</a>
+                    </li>
+                    <li role="presentation" id="tb-3" data-intro="Go语言书籍、资料，提供下载地址或在线链接"><a href="/resources/cat/3">Go语言资料</a>
+                    </li>
+                    <li role="presentation" id="tb-4" data-intro="分享跟Go相关或其他有用的资源"><a href="/resources/cat/4">其他资源</a>
+                    </li>
+                </ul>
+                <section class="article" style="margin-top: 10px;">
+                    <!-- First Blog Post -->
+                    {{range $postkey,$postvalue:=.pages}}
+                        <div class="articleInfo">
+                            <span><a class="articleTitle" href="/page/{{$postvalue.ID}}">
+                                {{$length := len $postvalue.Title}}
+                                    {{if ge $length 40}}
+                                        {{truncate $postvalue.Title 40}}...
+                                    {{else}}
+                                        {{$postvalue.Title}}
+                                    {{end}}
+                            </a></span>
+                            <span class="createdTime" style="margin-right: 10px;">{{dateFormat $postvalue.CreatedAt "2006-01-02 15:04"}}</span>
+                        </div>
+                        <div class="articleBody">
+                            {{$length := len $postvalue.Body}}
+                            {{if ge $length 100}}
+                                {{truncate $postvalue.Body 100}}...
+                            {{else}}
+                                {{$postvalue.Body}}
+                            {{end}}
+                        </div>
+                        <hr>
+                    {{end}}
+                </section>
+                {{if le .pageIndex .totalPage}}
+                    <ul class="pager">
+                        {{if le .pageIndex 1}}
+                            <li class="disabled"><a href="#">上一页</a></li>
+                        {{else}}
+                            <li class=""><a href="{{.path}}?page={{minus .pageIndex 1}}">上一页</a></li>
+                        {{end}}
+                        <li>{{ .pageIndex }}/ {{ .totalPage }}</li>
+                        {{if lt .pageIndex .totalPage }}
+                            <li class=""><a href="{{.path}}?page={{add .pageIndex 1}}">下一页</a></li>
+                        {{ else}}
+                            <li class="disabled"><a href="#">下一页</a></li>
+                        {{end}}
+                    </ul>
+                {{end}}
+            </div>
+            {{template "layouts/sidebar.html".}}
+        </div>
+    </div>
+    </body>
+    </html>
+{{end}}

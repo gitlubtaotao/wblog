@@ -22,8 +22,16 @@ func (r *Route) Register() {
 	home := client2.HomeApi{}
 	r.engine.GET("/", home.Index)
 	
-	group := r.engine.Group("/post")
+	post := r.engine.Group("/post")
 	{
-		group.GET("/:id", new(client2.PostApi).Show)
+		post.GET("/:id", new(client2.PostApi).Show)
+		post.GET("", new(client2.PostApi).Index)
 	}
+	page := r.engine.Group("/page")
+	{
+		
+		page.GET("/:id", new(client2.PageApi).Show)
+		page.GET("", new(client2.PageApi).Index)
+	}
+	
 }
