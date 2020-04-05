@@ -1,7 +1,8 @@
-package api
+package admin
 
 import (
 	"fmt"
+	"github.com/gitlubtaotao/wblog/api"
 	"github.com/gitlubtaotao/wblog/tools/upload/qiniu"
 	"io/ioutil"
 	"net/http"
@@ -20,7 +21,7 @@ func BackupPost(c *gin.Context) {
 		err error
 		res = gin.H{}
 	)
-	defer WriteJSON(c, res)
+	defer api.WriteJSON(c, res)
 	err = Backup()
 	if err != nil {
 		res["message"] = err.Error()
@@ -38,7 +39,7 @@ func RestorePost(c *gin.Context) {
 		resp      *http.Response
 		bodyBytes []byte
 	)
-	defer WriteJSON(c, res)
+	defer api.WriteJSON(c, res)
 	fileName = c.PostForm("fileName")
 	if fileName == "" {
 		res["message"] = "fileName cannot be empty."

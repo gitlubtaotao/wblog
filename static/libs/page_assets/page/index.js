@@ -1,4 +1,5 @@
 $(document).ready(function () {
+    var _csrf = $('.content').find('input[name="_csrf"]').val();
     $('#example2').DataTable({
         'paging': true,
         'lengthChange': false,
@@ -12,7 +13,7 @@ $(document).ready(function () {
         var status = $(this).data("status");
         console.log(status);
         var _this = $(this);
-        $.post("/admin/page/publish/" + id, {}, function (data) {
+        $.post("/admin/page/publish/" + id, {"_csrf": _csrf}, function (data) {
             console.log(data);
             if (data.succeed) {
                 if (status === "false") {
@@ -33,8 +34,9 @@ $(document).ready(function () {
         var _this = $(e.relatedTarget);
         $(this).find('.btn-ok').click(function () {
             $.ajax({
-                url: _this.data('href'),
+                url: _this.data('href')+"?_csrf="+_csrf,
                 type: 'delete',
+                data: {"_csrf": _csrf},
                 dataType: 'json',
                 success: function (data) {
                     if (data.succeed) {

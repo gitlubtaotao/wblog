@@ -22,7 +22,7 @@ func (s *SubscriberApi) Index(ctx *gin.Context) {
 		s.HandleMessage(ctx, err.Error())
 		ctx.Abort()
 	}
-	user, _ := s.CurrentUser(ctx)
+	user, _ := s.AdminUser(ctx)
 	ctx.HTML(http.StatusOK, "subscriber/index.html",
 		s.RenderComments(gin.H{
 			"subscribers": subscribers,

@@ -1,13 +1,18 @@
-package api
+package admin
 
 import (
+	"github.com/gitlubtaotao/wblog/api"
 	"github.com/gitlubtaotao/wblog/tools/upload/qiniu"
 	"mime/multipart"
 	
 	"github.com/gin-gonic/gin"
 )
 
-func Upload(c *gin.Context) {
+type UploadApi struct {
+	*api.BaseApi
+}
+
+func (u *UploadApi) Upload(c *gin.Context) {
 	var (
 		err  error
 		res  = gin.H{}
@@ -16,7 +21,7 @@ func Upload(c *gin.Context) {
 		file multipart.File
 		fh   *multipart.FileHeader
 	)
-	defer WriteJSON(c, res)
+	defer u.WriteJSON(c, res)
 	file, fh, err = c.Request.FormFile("file")
 	if err != nil {
 		res["message"] = err.Error()

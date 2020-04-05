@@ -4,6 +4,7 @@ import (
 	"github.com/cihub/seelog"
 	"github.com/gitlubtaotao/wblog/api"
 	"github.com/gitlubtaotao/wblog/repositories"
+	csrf "github.com/utrack/gin-csrf"
 	"net/http"
 	
 	"github.com/gin-gonic/gin"
@@ -21,16 +22,19 @@ func (l *LinkApi) Index(ctx *gin.Context) {
 		_ = seelog.Critical(err)
 		l.HandleMessage(ctx, "service is inter error")
 	}
-	user, err := l.CurrentUser(ctx)
+	user, err := l.AdminUser(ctx)
 	if err != nil {
 		_ = seelog.Critical(err)
 		l.HandleMessage(ctx, err.Error())
 		return
 	}
-	ctx.HTML(http.StatusOK, "link/index.html", l.RenderComments(gin.H{
-		"links": links,
-		"user":  user,
-	}))
+	ctx.HTML(http.StatusOK,
+		"link/index.html",
+		l.RenderComments(gin.H{
+			"links": links,
+			"user":  user,
+			"token": csrf.GetToken(ctx),
+		}))
 }
 
 func (l *LinkApi) Create(c *gin.Context) {

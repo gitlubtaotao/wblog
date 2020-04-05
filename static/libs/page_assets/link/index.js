@@ -1,4 +1,5 @@
 $(document).ready(function () {
+    var _csrf = $('.content').find('input[name="_csrf"]').val();
     $('#example2').DataTable({
         'paging': true,
         'lengthChange': false,
@@ -36,7 +37,7 @@ $(document).ready(function () {
         dialog.modal('show');
         dialog.find('.btn-save').click(function () {
             $.ajax({
-                url: _this.attr('data-href'),
+                url: _this.attr('data-href')+"?_csrf="+_csrf,
                 type: 'delete',
                 dataType: 'json',
                 success: function (data) {

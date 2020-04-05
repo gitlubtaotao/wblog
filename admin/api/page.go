@@ -3,6 +3,7 @@ package admin
 import (
 	"github.com/gitlubtaotao/wblog/api"
 	"github.com/gitlubtaotao/wblog/repositories"
+	csrf "github.com/utrack/gin-csrf"
 	"net/http"
 	"strconv"
 	
@@ -30,12 +31,13 @@ func (p *PageApi) PageGet(c *gin.Context) {
 }
 
 func (p *PageApi) New(c *gin.Context) {
-	user, _ := p.CurrentUser(c)
+	user, _ := p.AdminUser(c)
 	repository := p.repository(c)
 	page, _ := repository.New()
 	c.HTML(http.StatusOK, "page/edit.html",
 		p.RenderComments(gin.H{"user": user,
 			"page":   page,
+			"token":  csrf.GetToken(c),
 			"action": "/admin/page"}))
 }
 
@@ -56,16 +58,22 @@ func (p *PageApi) Create(c *gin.Context) {
 
 func (p *PageApi) Edit(c *gin.Context) {
 	repository := p.repository(c)
-	user, _ := p.CurrentUser(c)
+	user, _ := p.AdminUser(c)
 	page, err := repository.FindPage(p.stringToUnit(c))
 	if err != nil {
 		p.Handle404(c)
 		return
 	}
 	id := strconv.FormatInt(int64(page.ID), 10)
-	c.HTML(http.StatusOK, "page/edit.html",
-		p.RenderComments(gin.H{"user": user, "page": page,
-			"action": "/admin/page/update/" + id}))
+	c.HTML(
+		http.StatusOK,
+		"page/edit.html",
+		p.RenderComments(gin.H{
+			"user":   user,
+			"page":   page,
+			"token":  csrf.GetToken(c),
+			"action": "/admin/page/update/" + id,
+		}))
 }
 
 func (p *PageApi) Update(c *gin.Context) {
@@ -119,10 +127,15 @@ func (p *PageApi) Delete(c *gin.Context) {
 func (p *PageApi) Index(c *gin.Context) {
 	repository := p.repository(c)
 	pages, _ := repository.ListAllPage(map[string]interface{}{})
-	user, _ := p.CurrentUser(c)
+	user, _ := p.AdminUser(c)
 	
-	c.HTML(http.StatusOK, "page/index.html",
-		p.RenderComments(gin.H{"pages": pages, "user": user}))
+	c.HTML(http.StatusOK,
+		"page/index.html",
+		p.RenderComments(gin.H{
+			"pages": pages,
+			"user":  user,
+			"token": csrf.GetToken(c),
+		}))
 }
 
 func (p *PageApi) Get(c *gin.Context) {

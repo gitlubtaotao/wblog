@@ -35,6 +35,7 @@
                     <div class="col-xs-12">
                         <!-- create or update a article -->
                         <form action="{{.action}}" method="post" id="pageForm" class="form-group">
+                            <input name="_csrf" type="hidden" value="{{.token}}">
                             <input name="title" type="text" class="form-control" value="{{.page.Title}}" placeholder="Title"/><br/>
                             <textarea id="demo" name="body">{{.page.Body}}</textarea><br/>
                             <div class="bootstrap-switch-small">
@@ -47,7 +48,7 @@
         </div>
     </div>
     {{template "layouts/footer.html"}}
-    <script src="/static/libs/page_assets/simplemde.js"></script>
+    {{template "layouts/text_rich_footer.html"}}
     <script src="/static/libs/page_assets/page/edit.js"></script>
 
     </body>

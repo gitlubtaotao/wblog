@@ -32,8 +32,33 @@ func (r *Routes) Register() {
 		r.homeRoute()
 		r.user()
 		r.post()
+		r.tag()
+		r.page()
+		link := &admin.LinkApi{}
+		r.group.GET("/link", link.Index)
+		r.group.POST("/link", link.Create)
+		r.group.GET("/link/:id/show", link.Get)
+		r.group.POST("/link/:id/update", link.Update)
+		r.group.DELETE("/link/:id/delete", link.Delete)
+		
+		adminSub := admin.SubscriberApi{}
+		r.group.GET("/subscriber", adminSub.Index)
+		
+		upload := admin.UploadApi{}
+		r.group.POST("/upload", upload.Upload)
+		
+		// comment
+		comment := admin.CommentApi{}
+		r.group.POST("/comment/:id", comment.CommentRead)
+		r.group.POST("/read_all", comment.CommentReadAll)
+		
+		mail := admin.MailApi{}
+		r.group.POST("/mail/send", mail.Send)
+		r.group.POST("/mail/batch/send", mail.SendBatch)
+		// backup
+		r.group.POST("/backup", admin.BackupPost)
+		r.group.POST("/restore", admin.RestorePost)
 	}
-	
 }
 
 func (r *Routes) sessionRoute() {
@@ -103,6 +128,25 @@ func (r *Routes) post() {
 	r.group.POST("/post/:id/update", post.Update)
 	r.group.POST("/post/:id/publish", post.PostPublish)
 	r.group.POST("/post/:id/delete", post.Delete)
+}
+func (r *Routes) page() {
+	page := admin.PageApi{}
+	r.group.GET("/page", page.Index)
+	r.group.POST("/page", page.Create)
+	r.group.GET("/page/new", page.New)
+	r.group.GET("/page/edit/:id", page.Edit)
+	r.group.GET("/page/get/:id", page.Get)
+	r.group.POST("/page/update/:id", page.Update)
+	r.group.DELETE("/page/delete/:id", page.Delete)
+	r.group.POST("/page/publish/:id", page.Publish)
+}
+
+func (r *Routes) tag() {
+	// tag
+	tag := admin.TagApi{}
+	r.group.GET("/tag/:format", tag.Index)
+	r.group.POST("/tag", tag.Create)
+	r.group.DELETE("/tag/:id", tag.Delete)
 }
 
 //AuthRequired grants access to authenticated users, requires SharedData middleware

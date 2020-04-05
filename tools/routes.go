@@ -81,7 +81,7 @@ func (r *Routes) subscriberRouter() {
 
 func (r *Routes) otherRouter() {
 	r.engine.GET("/post/:id", admin2.PostGet)
-	r.engine.GET("/tag/:tag", admin.TagGet)
+	r.engine.GET("/tag/:tag", admin2.TagGet)
 	r.engine.GET("/archives/:year/:month", api.ArchiveGet)
 	//link := admin.LinkApi{}
 	//r.engine.GET("/link/:id", link.LinkGet)
@@ -92,57 +92,13 @@ func (r *Routes) adminRouter() {
 	authorized := r.engine.Group("/admin")
 	authorized.Use(AdminScopeRequired())
 	{
-		authorized.POST("/upload", api.Upload)
-		
-		page := admin.PageApi{}
-		authorized.GET("/page", page.Index)
-		authorized.POST("/page", page.Create)
-		authorized.GET("/page/new", page.New)
-		authorized.GET("/page/edit/:id", page.Edit)
-		authorized.GET("/page/get/:id", page.Get)
-		authorized.POST("/page/update/:id", page.Update)
-		authorized.DELETE("/page/delete/:id", page.Delete)
-		authorized.POST("/page/publish/:id", page.Publish)
-		
-		// post
-		
-		// tag
-		tag := admin.TagApi{}
-		authorized.GET("/tag/:format", tag.Index)
-		authorized.POST("/tag", tag.Create)
-		authorized.DELETE("/tag/:id", tag.Delete)
 		
 		
-		//auth := admin2.AuthApi{}
-		//authorized.POST("/profile/email/bind", auth.BindEmail)
-		//authorized.POST("/profile/email/unbind", auth.UnbindEmail)
-		//authorized.POST("/profile/github/unbind", auth.UnbindGithub)
 		
-		// subscriber
-		adminSub := admin.SubscriberApi{}
-		authorized.GET("/subscriber", adminSub.Index)
 		
-		// link
-		link := &admin.LinkApi{}
-		authorized.GET("/link", link.Index)
-		authorized.POST("/link", link.Create)
-		authorized.GET("/link/:id/show", link.Get)
-		authorized.POST("/link/:id/update", link.Update)
-		authorized.DELETE("/link/:id/delete", link.Delete)
-		
-		// comment
-		comment := admin.CommentApi{}
-		authorized.POST("/comment/:id", comment.CommentRead)
-		authorized.POST("/read_all", comment.CommentReadAll)
-		
-		// backup
-		authorized.POST("/backup", api.BackupPost)
-		authorized.POST("/restore", api.RestorePost)
 		
 		// mail
-		mail := admin.MailApi{}
-		authorized.POST("/mail/send", mail.Send)
-		authorized.POST("/mail/batch/send", mail.SendBatch)
+		
 	}
 	
 }
