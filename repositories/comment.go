@@ -8,10 +8,15 @@ import (
 type ICommentRepository interface {
 	MustListUnreadComment() ([]*models.Comment, error)
 	CountComment() int
+	ListCommentByPostID(postId uint) ([]*models.Comment, error)
 }
 
 type CommentRepository struct {
 	service service.ICommentService
+}
+
+func (c *CommentRepository) ListCommentByPostID(postId uint) ([]*models.Comment, error) {
+	return c.service.ListCommentByPostID(postId)
 }
 
 func NewCommentRepository() ICommentRepository {

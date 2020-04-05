@@ -6,19 +6,24 @@ import (
 	client2 "github.com/gitlubtaotao/wblog/client/api"
 )
 
-type  IRoute interface {
+type IRoute interface {
 	Register()
 }
 type Route struct {
 	engine *gin.Engine
-	group *gin.RouterGroup
+	group  *gin.RouterGroup
 }
 
 func NewRoute(engine *gin.Engine) IRoute {
-	return &Route{engine:engine,group: engine.Group("/client")}
+	return &Route{engine: engine, group: engine.Group("/client")}
 }
-func (r *Route) Register()  {
+func (r *Route) Register() {
 	r.engine.NoRoute(new(api.BaseApi).Handle404)
 	home := client2.HomeApi{}
 	r.engine.GET("/", home.Index)
+	
+	group := r.engine.Group("/post")
+	{
+		group.GET("/:id", new(client2.PostApi).Show)
+	}
 }

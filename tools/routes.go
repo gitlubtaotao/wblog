@@ -55,7 +55,6 @@ func (r *Routes) subscriberRouter() {
 }
 
 func (r *Routes) otherRouter() {
-	r.engine.GET("/post/:id", admin2.PostGet)
 	r.engine.GET("/tag/:tag", admin2.TagGet)
 	r.engine.GET("/archives/:year/:month", api.ArchiveGet)
 	//link := admin.LinkApi{}

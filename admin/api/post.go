@@ -159,24 +159,7 @@ func (p *PostApi) Update(ctx *gin.Context) {
 	res["succeed"] = true
 }
 
-func PostGet(c *gin.Context) {
-	id := c.Param("id")
-	post, err := models.GetPostById(id)
-	if err != nil || !post.IsPublished {
-		//_ = p.HandlerError("post not published ", err)
-		//api.Handle404(c)
-		return
-	}
-	post.View++
-	_ = post.UpdateView()
-	post.Tags, _ = models.ListTagByPostId(id)
-	post.Comments, _ = models.ListCommentByPostID(id)
-	//user, _ := c.Get(api.CONTEXT_USER_KEY)
-	//c.HTML(http.StatusOK, "post/display.html", gin.H{
-	//	"post": post,
-	//	"user": user,
-	//})
-}
+
 
 func (p *PostApi) PostPublish(c *gin.Context) {
 	var (

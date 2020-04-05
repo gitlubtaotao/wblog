@@ -1,0 +1,133 @@
+{{define "post/display.html"}}
+    <!DOCTYPE html>
+    <html lang="en">
+
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        {{template "layouts/meta.html"}}
+        <title>Post - {{.post.Title}}</title>
+        {{template "layouts/header.html"}}
+        <link href="/static/css/blog-post.css" rel="stylesheet">
+        <!-- github markdown css -->
+        <link rel="stylesheet" href="/static/css/markdown.css"/>
+        <!-- markdown parse -->
+        <script src="https://cdn.jsdelivr.net/npm/markdown-it@8.3.1/dist/markdown-it.js"></script>
+        <!-- code syntax highlighting -->
+        <script src="https://cdn.jsdelivr.net/highlight.js/latest/highlight.min.js"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/highlight.js/latest/styles/github.min.css"/>
+        <script>hljs.initHighlightingOnLoad();</script>
+
+        <script src="https://cdn.jsdelivr.net/gh/jquery-form/form@4.2.2/dist/jquery.form.min.js"
+                integrity="sha384-FzT3vTVGXqf7wRfy8k4BiyzvbNfeYjK+frTVqZeNDFl8woCbF0CYG6g2fMEFFo/i"
+                crossorigin="anonymous"></script>
+
+        <style>
+            .user-image {
+                float: left;
+                width: 64px;
+                height: 64px;
+                border-radius: 50%;
+                margin-right: 10px;
+                margin-top: -2px;
+            }
+        </style>
+    </head>
+
+    <body>
+
+    {{template "layouts/navigation.html" .}}
+
+    <!-- Page Content -->
+    <div class="container main">
+        <div class="row">
+            <div class="col-sm-10 col-sm-offset-1">
+                <article class="markdown-body">
+                    <!-- Title -->
+                    <h1>{{.post.Title}}</h1>
+                    <div>
+                        <!-- show tags -->
+                        {{range $key,$value := .post.Tags}}
+                            <a href="/tag/{{$value.ID}}" class="btn btn-default btn-sm">
+                                <span class="glyphicon glyphicon-tag"></span><span
+                                        th:text="' ' + ${tag.name}"> {{$value.Name}}</span>
+                            </a>
+                        {{end}}
+                        <!-- display article created time -->
+                        <span class="createdTime">
+                        <span class="glyphicon glyphicon-calendar"></span>{{dateFormat .post.CreatedAt "2006-01-02 15:04"}}
+                    </span>
+                        <span class="createdTime">
+                        <span class="glyphicon glyphicon-eye-open"></span>{{.post.View}}&nbsp;&nbsp;
+                    </span>
+                    </div><!-- display article info -->
+                    <br/>
+                    <!-- display aritcle body -->
+                    <div id="body">{{.post.Body}}</div>
+
+                </article>
+                <hr>
+                <comment>
+                    <!-- Comment -->
+                    {{range .post.Comments}}
+                        <div class="media">
+                            <a class="pull-left" href="{{.GithubUrl}}" target="_blank">
+                                {{if .AvatarUrl}}
+                                    <img class="user-image" src="{{.AvatarUrl}}" alt="">
+                                {{else}}
+                                    <img class="user-image" src="http://placehold.it/64x64" alt="">
+                                {{end}}
+                            </a>
+                            <div class="media-body">
+                                <h4 class="media-heading"><a href="{{.GithubUrl}}" target="_blank">{{.NickName}}</a>
+                                    <small>{{dateFormat .CreatedAt "2006-01-02 15:04"}}</small>
+                                </h4>
+                                {{.Content}}
+                            </div>
+                        </div>
+                    {{end}}
+                </comment>
+
+                <div class="media">
+                    {{if not .user}}
+                        <a href="/auth/github">登录发表评论</a>
+                    {{else}}
+                        <div id="messagebox" class="alert alert-danger" style="display: none;" role="alert"></div>
+                        <form id="commentForm" role="form" action="/visitor/new_comment" method="post">
+                            <input name="postId" type="hidden" value="{{.post.ID}}">
+                            <div class="form-group">
+                                <textarea name="content" class="form-control" id="inputContent"
+                                          placeholder="评论"></textarea>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <input name="verifyCode" class="form-control" placeholder="验证码">
+                                </div>
+                                <div class="col-md-4">
+                                    <img src="/captcha" class="j-verifycode"/>
+                                </div>
+                            </div>
+                            <div class="pull-right">
+                                <button type="submit" class="btn btn-primary">评论</button>
+                            </div>
+                        </form>
+                    {{end}}
+                </div>
+
+            </div>
+        </div>
+        <!-- /.row -->
+
+        <a id="back-to-top" href="#" class="btn btn-default btn-md back-to-top" role="button"
+           data-toggle="tooltip" data-placement="left"><span class="glyphicon glyphicon-chevron-up"></span>
+        </a>
+
+    </div>
+    <!-- /.container -->
+
+    {{template "layouts/footer.html"}}
+    </body>
+
+    </html>
+{{end}}

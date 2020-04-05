@@ -79,7 +79,7 @@ func (a *AuthApi) UnbindGithub(ctx *gin.Context) {
 	)
 	repository := repositories.NewUserRepository(ctx)
 	defer a.WriteJSON(ctx, res)
-	currentUser, err := a.CurrentUser(ctx)
+	currentUser, err := a.AdminUser(ctx)
 	if err != nil {
 		res["message"] = "server interval error"
 		return
@@ -105,7 +105,7 @@ func (a *AuthApi) UnbindEmail(ctx *gin.Context) {
 	var res = gin.H{}
 	repository := repositories.NewUserRepository(ctx)
 	defer a.WriteJSON(ctx, res)
-	currentUser, err := a.CurrentUser(ctx)
+	currentUser, err := a.AdminUser(ctx)
 	if err != nil {
 		res["message"] = err.Error()
 		return
@@ -133,7 +133,7 @@ func (a *AuthApi) BindEmail(ctx *gin.Context) {
 		res["message"] = "email have not bound"
 		return
 	}
-	user, err := a.CurrentUser(ctx)
+	user, err := a.AdminUser(ctx)
 	if err != nil {
 		_ = seelog.Error(err)
 		res["message"] = err.Error()

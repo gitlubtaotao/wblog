@@ -25,6 +25,7 @@ type IPostService interface {
 	CountPost(attr map[string]interface{}) (count int, err error)
 	ListMaxReadPost(column []string) ([]*models.Post, error)
 	ListMaxCommentPost(columns []string)([]*models.Post,error)
+	
 }
 
 type PostService struct {

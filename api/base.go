@@ -82,13 +82,23 @@ func (b *BaseApi) HandleMessage(c *gin.Context, message string) {
 	c.Abort()
 }
 
-func (b *BaseApi) CurrentUser(c *gin.Context) (*models.User, error) {
-	
-	sessionUser, exists := c.Get(CONTEXT_USER_KEY)
+func (b *BaseApi) AdminUser(ctx *gin.Context) (*models.User, error) {
+	return b.CurrentUser(ctx, system.GetConfiguration().AdminUser)
+}
+
+func (b *BaseApi) ClientUser(ctx *gin.Context) (*models.User, error) {
+	return b.CurrentUser(ctx, system.GetConfiguration().ClientUser)
+}
+
+/*
+@title: 查询当前用户
+
+*/
+func (b *BaseApi) CurrentUser(c *gin.Context, env string) (*models.User, error) {
+	sessionUser, exists := c.Get(env)
 	if !exists {
 		return nil, errors.New("current user is not exist")
 	}
-	
 	user, ok := sessionUser.(*models.User)
 	if !ok {
 		return nil, errors.New("server interval error")
@@ -108,18 +118,6 @@ func (b *BaseApi) DefaultNoticeMailHtml(subject, body string) error {
 	return repository.SystemDefaultNotify()
 }
 
-func (b *BaseApi) AdminUser(ctx *gin.Context) (*models.User, error) {
-	sessionUser, exists := ctx.Get(system.GetConfiguration().AdminUser)
-	if !exists {
-		return nil, errors.New("current user is not exist")
-	}
-	user, ok := sessionUser.(*models.User)
-	if !ok {
-		return nil, errors.New("server interval error")
-	}
-	return user, nil
-}
-
 //处理共同错误信息
 func (b *BaseApi) HandlerError(message string, err error) bool {
 	if err != nil {
@@ -128,7 +126,6 @@ func (b *BaseApi) HandlerError(message string, err error) bool {
 	}
 	return true
 }
-
 
 func CreateXMLSitemap() {
 	configuration := system.GetConfiguration()

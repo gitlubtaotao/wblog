@@ -396,11 +396,7 @@ func CountTag() int {
 	return count
 }
 
-func ListAllTag() ([]*Tag, error) {
-	var tags []*Tag
-	err := DB.Model(&Tag{}).Find(&tags).Error
-	return tags, err
-}
+
 
 // post_tags
 func (pt *PostTag) Insert() error {
