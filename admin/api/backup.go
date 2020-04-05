@@ -3,6 +3,7 @@ package admin
 import (
 	"fmt"
 	"github.com/gitlubtaotao/wblog/api"
+	"github.com/gitlubtaotao/wblog/encrypt"
 	"github.com/gitlubtaotao/wblog/tools/upload/qiniu"
 	"io/ioutil"
 	"net/http"
@@ -58,7 +59,9 @@ func RestorePost(c *gin.Context) {
 		res["message"] = err.Error()
 		return
 	}
-	bodyBytes, err = helpers.Decrypt(bodyBytes, system.GetConfiguration().BackupKey)
+	
+	bodyString, err := encrypt.DeCryptData(string(bodyBytes), false, "admin")
+	bodyBytes = []byte(bodyString)
 	if err != nil {
 		res["message"] = err.Error()
 		return
@@ -96,18 +99,17 @@ func Backup() (err error) {
 		seelog.Error(err)
 		return
 	}
-	encryptData, err = helpers.Encrypt(bodyBytes, system.GetConfiguration().BackupKey)
+	encryptData, err = encrypt.EncryptBytes(bodyBytes, "admin")
 	if err != nil {
 		seelog.Error(err)
 		return
 	}
 	uploader := qiniu.NewUploaderDefault()
-	url,_, err := uploader.ByteUpload(encryptData, fmt.Sprintf("wblog_%s.db", helpers.GetCurrentTime().Format("20060102150405")))
+	_, _, err = uploader.ByteUpload(encryptData, fmt.Sprintf("wblog_%s.db", helpers.GetCurrentTime().Format("20060102150405")))
 	if err != nil {
 		seelog.Debugf("backup error:%v", err)
 		return
 	}
 	seelog.Debug("backup succeefully.")
-	fmt.Println(url)
 	return err
 }

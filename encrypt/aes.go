@@ -11,6 +11,15 @@ import (
 	"strings"
 )
 
+func EncryptBytes(plaintext []byte, env string) ([]byte, error) {
+	secret := getSecret(env)
+	result, err := aesEncrypt(plaintext, []byte(secret))
+	if err != nil {
+		return nil,err
+	}
+	return []byte(base64.StdEncoding.EncodeToString(result)), err
+}
+
 func EnCryptData(originData string, env string) (string, error) {
 	secret := getSecret(env)
 	result, err := aesEncrypt([]byte(originData), []byte(secret))
