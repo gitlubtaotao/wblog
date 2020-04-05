@@ -24,5 +24,6 @@ request.token
 !/vendor/vendor.json
 dockerfile
 .idea
-/study_go/
+./admin/log
+./client/log
 
