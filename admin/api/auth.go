@@ -1,9 +1,10 @@
-package api
+package admin
 
 import (
 	"errors"
 	"github.com/cihub/seelog"
 	"github.com/gin-gonic/gin"
+	"github.com/gitlubtaotao/wblog/api"
 	"github.com/gitlubtaotao/wblog/encrypt"
 	"github.com/gitlubtaotao/wblog/helpers"
 	"github.com/gitlubtaotao/wblog/models"
@@ -13,20 +14,20 @@ import (
 
 //auth 其他登录开发
 type AuthApi struct {
-	*BaseApi
-	Auth repositories.IAuthRepository
+	*api.BaseApi
+	repository repositories.IAuthRepository
 }
 
 //绑定不同的登录方式
 func (a *AuthApi) AuthGet(c *gin.Context) {
-	a.Auth = repositories.NewAuthRepository()
+	a.repository = repositories.NewAuthRepository()
 	authType := c.Param("authType")
 	uuid := helpers.UUID()
-	_ = a.OperationSession(c, SESSION_GITHUB_STATE, uuid)
+	_ = a.OperationSession(c, api.SESSION_GITHUB_STATE, uuid)
 	authUrl := "/signin"
 	switch authType {
 	case "github":
-		authUrl = a.Auth.GitHubAccessURL(uuid)
+		authUrl = a.repository.GitHubAccessURL(uuid)
 	case "weibo":
 	case "qq":
 	case "wechat":
@@ -38,22 +39,22 @@ func (a *AuthApi) AuthGet(c *gin.Context) {
 
 //github callback
 func (a *AuthApi) GithubCallback(ctx *gin.Context) {
-	a.Auth = repositories.NewAuthRepository()
+	a.repository = repositories.NewAuthRepository()
 	code := ctx.Query("code")
 	state := ctx.Query("state")
-	systemState, _ := a.GetSessionValue(ctx, SESSION_GITHUB_STATE, true)
+	systemState, _ := a.GetSessionValue(ctx, api.SESSION_GITHUB_STATE, true)
 	//验证失败
 	if len(state) == 0 || state != systemState {
 		a.handlerError(ctx, errors.New("state is error "))
 		return
 	}
 	//通过code换取对于的token
-	token, err := a.Auth.GitHubExchangeTokenByCode(code)
+	token, err := a.repository.GitHubExchangeTokenByCode(code)
 	if err != nil {
 		a.handlerError(ctx, err)
 		return
 	}
-	githubUser, err := a.Auth.GithubUserInfoByAccessToken(token)
+	githubUser, err := a.repository.GithubUserInfoByAccessToken(token)
 	if err != nil {
 		a.handlerError(ctx, err)
 		return
@@ -163,7 +164,7 @@ func (a *AuthApi) handlerError(ctx *gin.Context, err error) {
 
 //method: bind user
 func (a *AuthApi) bindUser(ctx *gin.Context, sessionUser *models.User, githubUser *models.GithubUserInfo) {
-	if _, err := a.Auth.GithubUserBing(sessionUser, githubUser); err != nil {
+	if _, err := a.repository.GithubUserBing(sessionUser, githubUser); err != nil {
 		a.handlerError(ctx, err)
 		return
 	} else {
@@ -173,7 +174,7 @@ func (a *AuthApi) bindUser(ctx *gin.Context, sessionUser *models.User, githubUse
 }
 
 func (a *AuthApi) createUser(ctx *gin.Context, githubUser *models.GithubUserInfo) {
-	user, err := a.Auth.GithubUserCreate(githubUser)
+	user, err := a.repository.GithubUserCreate(githubUser)
 	if err != nil {
 		a.handlerError(ctx, err)
 		return
@@ -183,7 +184,7 @@ func (a *AuthApi) createUser(ctx *gin.Context, githubUser *models.GithubUserInfo
 		return
 	}
 	key, err := encrypt.EnCryptData(string(user.ID),"admin")
-	_ = a.OperationSession(ctx, SESSION_KEY, key)
+	_ = a.OperationSession(ctx, api.SESSION_KEY, key)
 	if err != nil {
 		a.handlerError(ctx, err)
 		return

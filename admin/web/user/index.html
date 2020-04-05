@@ -20,7 +20,7 @@
                 <h1 style="float: left;">
                     <small>User Manage</small>
                 </h1>
-                <a href="/admin/signup" target="_blank" class="btn btn-primary btn-sm " style="float: left;margin-left: 10px;">New User</a>
+                <a href="/admin/register" target="_blank" class="btn btn-primary btn-sm " style="float: left;margin-left: 10px;">New User</a>
                 <ol class="breadcrumb">
                     <li><a href="/admin/index"><i class="fa fa-dashboard"></i> Home</a></li>
                     <li class="active"><a href="#">User</a></li>
@@ -59,10 +59,10 @@
                                             <td>
                                                 {{if not .LockState}}
                                                     <a href="javascript:void(0);" class="lock-button btn btn-sm btn-danger"
-                                                       data-href="/admin/user/{{.ID}}/lock">锁定</a>
+                                                       data-href="/admin/user/lock/{{.ID}}">锁定</a>
                                                 {{else}}
                                                     <a href="javascript:void(0);" class="lock-button btn btn-sm btn-primary"
-                                                       data-href="/admin/user/{{.ID}}/lock">解除锁定</a>
+                                                       data-href="/admin/user/lock/{{.ID}}">解除锁定</a>
                                                 {{end}}
                                                 <a href="/admin/user/profile?id={{.ID}}" target="_blank" class="btn btn-primary btn-sm">查看</a>
                                             </td>

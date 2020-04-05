@@ -1,60 +1,8 @@
-2020-04-04 17:19:56 [CRT] [run.go:18] [main.main] err parsing config log filejson: unsupported type: map[interface {}]interface {}
-2020-04-04 17:20:04 [CRT] [run.go:18] [main.main] err parsing config log filejson: unsupported type: map[interface {}]interface {}
-2020-04-04 17:21:48 [CRT] [run.go:18] [main.main] err parsing config log filejson: unsupported type: map[interface {}]interface {}
-2020-04-04 17:24:51 [CRT] [run.go:18] [main.main] err parsing config log filejson: unsupported type: map[interface {}]interface {}
-2020-04-04 17:25:01 [CRT] [run.go:18] [main.main] err parsing config log filejson: unsupported type: map[interface {}]interface {}
-2020-04-04 17:25:19 [CRT] [run.go:18] [main.main] err parsing config log filejson: unsupported type: map[interface {}]interface {}
-2020-04-04 17:26:24 [CRT] [run.go:18] [main.main] err parsing config log filejson: cannot unmarshal number into Go struct field Configuration.admin_addr of type string
-2020-04-04 17:26:56 [CRT] [run.go:18] [main.main] err parsing config log filejson: cannot unmarshal number into Go struct field Configuration.admin_addr of type string
-2020-04-04 17:28:33 [CRT] [run.go:18] [main.main] err parsing config log filejson: unsupported type: map[interface {}]interface {}
-2020-04-04 17:38:15 [CRT] [run.go:18] [main.main] err parsing config log filejson: unsupported type: map[interface {}]interface {}
-2020-04-04 17:41:55 [CRT] [run.go:18] [main.main] err parsing config log fileyaml: unmarshal errors:
-  line 1: cannot unmarshal !!map into []map[string]interface {}
-  line 26: cannot unmarshal !!map into []map[string]interface {}
-  line 35: cannot unmarshal !!map into []map[string]interface {}
-  line 37: cannot unmarshal !!map into []map[string]interface {}
-2020-04-04 17:48:38 [CRT] [run.go:18] [main.main] err parsing config log filejson: unsupported type: map[interface {}]interface {}
-2020-04-04 17:52:30 [CRT] [run.go:18] [main.main] err parsing config log filejson: unsupported type: map[interface {}]interface {}
-2020-04-04 17:53:26 [CRT] [run.go:18] [main.main] err parsing config log fileinvalid character 'a' looking for beginning of value
-2020-04-04 17:53:52 [CRT] [run.go:18] [main.main] err parsing config log fileinvalid character 'a' looking for beginning of value
-2020-04-04 18:03:59 [CRT] [run.go:18] [main.main] err parsing config log fileunexpected end of JSON input
-2020-04-04 18:04:28 [CRT] [run.go:18] [main.main] err parsing config log fileunexpected end of JSON input
-2020-04-04 18:04:40 [CRT] [run.go:18] [main.main] err parsing config log fileunexpected end of JSON input
-2020-04-04 18:05:28 [CRT] [run.go:18] [main.main] err parsing config log fileunexpected end of JSON input
-2020-04-04 18:05:39 [CRT] [run.go:18] [main.main] err parsing config log fileunexpected end of JSON input
-2020-04-04 18:06:11 [CRT] [run.go:18] [main.main] err parsing config log fileunexpected end of JSON input
-2020-04-04 19:49:16 [CRT] [run.go:18] [main.main] err parsing config log fileunexpected end of JSON input
-2020-04-04 23:51:48 [ERR] [session.go:52] [github.com/gitlubtaotao/wblog/admin/api.(*SessionApi).Create] crypto/aes: invalid key size 0
-2020-04-04 23:52:21 [ERR] [session.go:42] [github.com/gitlubtaotao/wblog/admin/api.(*SessionApi).Create] crypto/bcrypt: hashedPassword is not the hash of the given password
-2020-04-04 23:52:28 [ERR] [session.go:42] [github.com/gitlubtaotao/wblog/admin/api.(*SessionApi).Create] crypto/bcrypt: hashedPassword is not the hash of the given password
-2020-04-04 23:52:34 [ERR] [session.go:42] [github.com/gitlubtaotao/wblog/admin/api.(*SessionApi).Create] crypto/bcrypt: hashedPassword is not the hash of the given password
-2020-04-04 23:53:09 [ERR] [session.go:52] [github.com/gitlubtaotao/wblog/admin/api.(*SessionApi).Create] crypto/aes: invalid key size 0
-2020-04-04 23:53:15 [ERR] [session.go:52] [github.com/gitlubtaotao/wblog/admin/api.(*SessionApi).Create] crypto/aes: invalid key size 0
-2020-04-04 23:55:10 [ERR] [session.go:42] [github.com/gitlubtaotao/wblog/admin/api.(*SessionApi).Create] crypto/bcrypt: hashedPassword is not the hash of the given password
-2020-04-04 23:55:49 [ERR] [session.go:42] [github.com/gitlubtaotao/wblog/admin/api.(*SessionApi).Create] crypto/bcrypt: hashedPassword is not the hash of the given password
-2020-04-04 23:56:04 [ERR] [session.go:42] [github.com/gitlubtaotao/wblog/admin/api.(*SessionApi).Create] crypto/bcrypt: hashedPassword is not the hash of the given password
-2020-04-04 23:56:55 [ERR] [session.go:42] [github.com/gitlubtaotao/wblog/admin/api.(*SessionApi).Create] crypto/bcrypt: hashedPassword is not the hash of the given password
-2020-04-04 23:57:59 [ERR] [session.go:52] [github.com/gitlubtaotao/wblog/admin/api.(*SessionApi).Create] crypto/aes: invalid key size 0
-2020-04-04 23:58:27 [ERR] [session.go:52] [github.com/gitlubtaotao/wblog/admin/api.(*SessionApi).Create] crypto/aes: invalid key size 0
-2020-04-04 23:58:50 [ERR] [session.go:54] [github.com/gitlubtaotao/wblog/admin/api.(*SessionApi).Create] crypto/aes: invalid key size 0
-2020-04-04 23:58:54 [ERR] [session.go:54] [github.com/gitlubtaotao/wblog/admin/api.(*SessionApi).Create] crypto/aes: invalid key size 0
-2020-04-04 23:59:14 [ERR] [session.go:55] [github.com/gitlubtaotao/wblog/admin/api.(*SessionApi).Create] crypto/aes: invalid key size 0
-2020-04-05 00:05:51 [ERR] [session.go:55] [github.com/gitlubtaotao/wblog/admin/api.(*SessionApi).Create] crypto/aes: invalid key size 0
-2020-04-05 00:30:10 [CRT] [user.go:35] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] current user is not exist
-2020-04-05 00:31:38 [CRT] [user.go:35] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] current user is not exist
-2020-04-05 00:31:48 [CRT] [user.go:35] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] current user is not exist
-2020-04-05 00:34:21 [CRT] [user.go:35] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] current user is not exist
-2020-04-05 00:35:05 [CRT] [user.go:35] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] current user is not exist
-2020-04-05 00:35:13 [CRT] [user.go:35] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] current user is not exist
-2020-04-05 00:35:36 [CRT] [user.go:35] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] current user is not exist
-2020-04-05 00:40:38 [CRT] [user.go:35] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] current user is not exist
-2020-04-05 00:40:47 [CRT] [user.go:35] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] current user is not exist
-2020-04-05 00:41:23 [CRT] [user.go:35] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] current user is not exist
-2020-04-05 00:43:28 [CRT] [user.go:35] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] current user is not exist
-2020-04-05 00:44:22 [CRT] [user.go:35] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] current user is not exist
-2020-04-05 00:44:28 [CRT] [user.go:35] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] current user is not exist
-2020-04-05 00:44:45 [CRT] [user.go:35] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] current user is not exist
-2020-04-05 00:44:54 [CRT] [user.go:35] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] current user is not exist
-2020-04-05 00:45:13 [CRT] [user.go:35] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] current user is not exist
-2020-04-05 00:46:02 [CRT] [user.go:35] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] current user is not exist
-2020-04-05 00:47:04 [CRT] [user.go:44] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] record not found
+2020-04-05 11:11:53 [CRT] [user.go:44] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] record not found
+2020-04-05 11:18:05 [CRT] [user.go:44] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] record not found
+2020-04-05 11:20:28 [CRT] [user.go:43] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] record not found
+2020-04-05 11:22:16 [CRT] [user.go:43] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] record not found
+2020-04-05 11:22:25 [ERR] [auth.go:161] [github.com/gitlubtaotao/wblog/admin/api.(*AuthApi).handlerError] state is error 
+2020-04-05 11:24:44 [CRT] [user.go:43] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] record not found
+2020-04-05 11:25:47 [CRT] [user.go:43] [github.com/gitlubtaotao/wblog/admin/api.(*UserApi).Get] record not found
+2020-04-05 11:25:52 [ERR] [auth.go:161] [github.com/gitlubtaotao/wblog/admin/api.(*AuthApi).handlerError] state is error 

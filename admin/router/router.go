@@ -28,8 +28,10 @@ func (r *Routes) Register() {
 	r.captchaRoute()
 	r.group.Use(r.AdminScopeRequired())
 	{
+		r.auth()
 		r.homeRoute()
 		r.user()
+		r.post()
 	}
 	
 }
@@ -39,6 +41,9 @@ func (r *Routes) sessionRoute() {
 	r.group.GET("/login", session.New)
 	r.group.POST("/login", session.Create)
 	r.group.DELETE("/destroy", session.Destroy)
+	auth := admin.AuthApi{}
+	r.engine.GET("/githubCallback", auth.GithubCallback)
+	r.engine.GET("/auth/:authType", auth.AuthGet)
 }
 func (r *Routes) registerRoute() {
 	if system.GetConfiguration().SignupEnabled {
@@ -73,12 +78,31 @@ func (r *Routes) homeRoute() {
 		r.group.GET("/index", home.Index)
 	}
 }
-func (r *Routes) user()  {
+
+func (r *Routes) user() {
 	user := &admin.UserApi{}
 	r.group.GET("/user/profile", user.Get)
 	r.group.POST("/user/:id/profile", user.Update)
 	r.group.GET("/user", user.Index)
-	r.group.POST("/user/:id/lock", user.Lock)
+	r.group.GET("/user/lock/:id", user.Lock)
+}
+
+func (r *Routes) auth() {
+	auth := admin.AuthApi{}
+	r.group.POST("/profile/email/bind", auth.BindEmail)
+	r.group.POST("/profile/email/unbind", auth.UnbindEmail)
+	r.group.POST("/profile/github/unbind", auth.UnbindGithub)
+}
+
+func (r *Routes) post() {
+	post := new(admin.PostApi)
+	r.group.GET("/posts", post.Index)
+	r.group.GET("/posts/new", post.New)
+	r.group.POST("/posts", post.Create)
+	r.group.GET("/post/:id/edit", post.Edit)
+	r.group.POST("/post/:id/update", post.Update)
+	r.group.POST("/post/:id/publish", post.PostPublish)
+	r.group.POST("/post/:id/delete", post.Delete)
 }
 
 //AuthRequired grants access to authenticated users, requires SharedData middleware

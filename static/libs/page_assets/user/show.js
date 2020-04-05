@@ -1,6 +1,8 @@
 $(document).ready(function () {
+    var _csrf = $('form').find('input[name="_csrf"]').val();
     $('#unbind_github').on("click", function () {
-        $.post("/admin/profile/github/unbind", {}, function (result) {
+
+        $.post("/admin/profile/github/unbind", {"_csrf": _csrf}, function (result) {
             toastr.success(result.message);
             if (result.succeed) {
                 window.location.reload(true)
@@ -17,7 +19,7 @@ $(document).ready(function () {
             toastr.error("email is not null");
             return;
         }
-        $.post("/admin/profile/email/bind", {email: email}, function (data) {
+        $.post("/admin/profile/email/bind", {email: email,"_csrf": _csrf}, function (data) {
             if (data.succeed) {
                 toastr.success(data.message);
             } else {
@@ -55,6 +57,7 @@ $(document).ready(function () {
     $('#upload_avatar').on("change", function () {
         var formData = new FormData();
         formData.append('file', $(this)[0].files[0]);
+        formData.append("_csrf",_csrf);
         $.ajax({
             url: '/admin/upload',
             type: 'POST',

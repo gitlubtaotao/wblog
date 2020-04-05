@@ -1,4 +1,5 @@
 $(document).ready(function () {
+    var _csrf = $('.content').find('input[name="_csrf"]').val();
     $('#example2').DataTable({
         'paging': true,
         'lengthChange': false,
@@ -8,12 +9,10 @@ $(document).ready(function () {
         'autoWidth': false
     });
     $('.publish-post').on('click', function () {
-        console.log('sdsdsd');
         var id = $(this).data('id');
         pushlish(id);
-
         function pushlish(id) {
-            $.post("/admin/post/" + id + "/publish", {}, function (result) {
+            $.post("/admin/post/" + id + "/publish", {"_csrf": _csrf}, function (result) {
                 console.log(result);
                 if (result.succeed) {
                     toastr.success('Publish is successful')
@@ -25,7 +24,7 @@ $(document).ready(function () {
 
     $('#confirm-delete').on('show.bs.modal', function (e) {
         $(this).find('.btn-ok').click(function () {
-            $.post($(e.relatedTarget).data('href'), {}, function (result) {
+            $.post($(e.relatedTarget).data('href'), {"_csrf": _csrf}, function (result) {
                 if (result['succeed']) {
                     $('tbody').find("#tr_" + result['id']).remove();
                     toastr.success("Delete post is successful");

@@ -7,6 +7,7 @@ import (
 	"github.com/gitlubtaotao/wblog/encrypt"
 	"github.com/gitlubtaotao/wblog/models"
 	"github.com/gitlubtaotao/wblog/repositories"
+	csrf "github.com/utrack/gin-csrf"
 	"net/http"
 	"strconv"
 )
@@ -17,33 +18,37 @@ type UserApi struct {
 }
 
 func (u *UserApi) Get(ctx *gin.Context) {
-	repository := repositories.NewUserRepository(ctx)
-	u.repository = repository
-	userId := ctx.Query("id")
 	var (
 		tempUser *models.User
 		err      error
 	)
+	repository := repositories.NewUserRepository(ctx)
+	u.repository = repository
+	userId := ctx.Query("id")
 	if userId == "" {
 		tempUser, err = u.AdminUser(ctx)
 	} else {
 		id, _ := strconv.ParseInt(userId, 10, 64)
 		tempUser, err = repository.GetUserByID(id)
 	}
-	
 	if err != nil {
 		_ = seelog.Critical(err)
 		u.HandleMessage(ctx, "service inter is error")
 		return
 	}
-	
 	err = u.repository.ReloadGithub(tempUser)
 	if err != nil {
 		_ = seelog.Critical(err)
 	}
 	var url = "/admin/user/" + strconv.Itoa(int(tempUser.ID)) + "/profile"
-	u.RenderHtml(ctx, "user/show.html",
-		u.RenderComments(gin.H{"user": tempUser, "url": url,}))
+	u.RenderHtml(
+		ctx,
+		"user/show.html",
+		u.RenderComments(gin.H{
+			"user":  tempUser,
+			"url":   url,
+			"token": csrf.GetToken(ctx),
+		}))
 }
 
 func (u *UserApi) Update(c *gin.Context) {
@@ -52,7 +57,7 @@ func (u *UserApi) Update(c *gin.Context) {
 		res = gin.H{}
 	)
 	defer u.WriteJSON(c, res)
-	user, err := u.CurrentUser(c)
+	user, err := u.AdminUser(c)
 	if err != nil {
 		res["message"] = err.Error()
 		return

@@ -3,6 +3,7 @@ package tools
 import (
 	"github.com/cihub/seelog"
 	"github.com/gin-gonic/gin"
+	admin2 "github.com/gitlubtaotao/wblog/admin/api"
 	"github.com/gitlubtaotao/wblog/api"
 	"github.com/gitlubtaotao/wblog/api/admin"
 	"github.com/gitlubtaotao/wblog/api/client"
@@ -46,7 +47,7 @@ func (r *Routes) indexInit() {
 //登录和退出
 func (r *Routes) signInAndOut() {
 	session := admin.SessionApi{}
-	auth := api.AuthApi{}
+	auth := admin2.AuthApi{}
 	r.engine.GET("/admin/signin", session.GetSignIn)
 	r.engine.POST("/admin/signin", session.PostSignIn)
 	r.engine.GET("/logout", session.LogoutGet)
@@ -79,7 +80,7 @@ func (r *Routes) subscriberRouter() {
 }
 
 func (r *Routes) otherRouter() {
-	r.engine.GET("/post/:id", admin.PostGet)
+	r.engine.GET("/post/:id", admin2.PostGet)
 	r.engine.GET("/tag/:tag", admin.TagGet)
 	r.engine.GET("/archives/:year/:month", api.ArchiveGet)
 	//link := admin.LinkApi{}
@@ -104,14 +105,7 @@ func (r *Routes) adminRouter() {
 		authorized.POST("/page/publish/:id", page.Publish)
 		
 		// post
-		post := new(admin.PostApi)
-		authorized.GET("/posts", post.Index)
-		authorized.GET("/posts/new", post.New)
-		authorized.POST("/posts", post.Create)
-		authorized.GET("/post/:id/edit", post.Edit)
-		authorized.POST("/post/:id/update", post.Update)
-		authorized.POST("/post/:id/publish", post.PostPublish)
-		authorized.POST("/post/:id/delete", post.Delete)
+		
 		// tag
 		tag := admin.TagApi{}
 		authorized.GET("/tag/:format", tag.Index)
@@ -119,10 +113,10 @@ func (r *Routes) adminRouter() {
 		authorized.DELETE("/tag/:id", tag.Delete)
 		
 		
-		auth := api.AuthApi{}
-		authorized.POST("/profile/email/bind", auth.BindEmail)
-		authorized.POST("/profile/email/unbind", auth.UnbindEmail)
-		authorized.POST("/profile/github/unbind", auth.UnbindGithub)
+		//auth := admin2.AuthApi{}
+		//authorized.POST("/profile/email/bind", auth.BindEmail)
+		//authorized.POST("/profile/email/unbind", auth.UnbindEmail)
+		//authorized.POST("/profile/github/unbind", auth.UnbindGithub)
 		
 		// subscriber
 		adminSub := admin.SubscriberApi{}

@@ -7,6 +7,7 @@ import (
 	"github.com/gitlubtaotao/wblog/api"
 	"github.com/gitlubtaotao/wblog/repositories"
 	"github.com/jinzhu/gorm"
+	csrf "github.com/utrack/gin-csrf"
 	"net/http"
 	"strconv"
 	"strings"
@@ -24,20 +25,22 @@ type PostApi struct {
 func (p *PostApi) Index(ctx *gin.Context) {
 	repository := repositories.NewPostRepository(ctx)
 	posts, _ := repository.ListAll(map[string]interface{}{}, []string{})
-	user, _ := p.CurrentUser(ctx)
+	user, _ := p.AdminUser(ctx)
 	renderJson := p.RenderComments(gin.H{
 		"posts": posts,
 		"user":  user,
+		"token": csrf.GetToken(ctx),
 	})
 	ctx.HTML(http.StatusOK, "post/index.html", renderJson)
 }
 
 func (p *PostApi) New(c *gin.Context) {
-	user, _ := p.CurrentUser(c)
+	user, _ := p.AdminUser(c)
 	c.HTML(http.StatusOK, "post/edit.html", p.RenderComments(gin.H{
 		"user":   user,
 		"post":   models.Post{},
-		"submit": "/admin/post",
+		"token":  csrf.GetToken(c),
+		"submit": "/admin/posts",
 	}))
 }
 
@@ -100,7 +103,7 @@ func (p *PostApi) Delete(ctx *gin.Context) {
 func (p *PostApi) Edit(c *gin.Context) {
 	id := p.stringToUnit(c.Param("id"))
 	repository := p.getRepository(c)
-	user, _ := p.CurrentUser(c)
+	user, _ := p.AdminUser(c)
 	post, err := repository.GetPostById(id, true)
 	if err != nil {
 		_ = seelog.Error(err)
@@ -111,6 +114,7 @@ func (p *PostApi) Edit(c *gin.Context) {
 	c.HTML(http.StatusOK, "post/edit.html", p.RenderComments(gin.H{
 		"post":   post,
 		"user":   user,
+		"token":  csrf.GetToken(c),
 		"submit": "/admin/post/" + strconv.FormatInt(int64(post.ID), 10) + "/update",
 	}))
 }

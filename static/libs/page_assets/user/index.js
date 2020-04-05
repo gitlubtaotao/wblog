@@ -8,7 +8,7 @@ $(document).ready(function () {
         'autoWidth': false
     });
     $('.lock-button').on('click', function (e) {
-        $.post($(e.target).data("href"), {}, function (data) {
+        $.get($(e.target).data("href"), {}, function (data) {
             if (data.succeed) {
                 toastr.success("Operation is successful")
             }else{
