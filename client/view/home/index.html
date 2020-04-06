@@ -27,11 +27,11 @@
                             <span>
                                 <a class="articleTitle" href="/post/{{$postvalue.ID}}">
                                     {{$length := len $postvalue.Title}}
-                                        {{if ge $length 40}}
-                                            {{truncate $postvalue.Title 40}}...
-                                        {{else}}
-                                            {{$postvalue.Title}}
-                                        {{end}}
+                                    {{if ge $length 40}}
+                                        {{truncate $postvalue.Title 40}}...
+                                    {{else}}
+                                        {{$postvalue.Title}}
+                                    {{end}}
                                 </a>
                             </span>
                             <span class="createdTime" style="margin-right: 10px;">
@@ -124,7 +124,7 @@
                             <ul class="list-unstyled">
                                 {{range $tagkey,$tagvalue:=.tags}}
                                     {{if isEven $tagkey}}
-                                        <li><a href="/tag/{{$tagvalue.ID}}">{{$tagvalue.Name}}({{$tagvalue.Total}})</a>
+                                        <li><a href="/index?tag={{$tagvalue.ID}}">{{$tagvalue.Name}}({{$tagvalue.Total}})</a>
                                         </li>
                                     {{end}}
                                 {{end}}
@@ -135,7 +135,7 @@
                             <ul class="list-unstyled">
                                 {{range $tagkey,$tagvalue:=.tags}}
                                     {{if isOdd $tagkey}}
-                                        <li><a href="/tag/{{$tagvalue.ID}}">{{$tagvalue.Name}}({{$tagvalue.Total}})</a>
+                                        <li><a href="/index?tag={{$tagvalue.ID}}">{{$tagvalue.Name}}({{$tagvalue.Total}})</a>
                                         </li>
                                     {{end}}
                                 {{end}}

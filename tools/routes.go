@@ -3,7 +3,6 @@ package tools
 import (
 	"github.com/cihub/seelog"
 	"github.com/gin-gonic/gin"
-	admin2 "github.com/gitlubtaotao/wblog/admin/api"
 	"github.com/gitlubtaotao/wblog/api"
 	"github.com/gitlubtaotao/wblog/models"
 	"net/http"
@@ -47,7 +46,6 @@ func (r *Routes) subscriberRouter() {
 }
 
 func (r *Routes) otherRouter() {
-	r.engine.GET("/tag/:tag", admin2.TagGet)
 	r.engine.GET("/archives/:year/:month", api.ArchiveGet)
 }
 

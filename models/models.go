@@ -24,12 +24,12 @@ type BaseModel struct {
 // table pages
 type Page struct {
 	gorm.Model
-	Title       string `json:"title" form:"title" validate:"required"` // title
-	Body        string `json:"body" form:"body"`                       // body
-	View        int    `form:"-" json:"-"`                             // view count
-	IsPublished bool   `json:"is_published" form:"is_published"`       // published or not
-	CommentTotal int        `gorm:"-"`                    // count of comment
-	LikeTotal    int        `gorm:"_"`
+	Title        string `json:"title" form:"title" validate:"required"` // title
+	Body         string `json:"body" form:"body"`                       // body
+	View         int    `form:"-" json:"-"`                             // view count
+	IsPublished  bool   `json:"is_published" form:"is_published"`       // published or not
+	CommentTotal int    `gorm:"-"`                                      // count of comment
+	LikeTotal    int    `gorm:"_"`
 }
 
 // table tags
@@ -46,6 +46,7 @@ type Post struct {
 	Body         string     `json:"body"  form:"body"  validate:"required"` // body
 	View         int        // view count
 	IsPublished  bool       `json:"is_published" form:"is_published"`
+	PostTags     []*PostTag `gorm:""`
 	Tags         []*Tag     `gorm:"many2many:post_tags;"` // tags of post
 	Comments     []*Comment `gorm:"-"`                    // comments of post
 	CommentTotal int        `gorm:"-"`                    // count of comment

@@ -18,12 +18,26 @@ type IPostRepository interface {
 	CountPost(attr map[string]interface{}) (count int, err error)
 	ListMaxReadPost(column []string) ([]*models.Post, error)
 	ListMaxCommentPost(columns []string) ([]*models.Post, error)
-	
+	TagsPost(per, page uint, attr map[string]interface{}, columns []string, tag string) (posts []*models.Post, err error)
 }
 
 type PostRepository struct {
 	ctx     *gin.Context
 	service service.IPostService
+}
+
+func (p *PostRepository) TagsPost(per, page uint, attr map[string]interface{}, columns []string, tag string) (posts []*models.Post, err error) {
+	posts, err = p.service.TagsPost(per, page, attr, columns, tag)
+	if err != nil {
+		return
+	}
+	var postId []uint
+	for _, post := range posts {
+		postId = append(postId, post.ID)
+	}
+	//获取对应的tags
+	
+	return
 }
 
 func (p *PostRepository) ListMaxCommentPost(columns []string) ([]*models.Post, error) {

@@ -21,6 +21,7 @@ func (r *Route) Register() {
 	r.engine.NoRoute(new(api.BaseApi).Handle404)
 	home := client2.HomeApi{}
 	r.engine.GET("/", home.Index)
+	r.engine.GET("/index", home.Index)
 	post := r.engine.Group("/post")
 	{
 		post.GET("/:id", new(client2.PostApi).Show)

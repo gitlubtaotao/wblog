@@ -1,6 +1,8 @@
 package client
 
 import (
+	"fmt"
+	"github.com/cihub/seelog"
 	"github.com/gin-gonic/gin"
 	"github.com/gitlubtaotao/wblog/models"
 	"github.com/gitlubtaotao/wblog/repositories"
@@ -9,6 +11,7 @@ import (
 	"gopkg.in/russross/blackfriday.v2"
 	"math"
 	"net/http"
+	"strconv"
 )
 
 type HomeApi struct {
@@ -35,6 +38,7 @@ func (h *HomeApi) Index(ctx *gin.Context) {
 		return
 	}
 	policy = bluemonday.StrictPolicy()
+	
 	for _, post := range posts {
 		post.Body = policy.Sanitize(string(blackfriday.Run([]byte(post.Body), blackfriday.WithNoExtensions())))
 	}
@@ -57,13 +61,16 @@ func (h *HomeApi) Index(ctx *gin.Context) {
 func (h *HomeApi) listPost(ctx *gin.Context) (posts []*models.Post, err error) {
 	repository := repositories.NewPostRepository(ctx)
 	page, _ := h.PageIndex(ctx)
-	posts, err = repository.PublishPost(
-		uint(system.GetConfiguration().PageSize),
-		uint(page),
-		map[string]interface{}{},
-		[]string{},
-		true,
+	tag := ctx.Query("tag")
+	var (
+		attr    = map[string]interface{}{}
+		per     = uint(system.GetConfiguration().PageSize)
 	)
+	if tag != "" {
+		posts, err = repository.TagsPost(per, uint(page), attr, []string{}, tag)
+	} else {
+		posts, err = repository.PublishPost(per, uint(page), attr, []string{}, true)
+	}
 	if err != nil {
 		ctx.AbortWithStatus(http.StatusInternalServerError)
 		return
@@ -73,11 +80,23 @@ func (h *HomeApi) listPost(ctx *gin.Context) (posts []*models.Post, err error) {
 
 func (h *HomeApi) CountPostByTag(ctx *gin.Context) (int, error) {
 	repository := repositories.NewPostRepository(ctx)
-	attr := map[string]interface{}{
-		"is_published": true,
+	tag := ctx.Query("tag")
+	var (
+		total int
+		err   error
+		attr  = map[string]interface{}{
+			"is_published": true,
+		}
+	)
+	if tag != "" {
+		tagId, _ := strconv.ParseUint(tag, 10, 64)
+		total, err = repository.CountPostByTag(uint(tagId))
+	} else {
+		total, err = repository.CountPost(attr)
 	}
-	total, err := repository.CountPost(attr)
 	if err != nil {
+		_ = seelog.Error(err)
+		fmt.Println(err)
 		ctx.AbortWithStatus(http.StatusInternalServerError)
 		return 0, err
 	}

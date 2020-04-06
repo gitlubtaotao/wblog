@@ -24,8 +24,7 @@ type IPostService interface {
 	CountPostByTag(tag uint) (count int, err error)
 	CountPost(attr map[string]interface{}) (count int, err error)
 	ListMaxReadPost(column []string) ([]*models.Post, error)
-	ListMaxCommentPost(columns []string)([]*models.Post,error)
-	
+	ListMaxCommentPost(columns []string) ([]*models.Post, error)
 }
 
 type PostService struct {
@@ -81,24 +80,16 @@ func (p *PostService) Create(post *models.Post) error {
  查询已经发布过的文章
 */
 func (p *PostService) PublishPost(per, page uint, attr map[string]interface{}, columns []string, isTag bool) (posts []*models.Post, err error) {
-	if per == 0 {
-		per = uint(system.GetConfiguration().PageSize)
-	}
-	temp := database.DBCon
-	if page != 0 {
-		temp = temp.Limit(per).Offset((page - 1) * per)
-	}
-	if len(attr) > 0 {
-		temp = temp.Where(attr)
-	}
+	temp := p.tempListPost(per, page, attr)
 	if isTag {
 		temp = temp.Preload("Tags")
 	}
+	temp = temp.Find(&posts)
 	temp = temp.Where("is_published =?", true)
 	if len(columns) > 0 {
 		temp = temp.Select(columns)
 	}
-	err = temp.Find(&posts).Error
+	err = temp.Error
 	return
 }
 
@@ -108,6 +99,7 @@ func (p *PostService) NotPublishPost(per, page uint, attr map[string]interface{}
 	if len(columns) > 0 {
 		temp = temp.Select(columns)
 	}
+	temp = temp.Model(&models.Post{})
 	err = temp.Scan(&posts).Error
 	return
 }
@@ -116,26 +108,16 @@ func (p *PostService) NotPublishPost(per, page uint, attr map[string]interface{}
 @title: 查询包涵标签的博文
 */
 func (p *PostService) TagsPost(per, page uint, attr map[string]interface{}, columns []string, tag string) (posts []*models.Post, err error) {
-	var tagId uint64
-	tagId, err = strconv.ParseUint(tag, 10, 64)
-	if err != nil {
-		return nil, err
-	}
 	temp := p.tempListPost(per, page, attr)
-	temp = temp.Joins("inner join post_tags pt on post.id = pt.post_id where pt.tag_id = ?", tagId)
+	tagId, _ := strconv.ParseUint(tag, 10, 64)
 	if len(columns) > 0 {
 		temp = temp.Select(columns)
+	}else{
+		temp = temp.Select("*")
 	}
-	rows, err := temp.Rows()
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	for rows.Next() {
-		var post models.Post
-		_ = models.DB.ScanRows(rows, &post)
-		posts = append(posts, &post)
-	}
+	temp = temp.Preload("Tags")
+	temp = temp.Joins("inner join post_tags as pt on posts.id = pt.post_id and pt.tag_id = ?", tagId).Find(&posts)
+	temp = temp.Where("is_published =?", true)
 	return posts, err
 }
 
@@ -154,6 +136,7 @@ func (p *PostService) ListPost(per, page uint, attr map[string]interface{}, colu
 	if len(columns) > 0 {
 		temp = temp.Select(columns)
 	}
+	temp = temp.Model(&models.Post{})
 	err = temp.Scan(&posts).Error
 	return
 }
@@ -174,7 +157,7 @@ func (p *PostService) tempListPost(per, page uint, attr map[string]interface{}) 
 	if per == 0 {
 		per = uint(system.GetConfiguration().PageSize)
 	}
-	temp = database.DBCon.Table("posts")
+	temp = database.DBCon
 	if page != 0 {
 		temp = temp.Limit(per).Offset((page - 1) * per)
 	}
@@ -216,7 +199,8 @@ func (p *PostService) selectTagsAndPost(tagId uint64) *gorm.DB {
 	db := models.DB.Raw("select p.* from posts p inner join post_tags pt on p.id = pt.post_id where pt.tag_id = ? order by created_at desc", tagId)
 	return db
 }
-
 func NewPostService() IPostService {
 	return &PostService{Model: &models.Post{}}
 }
+
+
