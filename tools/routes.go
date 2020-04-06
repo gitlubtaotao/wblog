@@ -49,8 +49,6 @@ func (r *Routes) subscriberRouter() {
 func (r *Routes) otherRouter() {
 	r.engine.GET("/tag/:tag", admin2.TagGet)
 	r.engine.GET("/archives/:year/:month", api.ArchiveGet)
-	//link := admin.LinkApi{}
-	//r.engine.GET("/link/:id", link.LinkGet)
 }
 
 func authRequired() gin.HandlerFunc {

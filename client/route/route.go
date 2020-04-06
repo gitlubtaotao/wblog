@@ -32,7 +32,7 @@ func (r *Route) Register() {
 		page.GET("/:id", new(client2.PageApi).Show)
 		page.GET("", new(client2.PageApi).Index)
 	}
-	
 	r.engine.GET("/rss", new(client2.RssApi).RssGet)
+	r.engine.GET("/link/:id", new(client2.LinkApi).Show)
 	
 }

@@ -109,15 +109,4 @@ func (l *LinkApi) New(ctx *gin.Context) {
 
 }
 
-//func (l *LinkApi) LinkGet(c *gin.Context) {
-////	id := c.Param("id")
-////	_id, _ := strconv.ParseInt(id, 10, 64)
-////	link, err := models.GetLinkById(uint(_id))
-////	if err != nil {
-////		c.AbortWithStatus(http.StatusInternalServerError)
-////		return
-////	}
-////	link.View++
-////	link.Update()
-////	c.Redirect(http.StatusFound, link.Url)
-////}
+

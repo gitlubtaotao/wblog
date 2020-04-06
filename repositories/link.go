@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/gitlubtaotao/wblog/models"
-	service2 "github.com/gitlubtaotao/wblog/service"
+	"github.com/gitlubtaotao/wblog/service"
 	"strconv"
 )
 
@@ -16,11 +16,16 @@ type ILinkRepository interface {
 	Update(link *models.Link) error
 	Delete() (uint, error)
 	Show() (link models.Link, err error)
+	GetLinkById(id uint) (models.Link, error)
 }
 
 type LinkRepository struct {
 	Ctx     *gin.Context
-	service service2.ILinkService
+	service service.ILinkService
+}
+
+func (l *LinkRepository) GetLinkById(id uint) (models.Link, error) {
+	return l.service.FirstLink(id)
 }
 
 func (l *LinkRepository) Delete() (uint, error) {
@@ -48,7 +53,7 @@ func (l *LinkRepository) UpdateAttr() (link models.Link, err error) {
 }
 
 func NewLinkRepository(ctx *gin.Context) ILinkRepository {
-	return &LinkRepository{Ctx: ctx, service: service2.NewLinkService()}
+	return &LinkRepository{Ctx: ctx, service: service.NewLinkService()}
 }
 
 //查询link没有进行分页
