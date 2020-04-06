@@ -21,7 +21,6 @@ func (r *Route) Register() {
 	r.engine.NoRoute(new(api.BaseApi).Handle404)
 	home := client2.HomeApi{}
 	r.engine.GET("/", home.Index)
-	
 	post := r.engine.Group("/post")
 	{
 		post.GET("/:id", new(client2.PostApi).Show)
@@ -33,5 +32,7 @@ func (r *Route) Register() {
 		page.GET("/:id", new(client2.PageApi).Show)
 		page.GET("", new(client2.PageApi).Index)
 	}
+	
+	r.engine.GET("/rss", new(client2.RssApi).RssGet)
 	
 }

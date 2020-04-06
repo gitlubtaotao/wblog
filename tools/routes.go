@@ -19,19 +19,12 @@ func NewRoutes(engine *gin.Engine) *Routes {
 
 //初始化路由
 func (r *Routes) InitRouter() {
-	r.indexInit()
 	r.visitorRouter()
 	r.subscriberRouter()
 	r.otherRouter()
 }
 
-func (r *Routes) indexInit() {
-	base := api.BaseApi{}
-	r.engine.NoRoute(base.Handle404)
-	//r.engine.GET("/", client.Index)
-	//r.engine.GET("/index", client.Index)
-	r.engine.GET("/rss", api.RssGet)
-}
+
 
 
 func (r *Routes) visitorRouter() {
