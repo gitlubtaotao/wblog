@@ -14,22 +14,6 @@ type PageApi struct {
 	*api.BaseApi
 }
 
-func (p *PageApi) PageGet(c *gin.Context) {
-	repository := p.repository(c)
-	id := c.Param("id")
-	uints, _ := strconv.ParseUint(id, 10, 64)
-	page, err := repository.FindPage(uint(uints))
-	if err != nil || !page.IsPublished {
-		p.Handle404(c)
-		return
-	}
-	page.View++
-	_ = page.UpdateView()
-	c.HTML(http.StatusOK, "page/display.html", gin.H{
-		"page": page,
-	})
-}
-
 func (p *PageApi) New(c *gin.Context) {
 	user, _ := p.AdminUser(c)
 	repository := p.repository(c)

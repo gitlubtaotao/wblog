@@ -87,6 +87,7 @@ func (b *BaseApi) AdminUser(ctx *gin.Context) (*models.User, error) {
 }
 
 func (b *BaseApi) ClientUser(ctx *gin.Context) (*models.User, error) {
+	fmt.Println(system.GetConfiguration().ClientUser)
 	return b.CurrentUser(ctx, system.GetConfiguration().ClientUser)
 }
 

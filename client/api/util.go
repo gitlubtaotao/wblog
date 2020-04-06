@@ -20,7 +20,7 @@ type UtilApi struct {
 /*
 @title: 获取当前分页数
 */
-func (u *UtilApi) PageIndex(ctx *gin.Context) (page int, err error) {
+func (u UtilApi) PageIndex(ctx *gin.Context) (page int, err error) {
 	pageIndex, err := strconv.Atoi(ctx.Query("page"))
 	if err != nil {
 		return 0, err

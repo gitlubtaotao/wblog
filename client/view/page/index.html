@@ -34,7 +34,10 @@
                                         {{$postvalue.Title}}
                                     {{end}}
                             </a></span>
-                            <span class="createdTime" style="margin-right: 10px;">{{dateFormat $postvalue.CreatedAt "2006-01-02 15:04"}}</span>
+                            <span class="createdTime" style="margin-right: 10px;">
+                                <i class="glyphicon glyphicon-calendar"></i>
+                                {{dateFormat $postvalue.CreatedAt "2006-01-02 15:04"}}
+                            </span>
                         </div>
                         <div class="articleBody">
                             {{$length := len $postvalue.Body}}
@@ -43,6 +46,13 @@
                             {{else}}
                                 {{$postvalue.Body}}
                             {{end}}
+                        </div>
+                        <div class="articleOther">
+                            <a href="/page/{{$postvalue.ID}}">
+                                <i class="glyphicon glyphicon-comment"></i> 评论
+                            </a>
+                            <span class="like_num"><i class="glyphicon glyphicon-heart"></i> <b>0</b> 喜欢</span>
+                            <span><i class="glyphicon glyphicon-eye-open"></i> <b>{{$postvalue.View}}</b> 阅读</span>
                         </div>
                         <hr>
                     {{end}}

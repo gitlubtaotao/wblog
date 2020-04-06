@@ -10,7 +10,7 @@ import (
 )
 
 type PostApi struct {
-	*UtilApi
+	UtilApi
 }
 
 func (p *PostApi) Show(ctx *gin.Context) {

@@ -28,6 +28,8 @@ type Page struct {
 	Body        string `json:"body" form:"body"`                       // body
 	View        int    `form:"-" json:"-"`                             // view count
 	IsPublished bool   `json:"is_published" form:"is_published"`       // published or not
+	CommentTotal int        `gorm:"-"`                    // count of comment
+	LikeTotal    int        `gorm:"_"`
 }
 
 // table tags
@@ -43,10 +45,11 @@ type Post struct {
 	Title        string     `json:"title" form:"title" validate:"required"` // title
 	Body         string     `json:"body"  form:"body"  validate:"required"` // body
 	View         int        // view count
-	IsPublished  bool        `json:"is_published" form:"is_published"`
+	IsPublished  bool       `json:"is_published" form:"is_published"`
 	Tags         []*Tag     `gorm:"many2many:post_tags;"` // tags of post
 	Comments     []*Comment `gorm:"-"`                    // comments of post
 	CommentTotal int        `gorm:"-"`                    // count of comment
+	LikeTotal    int        `gorm:"_"`
 	Keyword      string     `gorm:"size:255;not null" json:"keyword" form:"keyword" validate:"required"`
 }
 
@@ -191,7 +194,6 @@ func (page *Page) UpdateView() error {
 func ListPublishedPage() ([]*Page, error) {
 	return _listPage(true)
 }
-
 
 func _listPage(published bool) ([]*Page, error) {
 	var pages []*Page
@@ -396,14 +398,10 @@ func CountTag() int {
 	return count
 }
 
-
-
 // post_tags
 func (pt *PostTag) Insert() error {
 	return DB.FirstOrCreate(pt, "post_id = ? and tag_id = ?", pt.PostId, pt.TagId).Error
 }
-
-
 
 // user
 // insert user
@@ -553,7 +551,6 @@ func MustListLinks() []*Link {
 	links, _ := ListLinks()
 	return links
 }
-
 
 func (sf SmmsFile) Insert() (err error) {
 	err = DB.Create(&sf).Error

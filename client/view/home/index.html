@@ -24,17 +24,20 @@
                     <!-- First Blog Post -->
                     {{range $postkey,$postvalue:=.posts}}
                         <div class="articleInfo">
-                    <span><a class="articleTitle" href="/post/{{$postvalue.ID}}">
-                        {{$length := len $postvalue.Title}}
-                            {{if ge $length 40}}
-                                {{truncate $postvalue.Title 40}}...
-                            {{else}}
-                                {{$postvalue.Title}}
-                            {{end}}
-                    </a></span>
+                            <span>
+                                <a class="articleTitle" href="/post/{{$postvalue.ID}}">
+                                    {{$length := len $postvalue.Title}}
+                                        {{if ge $length 40}}
+                                            {{truncate $postvalue.Title 40}}...
+                                        {{else}}
+                                            {{$postvalue.Title}}
+                                        {{end}}
+                                </a>
+                            </span>
                             <span class="createdTime" style="margin-right: 10px;">
-                        {{dateFormat $postvalue.CreatedAt "06-01-02 15:04"}}
-                    </span>
+                                <i class="glyphicon glyphicon-calendar"></i>
+                                {{dateFormat $postvalue.CreatedAt "2006-01-02 15:04"}}
+                            </span>
                         </div>
                         <div class="articleBody">
                             {{$length := len $postvalue.Body}}
@@ -44,7 +47,6 @@
                                 {{$postvalue.Body}}
                             {{end}}
                         </div>
-
                         <!-- article tags -->
                         <div style="margin-top: 10px">
                             <tr>
@@ -56,6 +58,14 @@
                                 {{end}}
                             </tr>
                         </div><!-- article tags -->
+                        <div class="articleOther">
+                            <a href="/post/{{$postvalue.ID}}">
+                                <i class="glyphicon glyphicon-comment"></i> 评论
+                            </a>
+                            <span><i class="glyphicon glyphicon-heart"></i> <b>0</b> 喜欢</span>
+                            <span><i class="glyphicon glyphicon-eye-open"></i> <b>{{$postvalue.View}}</b> 阅读</span>
+
+                        </div>
 
                         <hr>
 

@@ -12,7 +12,7 @@ import (
 )
 
 type HomeApi struct {
-	*UtilApi
+	UtilApi
 }
 
 func (h *HomeApi) Index(ctx *gin.Context) {

@@ -1,11 +1,11 @@
 package admin
 
 import (
+	"fmt"
 	"github.com/cihub/seelog"
 	"github.com/gin-gonic/gin"
 	"github.com/gitlubtaotao/wblog/admin/api"
 	"github.com/gitlubtaotao/wblog/api"
-	"github.com/gitlubtaotao/wblog/api/client"
 	"github.com/gitlubtaotao/wblog/models"
 	"github.com/gitlubtaotao/wblog/system"
 	"net/http"
@@ -31,6 +31,10 @@ func (r *Routes) Register() {
 	r.registerRoute()
 	r.passwordRoute()
 	r.captchaRoute()
+	r.engine.Use(r.AdminScopeRequired())
+	{
+		r.engine.GET("/", new(admin.HomeApi).Index)
+	}
 	r.group.Use(r.AdminScopeRequired())
 	{
 		r.auth()
@@ -105,8 +109,6 @@ func (r *Routes) captchaRoute() {
 func (r *Routes) homeRoute() {
 	home := admin.HomeApi{}
 	{
-		r.engine.GET("/", home.Index)
-		r.engine.GET("/index", client.Index)
 		r.group.GET("/index", home.Index)
 	}
 }
@@ -160,6 +162,7 @@ func (r *Routes) tag() {
 func (r *Routes) AdminScopeRequired() gin.HandlerFunc {
 	config := system.GetConfiguration()
 	return func(c *gin.Context) {
+		fmt.Println(config.AdminUser)
 		if user, _ := c.Get(config.AdminUser); user != nil {
 			if u, ok := user.(*models.User); ok && u.IsAdmin {
 				c.Next()
